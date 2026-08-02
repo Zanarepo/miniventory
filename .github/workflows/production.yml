@@ -1,0 +1,48 @@
+name: Production Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    name: Build & Quality Assurance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Quality (Linting)
+        run: npm run lint
+        continue-on-error: true # For MVP, don't block on lint errors just yet
+
+      - name: TypeScript Type Checking
+        run: npx tsc --noEmit
+
+      - name: Build Application (Vite + PWA)
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Security Audit
+        run: npm audit --audit-level=high
+
+      # If this was hooked up to Vercel or similar, we would deploy here.
+      # For now, succeeding to build means it's ready.
+      - name: Verify Build Artifacts
+        run: ls -la dist/
