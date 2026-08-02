@@ -2,9 +2,10 @@ import Dexie, { type EntityTable } from 'dexie';
 import type { Business } from '../types/business';
 import type { Profile } from '../types/auth';
 import type { Product, ProductCategory, InventoryTransaction } from '../types/inventory';
-import type { Sale, SaleItem } from '../types/sales';
+import type { Sale, SaleItem, SalePayment } from '../types/sales';
 import type { Expense, ExpenseCategory } from '../types/expenses';
 import type { ReportHistory } from '../types/reports';
+import type { Customer } from '../types/customers';
 
 export interface SyncQueueItem {
   id?: number;
@@ -14,12 +15,14 @@ export interface SyncQueueItem {
     | 'product_category'
     | 'inventory_transaction'
     | 'sale'
+    | 'sale_payment'
     | 'expense'
     | 'expense_category'
     | 'profile'
     | 'business'
     | 'report_history'
-    | 'audit_log';
+    | 'audit_log'
+    | 'customer';
   payload: unknown;
   createdAt: number;
   status: 'pending' | 'syncing' | 'failed';
@@ -77,6 +80,8 @@ export class BizTrackDatabase extends Dexie {
   inventoryTransactions!: EntityTable<InventoryTransaction, 'id'>;
   sales!: EntityTable<Sale, 'id'>;
   saleItems!: EntityTable<SaleItem, 'id'>;
+  salePayments!: EntityTable<SalePayment, 'id'>;
+  customers!: EntityTable<Customer, 'id'>;
   expenseCategories!: EntityTable<ExpenseCategory, 'id'>;
   expenses!: EntityTable<Expense, 'id'>;
   reportHistory!: EntityTable<ReportHistory, 'id'>;
@@ -190,6 +195,25 @@ export class BizTrackDatabase extends Dexie {
       expenses: 'id, business_id, category_id, expense_date, deleted_at',
       reportHistory: 'id, businessId, reportType, exportFormat, generatedAt',
       auditLogs: 'id, business_id, user_id, action, entity, created_at, status',
+    });
+    this.version(10).stores({
+      syncQueue: '++id, action, entity, status, createdAt, retryCount',
+      cachedProducts: 'id, name, price, stock, updatedAt',
+      cachedSales: 'id, date, total, status',
+      cachedExpenses: 'id, date, amount, category',
+      cachedBusinesses: 'id, owner_id, business_name, updated_at',
+      cachedProfiles: 'id, email, phone',
+      products: 'id, business_id, category_id, product_name, sku, is_active',
+      productCategories: 'id, business_id, name',
+      inventoryTransactions: 'id, business_id, product_id, movement_type, created_at',
+      sales: 'id, business_id, receipt_number, created_at',
+      saleItems: 'id, sale_id, product_id',
+      expenseCategories: 'id, business_id, name',
+      expenses: 'id, business_id, category_id, expense_date, deleted_at',
+      reportHistory: 'id, businessId, reportType, exportFormat, generatedAt',
+      auditLogs: 'id, business_id, user_id, action, entity, created_at, status',
+      customers: 'id, business_id, name, phone',
+      salePayments: 'id, business_id, sale_id, payment_method, created_at',
     });
   }
 }

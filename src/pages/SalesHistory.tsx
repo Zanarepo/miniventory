@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { SearchInput } from '../components/SearchInput';
+import { CustomSelect } from '../components/CustomSelect';
 import { ReceiptModal } from '../components/ReceiptModal';
 import { Pagination } from '../components/Pagination';
 import type { Sale, SaleItem } from '../types/sales';
@@ -14,6 +15,7 @@ interface SaleWithItems extends Sale {
   productNames?: string;
   itemCount?: number;
   firstItemName?: string;
+  hasDiscount?: boolean;
 }
 
 export const SalesHistory: React.FC = () => {
@@ -157,6 +159,7 @@ export const SalesHistory: React.FC = () => {
             productNames: itemsWithNames.join(', '),
             itemCount: itemsWithNames.length,
             firstItemName: itemsWithNames[0],
+            hasDiscount: items.some((item) => item.is_discounted),
           };
         }),
       );
@@ -301,69 +304,49 @@ export const SalesHistory: React.FC = () => {
             backgroundColor: 'var(--bg-app)',
           }}
         >
+          <div style={{ width: '100%', maxWidth: '400px' }}>
+            <SearchInput
+              placeholder="Search by receipt or items..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '2 1 280px', maxWidth: '320px' }}>
-              <SearchInput
-                placeholder="Search by receipt or items..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-            </div>
-
-            <select
-              style={{
-                padding: '8px 12px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-card)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                fontWeight: 500,
-                outline: 'none',
-                cursor: 'pointer',
-                minWidth: '160px',
-              }}
+            <CustomSelect
+              style={{ flex: '1 1 140px' }}
               value={filterPayMethod}
-              onChange={(e) => {
-                setFilterPayMethod(e.target.value);
+              onChange={(val) => {
+                setFilterPayMethod(val);
                 setCurrentPage(1);
               }}
-            >
-              <option value="">All Pay Methods</option>
-              <option value="CASH">Cash</option>
-              <option value="POS">POS</option>
-              <option value="TRANSFER">Transfer</option>
-              <option value="MOBILE_MONEY">Mobile Money</option>
-            </select>
+              options={[
+                { value: '', label: 'All Pay Methods' },
+                { value: 'CASH', label: 'Cash' },
+                { value: 'POS', label: 'POS' },
+                { value: 'TRANSFER', label: 'Transfer' },
+                { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+              ]}
+            />
 
-            <select
-              style={{
-                padding: '8px 12px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-card)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                fontWeight: 500,
-                outline: 'none',
-                cursor: 'pointer',
-                minWidth: '160px',
-              }}
+            <CustomSelect
+              style={{ flex: '1 1 140px' }}
               value={period}
-              onChange={(e) => {
-                setPeriod(e.target.value);
+              onChange={(val) => {
+                setPeriod(val);
                 setCurrentPage(1);
               }}
-            >
-              <option value="TODAY">Today</option>
-              <option value="YESTERDAY">Yesterday</option>
-              <option value="LAST_7_DAYS">Last 7 Days</option>
-              <option value="LAST_30_DAYS">Last 30 Days</option>
-              <option value="THIS_MONTH">This Month</option>
-              <option value="LAST_MONTH">Last Month</option>
-              <option value="THIS_YEAR">This Year</option>
-              <option value="CUSTOM">Custom Range</option>
-            </select>
+              options={[
+                { value: 'TODAY', label: 'Today' },
+                { value: 'YESTERDAY', label: 'Yesterday' },
+                { value: 'LAST_7_DAYS', label: 'Last 7 Days' },
+                { value: 'LAST_30_DAYS', label: 'Last 30 Days' },
+                { value: 'THIS_MONTH', label: 'This Month' },
+                { value: 'LAST_MONTH', label: 'Last Month' },
+                { value: 'THIS_YEAR', label: 'This Year' },
+                { value: 'CUSTOM', label: 'Custom Range' },
+              ]}
+            />
           </div>
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -440,8 +423,8 @@ export const SalesHistory: React.FC = () => {
         </div>
 
         {/* Desktop View Table */}
-        <div className="desktop-table-container table-wrapper">
-          <table className="table">
+        <div className="desktop-table-container overflow-x-auto">
+          <table className="table w-full">
             <thead>
               <tr>
                 <th>{t('colDate')}</th>
@@ -449,6 +432,8 @@ export const SalesHistory: React.FC = () => {
                 <th>Items Sold</th>
                 <th>Payment Method</th>
                 <th>{t('colTotalAmount')}</th>
+                <th>Paid</th>
+                <th>Debt</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -476,19 +461,34 @@ export const SalesHistory: React.FC = () => {
                       maxWidth: '240px',
                     }}
                   >
-                    <span className="font-medium text-slate-700 dark:text-slate-300 text-sm">
-                      {sale.itemCount && sale.itemCount > 1
-                        ? 'Multiple Items'
-                        : sale.firstItemName || 'No items'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-slate-700 dark:text-slate-300 text-sm">
+                        {sale.itemCount && sale.itemCount > 1
+                          ? 'Multiple Items'
+                          : sale.firstItemName || 'No items'}
+                      </span>
+                      {sale.hasDiscount && (
+                        <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger, #ef4444)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                          Discount
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td>
                     <span className="text-xs font-semibold px-2 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 rounded-full">
                       {sale.payment_method}
                     </span>
                   </td>
-                  <td className="font-bold text-emerald-600 dark:text-emerald-400">
+                  <td className="font-bold text-slate-800 dark:text-slate-200">
                     {formatCurrency(sale.total_amount)}
+                  </td>
+                  <td className="font-bold text-emerald-600 dark:text-emerald-400">
+                    {formatCurrency(sale.amount_paid !== undefined ? sale.amount_paid : sale.total_amount)}
+                  </td>
+                  <td className="font-bold text-red-500">
+                    {sale.amount_paid !== undefined && sale.total_amount > sale.amount_paid 
+                      ? formatCurrency(sale.total_amount - sale.amount_paid) 
+                      : '-'}
                   </td>
                   <td>
                     <Button 
@@ -515,7 +515,7 @@ export const SalesHistory: React.FC = () => {
         </div>
 
         {/* Mobile Responsive Cards */}
-        <div className="mobile-cards-container">
+        <div className="mobile-cards-container mt-4">
           {paginatedSales.map((sale) => (
             <Card
               key={sale.id}
@@ -544,15 +544,23 @@ export const SalesHistory: React.FC = () => {
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  marginTop: '4px',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  gap: '8px',
                 }}
               >
-                <span className="text-base font-bold text-slate-800 dark:text-slate-200">
-                  {sale.itemCount && sale.itemCount > 1
-                    ? 'Multiple Items'
-                    : sale.firstItemName || 'No items'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-bold text-slate-800 dark:text-slate-200">
+                    {sale.itemCount && sale.itemCount > 1
+                      ? 'Multiple Items'
+                      : sale.firstItemName || 'No items'}
+                  </span>
+                  {sale.hasDiscount && (
+                    <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger, #ef4444)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                      Discount
+                    </span>
+                  )}
+                </div>
               </div>
               <div
                 style={{
@@ -564,11 +572,18 @@ export const SalesHistory: React.FC = () => {
                   paddingTop: '8px',
                 }}
               >
-                <span
-                  style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--brand-primary)' }}
-                >
-                  {formatCurrency(sale.total_amount)}
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span
+                    style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--brand-primary)' }}
+                  >
+                    {formatCurrency(sale.total_amount)}
+                  </span>
+                  {sale.amount_paid !== undefined && sale.total_amount > sale.amount_paid && (
+                    <span style={{ fontSize: '0.8rem', color: 'var(--brand-danger)', fontWeight: 700 }}>
+                      Debt: {formatCurrency(sale.total_amount - sale.amount_paid)}
+                    </span>
+                  )}
+                </div>
                 <Button 
                   size="sm" 
                   variant="outline" 

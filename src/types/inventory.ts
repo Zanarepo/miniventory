@@ -24,6 +24,10 @@ export interface Product {
   cost_price: number;
   selling_price: number;
   unit: string;
+  bulk_unit?: string;
+  conversion_ratio?: number;
+  bulk_cost_price?: number;
+  bulk_selling_price?: number;
   minimum_stock: number;
   image_url?: string;
   is_active: boolean;

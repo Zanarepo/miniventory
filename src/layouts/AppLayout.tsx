@@ -24,6 +24,7 @@ import {
   FileText,
   Download,
   ShieldAlert,
+  Users,
 } from 'lucide-react';
 
 export const AppLayout: React.FC = () => {
@@ -179,6 +180,14 @@ export const AppLayout: React.FC = () => {
           >
             <Receipt size={19} />
             <span>Sales History</span>
+          </Link>
+          <Link
+            to="/customers"
+            onClick={() => setIsSidebarOpen(false)}
+            style={navItemStyle('/customers')}
+          >
+            <Users size={19} />
+            <span>Customers & Debtors</span>
           </Link>
           <Link
             to="/expenses"

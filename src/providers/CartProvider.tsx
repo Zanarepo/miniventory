@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { CartContext } from '../contexts/CartContext';
 import type { CartItem } from '../contexts/CartContext';
 import type { Product } from '../types/inventory';
@@ -11,8 +11,22 @@ import { useInventory } from '../hooks/useInventory';
 import { db } from '../lib/dexie';
 import { supabase } from '../lib/supabase';
 
+const CART_STORAGE_KEY = 'biztrack_cart_draft';
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(CART_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  }, [cart]);
+
   const { business } = useBusiness();
   const { profile, user } = useAuth();
   const { isOnline } = useNetwork();
@@ -56,16 +70,34 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, []);
 
+  const updateItemPrice = useCallback((productId: string, newPrice: number | null) => {
+    setCart((prev) => {
+      return prev.map((item) => {
+        if (item.product.id === productId) {
+          if (newPrice === null) {
+            return { ...item, custom_price: undefined, is_discounted: false };
+          }
+          return { ...item, custom_price: newPrice, is_discounted: true };
+        }
+        return item;
+      });
+    });
+  }, []);
+
   const removeFromCart = useCallback((productId: string) => {
     setCart((prev) => prev.filter((item) => item.product.id !== productId));
   }, []);
 
   const clearCart = useCallback(() => {
     setCart([]);
+    localStorage.removeItem(CART_STORAGE_KEY);
   }, []);
 
   const checkout = async (
     paymentMethod: PaymentMethod,
+    customerId?: string,
+    amountPaid?: number,
+    salePaymentsInput?: { payment_method: PaymentMethod; amount: number }[]
   ): Promise<{ success: boolean; receiptNumber?: string }> => {
     if (!businessId || !currentUserId || cart.length === 0) {
       return { success: false };
@@ -85,6 +117,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         total_cost: totalCost,
         gross_profit: grossProfit,
         payment_method: paymentMethod,
+        customer_id: customerId,
+        payment_status: amountPaid !== undefined 
+          ? (amountPaid >= subtotal ? 'PAID' : (amountPaid > 0 ? 'PARTIAL' : 'UNPAID'))
+          : 'PAID',
+        amount_paid: amountPaid !== undefined ? amountPaid : subtotal,
         created_by: currentUserId,
         created_at: now,
       };
@@ -103,6 +140,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           line_total: lineTotal,
           line_profit: lineTotal - lineCost,
           custom_name: item.custom_name,
+          is_discounted: item.is_discounted,
           created_at: now,
         };
       });
@@ -119,15 +157,40 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: now,
       }));
 
+      const salePayments = salePaymentsInput?.map(sp => ({
+        id: crypto.randomUUID(),
+        business_id: businessId,
+        sale_id: saleId,
+        amount: sp.amount,
+        payment_method: sp.payment_method,
+        recorded_by: currentUserId,
+        created_at: now,
+      })) || [];
+
       // Store locally in Dexie immediately
       await db.sales.put(sale);
       await db.saleItems.bulkPut(saleItems);
+      if (salePayments.length > 0) {
+        await db.salePayments.bulkPut(salePayments);
+      }
       await db.inventoryTransactions.bulkPut(inventoryTxs); // Keeps local UI stock in sync!
+
+      // Update local customer balance for credit sales
+      if (customerId && amountPaid !== undefined && amountPaid !== subtotal) {
+        const balanceDiff = subtotal - amountPaid;
+        const customer = await db.customers.get(customerId);
+        if (customer) {
+          await db.customers.update(customerId, {
+            balance: Number(customer.balance || 0) + balanceDiff
+          });
+        }
+      }
 
       if (isOnline) {
         const { error, data } = await supabase.rpc('process_offline_sale', {
           p_sale: sale,
           p_sale_items: saleItems,
+          p_sale_payments: salePayments.length > 0 ? salePayments : null,
         });
 
         if (error || !data?.success) {
@@ -135,7 +198,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await db.syncQueue.add({
             action: 'CREATE',
             entity: 'sale',
-            payload: { sale, saleItems },
+            payload: { sale, saleItems, salePayments: salePayments.length > 0 ? salePayments : null },
             createdAt: Date.now(),
             status: 'pending',
           });
@@ -143,15 +206,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         // Offline: Add to sync queue for later
         await db.syncQueue.add({
-          action: 'CREATE',
-          entity: 'sale',
-          payload: { sale, saleItems },
-          createdAt: Date.now(),
-          status: 'pending',
-        });
+        action: 'CREATE',
+        entity: 'sale',
+        payload: { sale, saleItems, salePayments: salePayments.length > 0 ? salePayments : null },
+        createdAt: Date.now(),
+        status: 'pending',
+      });
       }
 
-      clearCart();
+      setCart([]);
+      localStorage.removeItem(CART_STORAGE_KEY);
       refreshInventory(); // Trigger inventory provider to recalculate local stock
       return { success: true, receiptNumber };
     } catch (err) {
@@ -168,6 +232,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     grossProfit,
     addToCart,
     updateQuantity,
+    updateItemPrice,
     removeFromCart,
     clearCart,
     checkout,

@@ -19,6 +19,7 @@ import {
   type BusinessRankingItem,
 } from '../../components/dashboard/BusinessComparisonChart';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { CustomSelect } from '../../components/CustomSelect';
 
 interface FinancialKPIs {
   total_revenue: number;
@@ -235,9 +236,9 @@ export const AdminFinancials: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label
               style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-muted)',
+                fontSize: '0.85rem',
                 fontWeight: 600,
+                color: 'var(--text-muted)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
@@ -245,35 +246,30 @@ export const AdminFinancials: React.FC = () => {
             >
               <Calendar size={12} /> Time Period:
             </label>
-            <select
+            <CustomSelect
+              style={{ minWidth: '150px' }}
               value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              style={{
-                padding: '8px 14px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
-            >
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-              <option value="all">All Time</option>
-            </select>
+              onChange={(val) => setTimeRange(val)}
+              options={[
+                { value: 'TODAY', label: 'Today' },
+                { value: 'YESTERDAY', label: 'Yesterday' },
+                { value: 'LAST_7_DAYS', label: 'Last 7 Days' },
+                { value: 'LAST_30_DAYS', label: 'Last 30 Days' },
+                { value: 'THIS_MONTH', label: 'This Month' },
+                { value: 'LAST_MONTH', label: 'Last Month' },
+                { value: 'THIS_YEAR', label: 'This Year' },
+                { value: 'ALL_TIME', label: 'All Time' },
+              ]}
+            />
           </div>
 
           {/* Business filter */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <label
               style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-muted)',
+                fontSize: '0.85rem',
                 fontWeight: 600,
+                color: 'var(--text-muted)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
@@ -281,27 +277,15 @@ export const AdminFinancials: React.FC = () => {
             >
               <Briefcase size={12} /> Scope:
             </label>
-            <select
+            <CustomSelect
+              style={{ minWidth: '180px' }}
               value={selectedBusinessId}
-              onChange={(e) => setSelectedBusinessId(e.target.value)}
-              style={{
-                padding: '8px 14px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
-            >
-              <option value="ALL">Company-Wide (All Businesses)</option>
-              {businesses.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.business_name || `Unnamed (${b.id.substring(0, 8)})`}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedBusinessId(val)}
+              options={[
+                { value: 'ALL', label: 'All Businesses (Platform)' },
+                ...businesses.map(b => ({ value: b.id, label: b.business_name }))
+              ]}
+            />
           </div>
         </div>
       </div>

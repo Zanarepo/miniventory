@@ -3,9 +3,10 @@ import { supabase } from '../lib/supabase';
 import type { Business } from '../types/business';
 import type { Profile } from '../types/auth';
 import type { Product, ProductCategory, InventoryTransaction } from '../types/inventory';
-import type { Sale, SaleItem } from '../types/sales';
+import type { Sale, SaleItem, SalePayment } from '../types/sales';
 import type { Expense, ExpenseCategory } from '../types/expenses';
 import type { ReportHistory } from '../types/reports';
+import type { Customer } from '../types/customers';
 
 let isSyncing = false;
 let isDownloading = false;
@@ -138,16 +139,37 @@ export const processSyncQueue = async (): Promise<number> => {
           }
         } else if (item.entity === 'sale') {
           if (item.action === 'CREATE') {
-            const payload = item.payload as { sale: Sale; saleItems: SaleItem[] };
+            const payload = item.payload as { sale: Sale; saleItems: SaleItem[]; salePayments?: SalePayment[] };
             const { error, data } = await supabase.rpc('process_offline_sale', {
               p_sale: payload.sale,
               p_sale_items: payload.saleItems,
+              p_sale_payments: payload.salePayments || null,
             });
             if (!error && data?.success) {
               await db.syncQueue.delete(item.id!);
               syncedCount++;
             } else {
               await handleFailedSync(item.id!, error || new Error('RPC failed'));
+            }
+          }
+        } else if (item.entity === 'customer') {
+          if (item.action === 'CREATE') {
+            const payload = item.payload as Customer;
+            const { error } = await supabase.from('customers').insert([payload]);
+            if (!error) {
+              await db.syncQueue.delete(item.id!);
+              syncedCount++;
+            } else {
+              await handleFailedSync(item.id!, error);
+            }
+          } else if (item.action === 'UPDATE') {
+            const payload = item.payload as Customer;
+            const { error } = await supabase.from('customers').update(payload).eq('id', payload.id);
+            if (!error) {
+              await db.syncQueue.delete(item.id!);
+              syncedCount++;
+            } else {
+              await handleFailedSync(item.id!, error);
             }
           }
         } else if (item.entity === 'expense_category') {
@@ -216,6 +238,17 @@ export const processSyncQueue = async (): Promise<number> => {
                   await db.auditLogs.update(dbPayload.id, { status: 'synced' });
                 }
               }
+              await db.syncQueue.delete(item.id!);
+              syncedCount++;
+            } else {
+              await handleFailedSync(item.id!, error);
+            }
+          }
+        } else if (item.entity === 'sale_payment') {
+          if (item.action === 'CREATE') {
+            const payload = item.payload as SalePayment;
+            const { error } = await supabase.from('sale_payments').insert([payload]);
+            if (!error) {
               await db.syncQueue.delete(item.id!);
               syncedCount++;
             } else {
@@ -335,6 +368,12 @@ export const syncFromServer = async (businessId: string): Promise<boolean> => {
       await db.auditLogs.bulkPut(
         (auditRes.data as unknown as CachedAuditLog[]).map((l) => ({ ...l, status: 'synced' })),
       );
+    }
+
+    // 5. Sync Customers
+    const customersRes = await supabase.from('customers').select('*').eq('business_id', businessId);
+    if (customersRes.data) {
+      await db.customers.bulkPut(customersRes.data);
     }
 
     return true;

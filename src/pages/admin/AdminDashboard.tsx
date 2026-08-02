@@ -14,6 +14,7 @@ import {
 import { KPICard } from '../../components/dashboard/KPICard';
 import { ActivityChart } from '../../components/dashboard/ActivityChart';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { CustomSelect } from '../../components/CustomSelect';
 
 interface PlatformStats {
   totalUsers: number;
@@ -270,52 +271,34 @@ export const AdminDashboard: React.FC = () => {
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               By Business:
             </label>
-            <select
+            <CustomSelect
+              style={{ minWidth: '180px' }}
               value={selectedBusinessId}
-              onChange={(e) => setSelectedBusinessId(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="ALL">All Businesses (Platform Wide)</option>
-              {businesses.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.business_name || `Unnamed (${b.id.substring(0, 8)})`}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedBusinessId(val)}
+              options={[
+                { value: 'ALL', label: 'Company-Wide' },
+                ...businesses.map(b => ({ value: b.id, label: b.business_name || `Unnamed (${b.id.substring(0, 8)})` }))
+              ]}
+            />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               Activity Type:
             </label>
-            <select
+            <CustomSelect
+              style={{ minWidth: '180px' }}
               value={selectedActivityType}
-              onChange={(e) => setSelectedActivityType(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-app)',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="ALL">All Activity Types</option>
-              <option value="app_open">App Opens</option>
-              <option value="record_sale">Sales Recorded</option>
-              <option value="create_product">Inventory (Add Product)</option>
-              <option value="update_product">Inventory (Update Product)</option>
-              <option value="record_expense">Expenses Recorded</option>
-            </select>
+              onChange={(val) => setSelectedActivityType(val)}
+              options={[
+                { value: 'ALL', label: 'All Activities' },
+                { value: 'app_open', label: 'App Opens' },
+                { value: 'record_sale', label: 'Sales Recorded' },
+                { value: 'create_product', label: 'Inventory (Add Product)' },
+                { value: 'update_product', label: 'Inventory (Update Product)' },
+                { value: 'record_expense', label: 'Expenses Recorded' },
+              ]}
+            />
           </div>
         </div>
       </div>

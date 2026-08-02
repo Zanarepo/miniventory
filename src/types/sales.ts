@@ -7,6 +7,9 @@ export interface Sale {
   total_cost: number;
   gross_profit: number;
   payment_method: string;
+  customer_id?: string;
+  payment_status?: string;
+  amount_paid?: number;
   created_by: string;
   created_at?: string;
 }
@@ -21,7 +24,20 @@ export interface SaleItem {
   line_total: number;
   line_profit: number;
   custom_name?: string;
+  is_discounted?: boolean;
   created_at?: string;
 }
 
-export type PaymentMethod = 'CASH' | 'POS' | 'TRANSFER' | 'MOBILE_MONEY' | 'OTHER';
+export type PaymentMethod = 'CASH' | 'POS' | 'TRANSFER' | 'MOBILE_MONEY' | 'OTHER' | 'SPLIT';
+
+export type PaymentStatus = 'PAID' | 'PARTIAL' | 'UNPAID';
+
+export interface SalePayment {
+  id: string;
+  business_id: string;
+  sale_id: string;
+  amount: number;
+  payment_method: PaymentMethod;
+  recorded_by: string;
+  created_at?: string;
+}

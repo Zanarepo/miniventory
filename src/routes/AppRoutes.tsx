@@ -62,6 +62,9 @@ const NewSale = React.lazy(() =>
 const SalesHistory = React.lazy(() =>
   import('../pages/SalesHistory').then((module) => ({ default: module.SalesHistory })),
 );
+const Customers = React.lazy(() =>
+  import('../pages/Customers').then((module) => ({ default: module.Customers })),
+);
 const Expenses = React.lazy(() =>
   import('../pages/Expenses').then((module) => ({ default: module.Expenses })),
 );
@@ -136,6 +139,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/inventory-ledger" element={<InventoryHistory />} />
             <Route path="/sales" element={<NewSale />} />
             <Route path="/sales-history" element={<SalesHistory />} />
+            <Route path="/customers" element={<Customers />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/expenses/new" element={<NewExpense />} />
             <Route path="/expenses/edit/:id" element={<EditExpense />} />

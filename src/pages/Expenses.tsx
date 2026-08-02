@@ -9,6 +9,7 @@ import { SearchInput } from '../components/SearchInput';
 import { Pagination } from '../components/Pagination';
 import { Toast } from '../components/Toast';
 import { Modal } from '../components/Modal';
+import { CustomSelect } from '../components/CustomSelect';
 import { Plus, Edit2, Trash2, Calendar, FileText } from 'lucide-react';
 
 export const Expenses: React.FC = () => {
@@ -258,44 +259,42 @@ export const Expenses: React.FC = () => {
             backgroundColor: 'var(--bg-app)',
           }}
         >
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <div style={{ flex: '2 1 280px' }}>
-              <SearchInput
-                placeholder="Search expense description..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-            </div>
-            <select
-              style={selectStyle}
+          <div style={{ width: '100%', maxWidth: '400px' }}>
+            <SearchInput
+              placeholder="Search expense description..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <CustomSelect
+              style={{ flex: '1 1 140px' }}
               value={filterCategoryId}
-              onChange={(e) => {
-                setFilterCategoryId(e.target.value);
+              onChange={(val) => {
+                setFilterCategoryId(val);
                 setCurrentPage(1);
               }}
-            >
-              <option value="">All Categories</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <select
-              style={selectStyle}
+              options={[
+                { value: '', label: 'All Categories' },
+                ...categories.map(c => ({ value: c.id, label: c.name }))
+              ]}
+            />
+            <CustomSelect
+              style={{ flex: '1 1 140px' }}
               value={filterPayMethod}
-              onChange={(e) => {
-                setFilterPayMethod(e.target.value);
+              onChange={(val) => {
+                setFilterPayMethod(val);
                 setCurrentPage(1);
               }}
-            >
-              <option value="">All Pay Methods</option>
-              <option value="CASH">Cash</option>
-              <option value="POS">POS</option>
-              <option value="TRANSFER">Transfer</option>
-              <option value="MOBILE_MONEY">Mobile Money</option>
-              <option value="OTHER">Other</option>
-            </select>
+              options={[
+                { value: '', label: 'All Pay Methods' },
+                { value: 'CASH', label: 'Cash' },
+                { value: 'POS', label: 'POS' },
+                { value: 'TRANSFER', label: 'Transfer' },
+                { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+                { value: 'OTHER', label: 'Other' }
+              ]}
+            />
           </div>
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>

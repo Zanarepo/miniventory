@@ -33,7 +33,7 @@ BEGIN
     -- Insert Line Item
     INSERT INTO sale_items (
       id, sale_id, product_id, quantity, unit_cost, 
-      selling_price, line_total, line_profit
+      selling_price, line_total, line_profit, custom_name, is_discounted
     ) VALUES (
       COALESCE((v_item->>'id')::uuid, gen_random_uuid()),
       v_sale_id,
@@ -42,7 +42,9 @@ BEGIN
       (v_item->>'unit_cost')::numeric,
       (v_item->>'selling_price')::numeric,
       (v_item->>'line_total')::numeric,
-      (v_item->>'line_profit')::numeric
+      (v_item->>'line_profit')::numeric,
+      v_item->>'custom_name',
+      COALESCE((v_item->>'is_discounted')::boolean, false)
     );
 
     -- Insert Inventory Transaction (Negative for sales)

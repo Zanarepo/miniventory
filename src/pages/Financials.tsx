@@ -3,6 +3,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useBusiness } from '../hooks/useBusiness';
 import { useFinancials } from '../hooks/useFinancials';
 import { Card } from '../components/Card';
+import { CustomSelect } from '../components/CustomSelect';
 
 import {
   Coins,
@@ -36,19 +37,6 @@ export const Financials: React.FC = () => {
     if (score >= 75) return 'var(--brand-primary, #6366f1)';
     if (score >= 60) return 'var(--brand-warning, #f59e0b)';
     return 'var(--brand-danger, #ef4444)';
-  };
-
-  const selectStyle: React.CSSProperties = {
-    padding: '10px 14px',
-    borderRadius: 'var(--radius-md)',
-    border: '1px solid var(--border-color)',
-    backgroundColor: 'var(--bg-card)',
-    color: 'var(--text-main)',
-    fontSize: '0.95rem',
-    fontWeight: 600,
-    outline: 'none',
-    cursor: 'pointer',
-    flex: '1 1 200px',
   };
 
   const inputStyle: React.CSSProperties = {
@@ -116,20 +104,21 @@ export const Financials: React.FC = () => {
 
         {/* Date / Period Selector */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <select
-            style={selectStyle}
+          <CustomSelect
+            style={{ minWidth: '160px' }}
             value={period}
-            onChange={(e) => setPeriod(e.target.value as PeriodSelection)}
-          >
-            <option value="TODAY">{getPeriodLabel('TODAY')}</option>
-            <option value="YESTERDAY">{getPeriodLabel('YESTERDAY')}</option>
-            <option value="LAST_7_DAYS">{getPeriodLabel('LAST_7_DAYS')}</option>
-            <option value="LAST_30_DAYS">{getPeriodLabel('LAST_30_DAYS')}</option>
-            <option value="THIS_MONTH">{getPeriodLabel('THIS_MONTH')}</option>
-            <option value="LAST_MONTH">{getPeriodLabel('LAST_MONTH')}</option>
-            <option value="THIS_YEAR">{getPeriodLabel('THIS_YEAR')}</option>
-            <option value="CUSTOM">{getPeriodLabel('CUSTOM')}</option>
-          </select>
+            onChange={(val) => setPeriod(val as PeriodSelection)}
+            options={[
+              { value: 'TODAY', label: getPeriodLabel('TODAY') },
+              { value: 'YESTERDAY', label: getPeriodLabel('YESTERDAY') },
+              { value: 'LAST_7_DAYS', label: getPeriodLabel('LAST_7_DAYS') },
+              { value: 'LAST_30_DAYS', label: getPeriodLabel('LAST_30_DAYS') },
+              { value: 'THIS_MONTH', label: getPeriodLabel('THIS_MONTH') },
+              { value: 'LAST_MONTH', label: getPeriodLabel('LAST_MONTH') },
+              { value: 'THIS_YEAR', label: getPeriodLabel('THIS_YEAR') },
+              { value: 'CUSTOM', label: getPeriodLabel('CUSTOM') },
+            ]}
+          />
 
           {period === 'CUSTOM' && (
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>

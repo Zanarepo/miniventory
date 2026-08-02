@@ -3,6 +3,7 @@ import { useInventory } from '../hooks/useInventory';
 import { useLanguage } from '../hooks/useLanguage';
 import { Button } from './Button';
 import { Input } from './Input';
+import { CustomSelect } from './CustomSelect';
 import { Toast } from './Toast';
 import { Plus, FolderPlus, Tag, X } from 'lucide-react';
 
@@ -97,41 +98,21 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       </div>
 
       <div style={{ position: 'relative' }}>
-        <select
+        <CustomSelect
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(val) => onChange(val)}
           required={required && !value}
-          className={`input-field ${error ? 'input-error' : ''}`}
-          style={{
-            width: '100%',
-            paddingLeft: '38px',
-            height: '48px',
-            cursor: 'pointer',
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-md)',
-            color: 'var(--text-main)',
-          }}
           disabled={isCreatingInline}
-        >
-          <option value="">-- Select category group --</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name} {cat.description ? `(${cat.description})` : ''}
-            </option>
-          ))}
-        </select>
-        <div
-          style={{
-            position: 'absolute',
-            left: '12px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--text-muted)',
-          }}
-        >
-          <Tag size={17} />
-        </div>
+          leftIcon={<Tag size={17} />}
+          options={[
+            { value: '', label: '-- Select category group --' },
+            ...categories.map(cat => ({
+              value: cat.id,
+              label: `${cat.name}${cat.description ? ` (${cat.description})` : ''}`
+            }))
+          ]}
+          style={{ width: '100%', height: '48px' }}
+        />
       </div>
       {error && (
         <span className="form-error" style={{ color: 'var(--brand-danger)', fontSize: '0.78rem' }}>
