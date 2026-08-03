@@ -283,7 +283,7 @@ export const AdminFinancials: React.FC = () => {
               onChange={(val) => setSelectedBusinessId(val)}
               options={[
                 { value: 'ALL', label: 'All Businesses (Platform)' },
-                ...businesses.map(b => ({ value: b.id, label: b.business_name }))
+                ...businesses.map((b) => ({ value: b.id, label: b.business_name })),
               ]}
             />
           </div>

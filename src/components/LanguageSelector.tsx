@@ -10,9 +10,9 @@ export const LanguageSelector: React.FC = () => {
     <CustomSelect
       value={language}
       onChange={(val) => setLanguage(val as LanguageCode)}
-      options={supportedLanguages.map(lang => ({
+      options={supportedLanguages.map((lang) => ({
         value: lang.code,
-        label: `${lang.flag} ${lang.label}`
+        label: `${lang.flag} ${lang.label}`,
       }))}
       style={{ minWidth: '130px' }}
     />

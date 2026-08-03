@@ -277,7 +277,10 @@ export const AdminDashboard: React.FC = () => {
               onChange={(val) => setSelectedBusinessId(val)}
               options={[
                 { value: 'ALL', label: 'Company-Wide' },
-                ...businesses.map(b => ({ value: b.id, label: b.business_name || `Unnamed (${b.id.substring(0, 8)})` }))
+                ...businesses.map((b) => ({
+                  value: b.id,
+                  label: b.business_name || `Unnamed (${b.id.substring(0, 8)})`,
+                })),
               ]}
             />
           </div>

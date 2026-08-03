@@ -38,7 +38,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const itemCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
 
   const subtotal = useMemo(
-    () => cart.reduce((acc, item) => acc + (item.custom_price ?? Number(item.product.selling_price)) * item.quantity, 0),
+    () =>
+      cart.reduce(
+        (acc, item) =>
+          acc + (item.custom_price ?? Number(item.product.selling_price)) * item.quantity,
+        0,
+      ),
     [cart],
   );
 
@@ -49,17 +54,29 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const grossProfit = useMemo(() => subtotal - totalCost, [subtotal, totalCost]);
 
-  const addToCart = useCallback((product: Product, quantity = 1, custom_name?: string, custom_price?: number) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id && item.custom_name === custom_name && item.custom_price === custom_price);
-      if (existing) {
-        return prev.map((item) =>
-          (item.product.id === product.id && item.custom_name === custom_name && item.custom_price === custom_price) ? { ...item, quantity: item.quantity + quantity } : item,
+  const addToCart = useCallback(
+    (product: Product, quantity = 1, custom_name?: string, custom_price?: number) => {
+      setCart((prev) => {
+        const existing = prev.find(
+          (item) =>
+            item.product.id === product.id &&
+            item.custom_name === custom_name &&
+            item.custom_price === custom_price,
         );
-      }
-      return [...prev, { product, quantity, custom_name, custom_price }];
-    });
-  }, []);
+        if (existing) {
+          return prev.map((item) =>
+            item.product.id === product.id &&
+            item.custom_name === custom_name &&
+            item.custom_price === custom_price
+              ? { ...item, quantity: item.quantity + quantity }
+              : item,
+          );
+        }
+        return [...prev, { product, quantity, custom_name, custom_price }];
+      });
+    },
+    [],
+  );
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
     setCart((prev) => {
@@ -97,7 +114,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     paymentMethod: PaymentMethod,
     customerId?: string,
     amountPaid?: number,
-    salePaymentsInput?: { payment_method: PaymentMethod; amount: number }[]
+    salePaymentsInput?: { payment_method: PaymentMethod; amount: number }[],
   ): Promise<{ success: boolean; receiptNumber?: string }> => {
     if (!businessId || !currentUserId || cart.length === 0) {
       return { success: false };
@@ -118,9 +135,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         gross_profit: grossProfit,
         payment_method: paymentMethod,
         customer_id: customerId,
-        payment_status: amountPaid !== undefined 
-          ? (amountPaid >= subtotal ? 'PAID' : (amountPaid > 0 ? 'PARTIAL' : 'UNPAID'))
-          : 'PAID',
+        payment_status:
+          amountPaid !== undefined
+            ? amountPaid >= subtotal
+              ? 'PAID'
+              : amountPaid > 0
+                ? 'PARTIAL'
+                : 'UNPAID'
+            : 'PAID',
         amount_paid: amountPaid !== undefined ? amountPaid : subtotal,
         created_by: currentUserId,
         created_at: now,
@@ -157,15 +179,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: now,
       }));
 
-      const salePayments = salePaymentsInput?.map(sp => ({
-        id: crypto.randomUUID(),
-        business_id: businessId,
-        sale_id: saleId,
-        amount: sp.amount,
-        payment_method: sp.payment_method,
-        recorded_by: currentUserId,
-        created_at: now,
-      })) || [];
+      const salePayments =
+        salePaymentsInput?.map((sp) => ({
+          id: crypto.randomUUID(),
+          business_id: businessId,
+          sale_id: saleId,
+          amount: sp.amount,
+          payment_method: sp.payment_method,
+          recorded_by: currentUserId,
+          created_at: now,
+        })) || [];
 
       // Store locally in Dexie immediately
       await db.sales.put(sale);
@@ -181,7 +204,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const customer = await db.customers.get(customerId);
         if (customer) {
           await db.customers.update(customerId, {
-            balance: Number(customer.balance || 0) + balanceDiff
+            balance: Number(customer.balance || 0) + balanceDiff,
           });
         }
       }
@@ -198,7 +221,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await db.syncQueue.add({
             action: 'CREATE',
             entity: 'sale',
-            payload: { sale, saleItems, salePayments: salePayments.length > 0 ? salePayments : null },
+            payload: {
+              sale,
+              saleItems,
+              salePayments: salePayments.length > 0 ? salePayments : null,
+            },
             createdAt: Date.now(),
             status: 'pending',
           });
@@ -206,12 +233,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         // Offline: Add to sync queue for later
         await db.syncQueue.add({
-        action: 'CREATE',
-        entity: 'sale',
-        payload: { sale, saleItems, salePayments: salePayments.length > 0 ? salePayments : null },
-        createdAt: Date.now(),
-        status: 'pending',
-      });
+          action: 'CREATE',
+          entity: 'sale',
+          payload: { sale, saleItems, salePayments: salePayments.length > 0 ? salePayments : null },
+          createdAt: Date.now(),
+          status: 'pending',
+        });
       }
 
       setCart([]);

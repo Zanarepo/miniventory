@@ -106,10 +106,10 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           leftIcon={<Tag size={17} />}
           options={[
             { value: '', label: '-- Select category group --' },
-            ...categories.map(cat => ({
+            ...categories.map((cat) => ({
               value: cat.id,
-              label: `${cat.name}${cat.description ? ` (${cat.description})` : ''}`
-            }))
+              label: `${cat.name}${cat.description ? ` (${cat.description})` : ''}`,
+            })),
           ]}
           style={{ width: '100%', height: '48px' }}
         />

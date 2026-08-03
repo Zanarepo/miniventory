@@ -16,7 +16,12 @@ export interface CartContextType {
   subtotal: number;
   totalCost: number;
   grossProfit: number;
-  addToCart: (product: Product, quantity?: number, custom_name?: string, custom_price?: number) => void;
+  addToCart: (
+    product: Product,
+    quantity?: number,
+    custom_name?: string,
+    custom_price?: number,
+  ) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   updateItemPrice: (productId: string, newPrice: number | null) => void;
   removeFromCart: (productId: string) => void;
@@ -25,7 +30,7 @@ export interface CartContextType {
     paymentMethod: PaymentMethod,
     customerId?: string,
     amountPaid?: number,
-    salePaymentsInput?: { payment_method: PaymentMethod; amount: number }[]
+    salePaymentsInput?: { payment_method: PaymentMethod; amount: number }[],
   ) => Promise<{ success: boolean; receiptNumber?: string }>;
 }
 

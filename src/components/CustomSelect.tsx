@@ -17,15 +17,15 @@ interface CustomSelectProps {
   leftIcon?: React.ReactNode;
 }
 
-export const CustomSelect: React.FC<CustomSelectProps> = ({ 
-  value, 
-  options, 
-  onChange, 
-  style, 
+export const CustomSelect: React.FC<CustomSelectProps> = ({
+  value,
+  options,
+  onChange,
+  style,
   className,
   disabled,
   required,
-  leftIcon
+  leftIcon,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,14 +43,18 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   }, []);
 
   return (
-    <div ref={containerRef} className={className} style={{ position: 'relative', display: 'inline-block', ...style }}>
+    <div
+      ref={containerRef}
+      className={className}
+      style={{ position: 'relative', display: 'inline-block', ...style }}
+    >
       {required && (
-        <input 
-          type="text" 
-          required={required} 
-          value={value} 
-          onChange={() => {}} 
-          style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }} 
+        <input
+          type="text"
+          required={required}
+          value={value}
+          onChange={() => {}}
+          style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }}
         />
       )}
       <div
@@ -62,7 +66,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           padding: leftIcon ? '8px 12px 8px 38px' : '8px 12px',
           borderRadius: 'var(--radius-md, 8px)',
           border: `1px solid ${isOpen ? 'var(--brand-primary, #2563eb)' : 'var(--border-color, #e2e8f0)'}`,
-          backgroundColor: disabled ? 'var(--bg-app, #f8fafc)' : 'var(--bg-dropdown, var(--bg-elevated, #ffffff))',
+          backgroundColor: disabled
+            ? 'var(--bg-app, #f8fafc)'
+            : 'var(--bg-dropdown, var(--bg-elevated, #ffffff))',
           color: disabled ? 'var(--text-muted, #64748b)' : 'var(--text-main, #0f172a)',
           fontSize: '0.85rem',
           fontWeight: 500,
@@ -91,7 +97,16 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
           {selectedOption?.label}
         </span>
-        <ChevronDown size={16} style={{ color: 'var(--text-muted, #64748b)', flexShrink: 0, marginLeft: '8px', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
+        <ChevronDown
+          size={16}
+          style={{
+            color: 'var(--text-muted, #64748b)',
+            flexShrink: 0,
+            marginLeft: '8px',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease',
+          }}
+        />
       </div>
 
       {isOpen && (
@@ -120,7 +135,9 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-hover, #f1f5f9)')}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = 'var(--bg-hover, #f1f5f9)')
+                }
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 style={{
                   padding: '10px 12px',
@@ -130,13 +147,18 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: value === option.value ? 600 : 500,
-                  color: value === option.value ? 'var(--brand-primary, #2563eb)' : 'var(--text-main, #0f172a)',
+                  color:
+                    value === option.value
+                      ? 'var(--brand-primary, #2563eb)'
+                      : 'var(--text-main, #0f172a)',
                   backgroundColor: 'transparent',
                   transition: 'background-color 0.15s ease',
                 }}
               >
                 <span>{option.label}</span>
-                {value === option.value && <Check size={16} style={{ color: 'var(--brand-primary, #2563eb)' }} />}
+                {value === option.value && (
+                  <Check size={16} style={{ color: 'var(--brand-primary, #2563eb)' }} />
+                )}
               </div>
             ))}
           </div>

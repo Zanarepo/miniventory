@@ -26,7 +26,9 @@ export const SalesHistory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
-  const [selectedSaleItems, setSelectedSaleItems] = useState<(SaleItem & { product_name?: string })[]>([]);
+  const [selectedSaleItems, setSelectedSaleItems] = useState<
+    (SaleItem & { product_name?: string })[]
+  >([]);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
   // Filter states
@@ -195,7 +197,7 @@ export const SalesHistory: React.FC = () => {
           ...item,
           product_name: item.custom_name || (prod ? prod.product_name : 'Unknown Product'),
         };
-      })
+      }),
     );
     setSelectedSale(sale);
     setSelectedSaleItems(itemsWithNames);
@@ -439,8 +441,8 @@ export const SalesHistory: React.FC = () => {
             </thead>
             <tbody>
               {paginatedSales.map((sale) => (
-                <tr 
-                  key={sale.id} 
+                <tr
+                  key={sale.id}
                   onClick={() => viewReceipt(sale)}
                   className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   style={{ cursor: 'pointer' }}
@@ -468,7 +470,18 @@ export const SalesHistory: React.FC = () => {
                           : sale.firstItemName || 'No items'}
                       </span>
                       {sale.hasDiscount && (
-                        <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger, #ef4444)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                        <span
+                          style={{
+                            marginLeft: '8px',
+                            fontSize: '0.65rem',
+                            backgroundColor: 'var(--brand-danger, #ef4444)',
+                            color: 'white',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                          }}
+                        >
                           Discount
                         </span>
                       )}
@@ -483,16 +496,18 @@ export const SalesHistory: React.FC = () => {
                     {formatCurrency(sale.total_amount)}
                   </td>
                   <td className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {formatCurrency(sale.amount_paid !== undefined ? sale.amount_paid : sale.total_amount)}
+                    {formatCurrency(
+                      sale.amount_paid !== undefined ? sale.amount_paid : sale.total_amount,
+                    )}
                   </td>
                   <td className="font-bold text-red-500">
-                    {sale.amount_paid !== undefined && sale.total_amount > sale.amount_paid 
-                      ? formatCurrency(sale.total_amount - sale.amount_paid) 
+                    {sale.amount_paid !== undefined && sale.total_amount > sale.amount_paid
+                      ? formatCurrency(sale.total_amount - sale.amount_paid)
                       : '-'}
                   </td>
                   <td>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={(e) => {
                         e.stopPropagation();
                         viewReceipt(sale);
@@ -556,7 +571,18 @@ export const SalesHistory: React.FC = () => {
                       : sale.firstItemName || 'No items'}
                   </span>
                   {sale.hasDiscount && (
-                    <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger, #ef4444)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    <span
+                      style={{
+                        marginLeft: '8px',
+                        fontSize: '0.65rem',
+                        backgroundColor: 'var(--brand-danger, #ef4444)',
+                        color: 'white',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                      }}
+                    >
                       Discount
                     </span>
                   )}
@@ -579,14 +605,16 @@ export const SalesHistory: React.FC = () => {
                     {formatCurrency(sale.total_amount)}
                   </span>
                   {sale.amount_paid !== undefined && sale.total_amount > sale.amount_paid && (
-                    <span style={{ fontSize: '0.8rem', color: 'var(--brand-danger)', fontWeight: 700 }}>
+                    <span
+                      style={{ fontSize: '0.8rem', color: 'var(--brand-danger)', fontWeight: 700 }}
+                    >
                       Debt: {formatCurrency(sale.total_amount - sale.amount_paid)}
                     </span>
                   )}
                 </div>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
+                <Button
+                  size="sm"
+                  variant="outline"
                   onClick={(e) => {
                     e.stopPropagation();
                     viewReceipt(sale);

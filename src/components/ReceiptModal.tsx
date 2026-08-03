@@ -27,7 +27,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, sal
 
   if (!sale) return null;
 
-  const customer = sale.customer_id ? customers.find(c => c.id === sale.customer_id) : null;
+  const customer = sale.customer_id ? customers.find((c) => c.id === sale.customer_id) : null;
   const isCredit = sale.payment_status === 'PARTIAL' || sale.payment_status === 'UNPAID';
   const balanceDue = sale.total_amount - (sale.amount_paid || 0);
 
@@ -53,33 +53,113 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, sal
         </div>
 
         <div style={{ margin: '20px 0' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '0.9rem',
+              color: 'var(--text-main)',
+            }}
+          >
             <thead>
               <tr style={{ backgroundColor: 'var(--bg-elevated, #f1f5f9)' }}>
-                <th style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'left', fontWeight: '600' }}>Item</th>
-                <th style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'center', fontWeight: '600' }}>Qty</th>
-                <th style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>Price</th>
-                <th style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600' }}>Total</th>
+                <th
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                  }}
+                >
+                  Item
+                </th>
+                <th
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                  }}
+                >
+                  Qty
+                </th>
+                <th
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                  }}
+                >
+                  Price
+                </th>
+                <th
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                  }}
+                >
+                  Total
+                </th>
               </tr>
             </thead>
             <tbody>
               {saleItems.map((item, idx) => (
                 <tr key={item.id || idx}>
-                  <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'left', fontWeight: '500' }}>
+                  <td
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'left',
+                      fontWeight: '500',
+                    }}
+                  >
                     {item.custom_name || item.product_name || `Item ${idx + 1}`}
                     {item.is_discounted && (
-                      <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger, #ef4444)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                      <span
+                        style={{
+                          marginLeft: '8px',
+                          fontSize: '0.65rem',
+                          backgroundColor: 'var(--brand-danger, #ef4444)',
+                          color: 'white',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         Discount
                       </span>
                     )}
                   </td>
-                  <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'center' }}>
+                  <td
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'center',
+                    }}
+                  >
                     {Number(item.quantity).toFixed(2).replace(/\.00$/, '')}
                   </td>
-                  <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right' }}>
+                  <td
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'right',
+                    }}
+                  >
                     {formatCurrency(item.selling_price)}
                   </td>
-                  <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '700' }}>
+                  <td
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'right',
+                      fontWeight: '700',
+                    }}
+                  >
                     {formatCurrency(item.line_total)}
                   </td>
                 </tr>
@@ -87,27 +167,85 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, sal
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={3} style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '700', textTransform: 'uppercase', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <td
+                  colSpan={3}
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    fontSize: '0.8rem',
+                    color: 'var(--text-muted)',
+                  }}
+                >
                   Total Amount
                 </td>
-                <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '800', color: '#059669', fontSize: '1.05rem' }}>
+                <td
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '800',
+                    color: '#059669',
+                    fontSize: '1.05rem',
+                  }}
+                >
                   {formatCurrency(sale.total_amount)}
                 </td>
               </tr>
               <tr>
-                <td colSpan={3} style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                <td
+                  colSpan={3}
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-muted)',
+                  }}
+                >
                   Payment Method
                 </td>
-                <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#4338ca', textTransform: 'uppercase', fontSize: '0.85rem' }}>
+                <td
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '10px 12px',
+                    textAlign: 'right',
+                    fontWeight: '700',
+                    color: '#4338ca',
+                    textTransform: 'uppercase',
+                    fontSize: '0.85rem',
+                  }}
+                >
                   {sale.payment_method}
                 </td>
               </tr>
               {customer && (
                 <tr>
-                  <td colSpan={3} style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  <td
+                    colSpan={3}
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'right',
+                      fontWeight: '600',
+                      fontSize: '0.85rem',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
                     Customer
                   </td>
-                  <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '700', fontSize: '0.85rem' }}>
+                  <td
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      padding: '10px 12px',
+                      textAlign: 'right',
+                      fontWeight: '700',
+                      fontSize: '0.85rem',
+                    }}
+                  >
                     {customer.name}
                   </td>
                 </tr>
@@ -115,18 +253,56 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, sal
               {isCredit && (
                 <>
                   <tr>
-                    <td colSpan={3} style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <td
+                      colSpan={3}
+                      style={{
+                        border: '1px solid #cbd5e1',
+                        padding: '10px 12px',
+                        textAlign: 'right',
+                        fontWeight: '600',
+                        fontSize: '0.85rem',
+                        color: 'var(--text-muted)',
+                      }}
+                    >
                       Amount Paid
                     </td>
-                    <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '700', color: '#059669', fontSize: '0.85rem' }}>
+                    <td
+                      style={{
+                        border: '1px solid #cbd5e1',
+                        padding: '10px 12px',
+                        textAlign: 'right',
+                        fontWeight: '700',
+                        color: '#059669',
+                        fontSize: '0.85rem',
+                      }}
+                    >
                       {formatCurrency(sale.amount_paid || 0)}
                     </td>
                   </tr>
                   <tr>
-                    <td colSpan={3} style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '600', fontSize: '0.85rem', color: 'var(--brand-danger)' }}>
+                    <td
+                      colSpan={3}
+                      style={{
+                        border: '1px solid #cbd5e1',
+                        padding: '10px 12px',
+                        textAlign: 'right',
+                        fontWeight: '600',
+                        fontSize: '0.85rem',
+                        color: 'var(--brand-danger)',
+                      }}
+                    >
                       Balance Due (Debt)
                     </td>
-                    <td style={{ border: '1px solid #cbd5e1', padding: '10px 12px', textAlign: 'right', fontWeight: '800', color: 'var(--brand-danger)', fontSize: '0.95rem' }}>
+                    <td
+                      style={{
+                        border: '1px solid #cbd5e1',
+                        padding: '10px 12px',
+                        textAlign: 'right',
+                        fontWeight: '800',
+                        color: 'var(--brand-danger)',
+                        fontSize: '0.95rem',
+                      }}
+                    >
                       {formatCurrency(balanceDue)}
                     </td>
                   </tr>

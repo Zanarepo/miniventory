@@ -10,13 +10,10 @@ export function useCustomers() {
   const customers = useLiveQuery(
     () => {
       if (!businessId) return [];
-      return db.customers
-        .where('business_id')
-        .equals(businessId)
-        .sortBy('name');
+      return db.customers.where('business_id').equals(businessId).sortBy('name');
     },
     [businessId],
-    []
+    [],
   );
 
   const addCustomer = async (customer: InsertCustomer) => {
@@ -31,7 +28,7 @@ export function useCustomers() {
     };
 
     await db.customers.put(newCustomer);
-    
+
     await db.syncQueue.add({
       action: 'CREATE',
       entity: 'customer',

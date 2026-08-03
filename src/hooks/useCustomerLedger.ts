@@ -34,22 +34,25 @@ export function useCustomerLedger(customerId: string | null) {
       const items = await db.saleItems.where('sale_id').anyOf(saleIds).toArray();
 
       // 2b. Fetch corresponding products to get their names
-      const productIds = [...new Set(items.map(item => item.product_id))];
+      const productIds = [...new Set(items.map((item) => item.product_id))];
       const products = await db.products.where('id').anyOf(productIds).toArray();
-      const productMap = new Map(products.map(p => [p.id, p.product_name]));
+      const productMap = new Map(products.map((p) => [p.id, p.product_name]));
 
       // Group items by sale_id and enrich with product name
-      const itemsBySaleId = items.reduce((acc, item) => {
-        if (!acc[item.sale_id]) acc[item.sale_id] = [];
-        
-        const enrichedItem: LedgerSaleItem = {
-          ...item,
-          product_name: productMap.get(item.product_id)
-        };
-        
-        acc[item.sale_id].push(enrichedItem);
-        return acc;
-      }, {} as Record<string, LedgerSaleItem[]>);
+      const itemsBySaleId = items.reduce(
+        (acc, item) => {
+          if (!acc[item.sale_id]) acc[item.sale_id] = [];
+
+          const enrichedItem: LedgerSaleItem = {
+            ...item,
+            product_name: productMap.get(item.product_id),
+          };
+
+          acc[item.sale_id].push(enrichedItem);
+          return acc;
+        },
+        {} as Record<string, LedgerSaleItem[]>,
+      );
 
       // 3. Assemble and categorize
       const unpaidInvoices: LedgerSale[] = [];
@@ -62,7 +65,7 @@ export function useCustomerLedger(customerId: string | null) {
         };
 
         const paidAmount = sale.amount_paid !== undefined ? sale.amount_paid : sale.total_amount;
-        
+
         if (sale.total_amount > paidAmount) {
           unpaidInvoices.push(saleWithItems);
         } else {
@@ -73,7 +76,7 @@ export function useCustomerLedger(customerId: string | null) {
       return { unpaidInvoices, paidInvoices };
     },
     [businessId, customerId],
-    { unpaidInvoices: [], paidInvoices: [] }
+    { unpaidInvoices: [], paidInvoices: [] },
   );
 
   const payInvoice = async (saleId: string, amount: number) => {
@@ -89,7 +92,7 @@ export function useCustomerLedger(customerId: string | null) {
 
       const currentPaid = sale.amount_paid || 0;
       const newPaidAmount = currentPaid + amount;
-      
+
       // Prevent overpayment
       const finalPaidAmount = Math.min(newPaidAmount, sale.total_amount);
       const actualPaymentApplied = finalPaidAmount - currentPaid;
@@ -101,7 +104,7 @@ export function useCustomerLedger(customerId: string | null) {
         amount_paid: finalPaidAmount,
         payment_status: newStatus,
       };
-      
+
       await db.sales.update(saleId, saleUpdates);
       await db.syncQueue.add({
         action: 'UPDATE',

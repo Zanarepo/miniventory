@@ -34,9 +34,9 @@ export const BusinessCategorySelect: React.FC<BusinessCategorySelectProps> = ({
           onChange={(val) => onChange(val as BusinessCategory)}
           required={required}
           leftIcon={<Store size={18} />}
-          options={BUSINESS_CATEGORIES.map(cat => ({
+          options={BUSINESS_CATEGORIES.map((cat) => ({
             value: cat.value,
-            label: `${cat.icon} ${cat.label}`
+            label: `${cat.icon} ${cat.label}`,
           }))}
           className={errorText ? 'has-error' : ''}
           style={{ width: '100%', height: '48px', backgroundColor: 'var(--bg-input)' }}

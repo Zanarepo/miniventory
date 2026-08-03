@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useLanguage } from '../hooks/useLanguage';
 import { useAuth } from '../hooks/useAuth';
-import "../styles/landing.css";
+import '../styles/landing.css';
 import analyticsImg from '../assets/Analytics.png';
 import offlineSyncImg from '../assets/OfflineSync.png';
 import sampleReceiptImg from '../assets/SampleReceipt.png';
@@ -19,86 +19,203 @@ import sampleReceiptImg from '../assets/SampleReceipt.png';
 type IconProps = { size?: number };
 
 const IconBolt = ({ size = 18 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" />
   </svg>
 );
 
 const IconWifiOff = ({ size = 18 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 3.5-2.4M19 12.5a10 10 0 0 0-2.2-1.8M12 20h.01" />
   </svg>
 );
 
 const IconGlobe = ({ size = 18 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="12" cy="12" r="9" />
     <path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z" />
   </svg>
 );
 
 const IconShield = ({ size = 18 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M12 3 4 6v6c0 4.4 3 7.9 8 9 5-1.1 8-4.6 8-9V6l-8-3Z" />
     <path d="m9 12 2 2 4-4" />
   </svg>
 );
 
 const IconCheck = ({ size = 14 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="m5 13 4 4L19 7" />
   </svg>
 );
 
 const IconArrowRight = ({ size = 16 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M5 12h14M13 6l6 6-6 6" />
   </svg>
 );
 
 const IconBag = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M6 8h12l-1 12H7L6 8Z" />
     <path d="M9 8V6a3 3 0 0 1 6 0v2" />
   </svg>
 );
 
 const IconBox = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" />
     <path d="M3 8l9 5 9-5M12 13v8" />
   </svg>
 );
 
 const IconChart = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M4 20V10M12 20V4M20 20v-7" />
   </svg>
 );
 
 const IconUsers = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="9" cy="8" r="3.2" />
     <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 8.3A3.2 3.2 0 1 1 16 14.7M18.5 20c0-2.7-1.6-4.8-4-5.6" />
   </svg>
 );
 
 const IconReceipt = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
     <path d="M9 8h6M9 12h6" />
   </svg>
 );
 
 const IconMic = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <rect x="9" y="2" width="6" height="12" rx="3" />
     <path d="M5 11a7 7 0 0 0 14 0M12 18v4" />
   </svg>
 );
 
 const IconDoc = ({ size = 20 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M7 3h7l4 4v14H7V3Z" />
     <path d="M14 3v4h4M9 12h6M9 16h6" />
   </svg>
@@ -111,15 +228,15 @@ const IconDoc = ({ size = 20 }: IconProps) => (
 function useCountUp(target: number, durationMs = 1500) {
   const [value, setValue] = useState(() => {
     const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     return prefersReduced ? target : 0;
   });
 
   useEffect(() => {
     const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReduced) {
       return;
@@ -143,7 +260,7 @@ function useCountUp(target: number, durationMs = 1500) {
   return value;
 }
 
-const naira = (n: number) => `₦${n.toLocaleString("en-NG")}`;
+const naira = (n: number) => `₦${n.toLocaleString('en-NG')}`;
 
 /* ============================================================================
    Scroll-reveal wrapper
@@ -151,7 +268,7 @@ const naira = (n: number) => `₦${n.toLocaleString("en-NG")}`;
 
 const Reveal: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
-  className = "",
+  className = '',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -166,14 +283,14 @@ const Reveal: React.FC<{ children: React.ReactNode; className?: string }> = ({
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className={`mv-reveal ${inView ? "mv-in-view" : ""} ${className}`}>
+    <div ref={ref} className={`mv-reveal ${inView ? 'mv-in-view' : ''} ${className}`}>
       {children}
     </div>
   );
@@ -184,60 +301,106 @@ const Reveal: React.FC<{ children: React.ReactNode; className?: string }> = ({
    ============================================================================ */
 
 const FEATURES = [
-  { icon: <IconBag />, title: "Record sales fast", body: "Log every sale in a few taps. No forms, no long typing.", accent: "#22d3ee", num: "01" },
-  { icon: <IconBox />, title: "Track your stock", body: "Always know what's in your shop and what's finishing.", accent: "#2dd4bf", num: "02" },
-  { icon: <IconChart />, title: "See your real profit", body: "Know how much you truly made — today, this week, this month.", accent: "#a3e635", num: "03" },
-  { icon: <IconUsers />, title: "Customers who owe you", body: "Never forget who owes you money, or how much.", accent: "#f4b740", num: "04" },
-  { icon: <IconReceipt />, title: "Record shop expenses", body: "Rent, fuel, stock cost — all in one place.", accent: "#fb7185", num: "05" },
-  { icon: <IconWifiOff />, title: "Works without internet", body: "No data? No wahala. Your shop keeps running.", accent: "#818cf8", num: "06" },
-  { icon: <IconDoc />, title: "Reports you understand", body: "Simple daily reports — no accounting knowledge needed.", accent: "#34d399", num: "07" },
+  {
+    icon: <IconBag />,
+    title: 'Record sales fast',
+    body: 'Log every sale in a few taps. No forms, no long typing.',
+    accent: '#22d3ee',
+    num: '01',
+  },
+  {
+    icon: <IconBox />,
+    title: 'Track your stock',
+    body: "Always know what's in your shop and what's finishing.",
+    accent: '#2dd4bf',
+    num: '02',
+  },
+  {
+    icon: <IconChart />,
+    title: 'See your real profit',
+    body: 'Know how much you truly made — today, this week, this month.',
+    accent: '#a3e635',
+    num: '03',
+  },
+  {
+    icon: <IconUsers />,
+    title: 'Customers who owe you',
+    body: 'Never forget who owes you money, or how much.',
+    accent: '#f4b740',
+    num: '04',
+  },
+  {
+    icon: <IconReceipt />,
+    title: 'Record shop expenses',
+    body: 'Rent, fuel, stock cost — all in one place.',
+    accent: '#fb7185',
+    num: '05',
+  },
+  {
+    icon: <IconWifiOff />,
+    title: 'Works without internet',
+    body: 'No data? No wahala. Your shop keeps running.',
+    accent: '#818cf8',
+    num: '06',
+  },
+  {
+    icon: <IconDoc />,
+    title: 'Reports you understand',
+    body: 'Simple daily reports — no accounting knowledge needed.',
+    accent: '#34d399',
+    num: '07',
+  },
 ];
 
 const STEPS = [
   {
-    title: "Record it",
-    body: "Tap \u201cRecord Sale\u201d and enter what you sold. It takes about 10 seconds.",
+    title: 'Record it',
+    body: 'Tap \u201cRecord Sale\u201d and enter what you sold. It takes about 10 seconds.',
   },
   {
-    title: "We do the maths",
-    body: "Miniventory checks your stock and works out your profit automatically.",
+    title: 'We do the maths',
+    body: 'Miniventory checks your stock and works out your profit automatically.',
   },
   {
-    title: "You decide",
-    body: "See your true numbers today, and know what to buy, sell, or stop.",
+    title: 'You decide',
+    body: 'See your true numbers today, and know what to buy, sell, or stop.',
   },
 ];
 
 const STORY_CARDS = [
   {
-    eyebrow: "Record sales & debts",
-    title: "Never lose track of who owes you again",
-    body: "Every sale, every pending balance — logged in seconds. Miniventory generates a clean digital receipt for every transaction so you and your customer are always on the same page.",
-    highlights: ["Cash & credit sales", "Pending balance alerts", "Customer-linked records"],
+    eyebrow: 'Record sales & debts',
+    title: 'Never lose track of who owes you again',
+    body: 'Every sale, every pending balance — logged in seconds. Miniventory generates a clean digital receipt for every transaction so you and your customer are always on the same page.',
+    highlights: ['Cash & credit sales', 'Pending balance alerts', 'Customer-linked records'],
     img: sampleReceiptImg,
-    imgAlt: "Sample receipt showing cash paid and pending balance for customer Musa O.",
+    imgAlt: 'Sample receipt showing cash paid and pending balance for customer Musa O.',
     flip: false,
-    accent: "var(--mv-cyan)",
+    accent: 'var(--mv-cyan)',
   },
   {
-    eyebrow: "Works without internet",
+    eyebrow: 'Works without internet',
     title: "Sell at the market, syncs when you're back",
-    body: "No data? No wahala. Miniventory saves every sale offline and quietly syncs everything the moment your connection returns — securely, automatically, without you lifting a finger.",
-    highlights: ["Full offline mode", "Automatic background sync", "Secure data protection"],
+    body: 'No data? No wahala. Miniventory saves every sale offline and quietly syncs everything the moment your connection returns — securely, automatically, without you lifting a finger.',
+    highlights: ['Full offline mode', 'Automatic background sync', 'Secure data protection'],
     img: offlineSyncImg,
-    imgAlt: "Market seller using Miniventory on a tablet while offline, with sync shield graphic",
+    imgAlt: 'Market seller using Miniventory on a tablet while offline, with sync shield graphic',
     flip: true,
-    accent: "var(--mv-teal)",
+    accent: 'var(--mv-teal)',
   },
   {
-    eyebrow: "Real-time analytics",
-    title: "See the numbers that actually matter",
-    body: "Forget spreadsheets. Miniventory turns every sale into live business intelligence — portfolio growth, cumulative revenue, profit margins — all on your phone, in real time.",
-    highlights: ["Live profit & revenue", "Inventory & shipping tracking", "78%+ profit margin insight"],
+    eyebrow: 'Real-time analytics',
+    title: 'See the numbers that actually matter',
+    body: 'Forget spreadsheets. Miniventory turns every sale into live business intelligence — portfolio growth, cumulative revenue, profit margins — all on your phone, in real time.',
+    highlights: [
+      'Live profit & revenue',
+      'Inventory & shipping tracking',
+      '78%+ profit margin insight',
+    ],
     img: analyticsImg,
-    imgAlt: "3D analytics dashboard showing portfolio growth, profit margins and shipping metrics",
+    imgAlt: '3D analytics dashboard showing portfolio growth, profit margins and shipping metrics',
     flip: false,
-    accent: "var(--mv-gold)",
+    accent: 'var(--mv-gold)',
   },
 ];
 
@@ -306,8 +469,18 @@ export const Landing: React.FC = () => {
         <div className="mv-shell mv-nav-row">
           <a href="/" className="mv-logo" aria-label="Miniventory home">
             <svg className="mv-logo-mark" viewBox="0 0 34 34" fill="none">
-              <path d="M17 2 30 9v16L17 32 4 25V9L17 2Z" stroke="var(--mv-cyan)" strokeWidth="2" strokeLinejoin="round" />
-              <path d="M17 2v15M17 17 4 9M17 17l13-8M17 17v15" stroke="var(--mv-cyan)" strokeWidth="2" strokeLinejoin="round" />
+              <path
+                d="M17 2 30 9v16L17 32 4 25V9L17 2Z"
+                stroke="var(--mv-cyan)"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M17 2v15M17 17 4 9M17 17l13-8M17 17v15"
+                stroke="var(--mv-cyan)"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
             </svg>
             <span>
               <span className="mv-logo-mini">Mini</span>
@@ -322,7 +495,10 @@ export const Landing: React.FC = () => {
           </nav>
 
           <div className="mv-nav-actions" style={{ gap: '12px' }}>
-            <div className="mv-hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              className="mv-hide-mobile"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+            >
               <ThemeToggle />
               <LanguageSelector />
             </div>
@@ -332,7 +508,11 @@ export const Landing: React.FC = () => {
               </Link>
             ) : (
               <>
-                <Link to="/login" className="mv-btn mv-btn-ghost mv-btn-sm mv-hide-mobile" style={{ padding: '8px 14px' }}>
+                <Link
+                  to="/login"
+                  className="mv-btn mv-btn-ghost mv-btn-sm mv-hide-mobile"
+                  style={{ padding: '8px 14px' }}
+                >
                   {t('existingAccount')}
                 </Link>
                 <Link to="/register" className="mv-btn mv-btn-primary mv-btn-sm">
@@ -348,24 +528,55 @@ export const Landing: React.FC = () => {
               onClick={() => setMenuOpen((v) => !v)}
             >
               {menuOpen ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
               ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
               )}
             </button>
           </div>
         </div>
 
-        <div className={`mv-shell mv-mobile-menu ${menuOpen ? "mv-open" : ""}`}>
-          <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
-          <a href="#how-it-works" onClick={() => setMenuOpen(false)}>How It Works</a>
+        <div className={`mv-shell mv-mobile-menu ${menuOpen ? 'mv-open' : ''}`}>
+          <a href="#features" onClick={() => setMenuOpen(false)}>
+            Features
+          </a>
+          <a href="#how-it-works" onClick={() => setMenuOpen(false)}>
+            How It Works
+          </a>
           {/* <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a> */}
           {!user && (
             <Link to="/login" onClick={() => setMenuOpen(false)}>
               {t('existingAccount')}
             </Link>
           )}
-          <div style={{ padding: '12px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              padding: '12px 4px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <LanguageSelector />
             <ThemeToggle />
           </div>
@@ -381,9 +592,7 @@ export const Landing: React.FC = () => {
               {t('heroBadge')}
             </span>
             <h1>{t('appTagline')}</h1>
-            <p className="mv-hero-sub">
-              {t('heroDesc')}
-            </p>
+            <p className="mv-hero-sub">{t('heroDesc')}</p>
             <div className="mv-hero-cta-row">
               {user ? (
                 <Link to="/dashboard" className="mv-btn mv-btn-primary">
@@ -414,7 +623,11 @@ export const Landing: React.FC = () => {
               Profit updated
             </div>
 
-            <div className="mv-device" role="img" aria-label="Preview of the Miniventory daily profit dashboard">
+            <div
+              className="mv-device"
+              role="img"
+              aria-label="Preview of the Miniventory daily profit dashboard"
+            >
               <div className="mv-device-header">
                 <div className="mv-device-shop">
                   <span className="mv-device-shop-name">Mama Ngozi's Shop</span>
@@ -502,7 +715,10 @@ export const Landing: React.FC = () => {
           <Reveal className="mv-section-head">
             <span className="mv-eyebrow">See it in action</span>
             <h2>Built for the way you really run your shop</h2>
-            <p>From your first sale to your end-of-day report — here's what Miniventory actually does for you.</p>
+            <p>
+              From your first sale to your end-of-day report — here's what Miniventory actually does
+              for you.
+            </p>
           </Reveal>
 
           <div className="mv-story-cards">
@@ -510,17 +726,19 @@ export const Landing: React.FC = () => {
               <Reveal key={card.title}>
                 <div className={`mv-story-card ${card.flip ? 'mv-story-card-flip' : ''}`}>
                   <div className="mv-story-img-wrap">
-                    <div className="mv-story-img-glow" style={{ background: `radial-gradient(60% 70% at 50% 50%, ${card.accent}33 0%, transparent 70%)` }} />
-                    <img
-                      src={card.img}
-                      alt={card.imgAlt}
-                      className="mv-story-img"
-                      loading="lazy"
+                    <div
+                      className="mv-story-img-glow"
+                      style={{
+                        background: `radial-gradient(60% 70% at 50% 50%, ${card.accent}33 0%, transparent 70%)`,
+                      }}
                     />
+                    <img src={card.img} alt={card.imgAlt} className="mv-story-img" loading="lazy" />
                     <div className="mv-story-step-badge">{i + 1}</div>
                   </div>
                   <div className="mv-story-copy">
-                    <span className="mv-eyebrow" style={{ color: card.accent }}>{card.eyebrow}</span>
+                    <span className="mv-eyebrow" style={{ color: card.accent }}>
+                      {card.eyebrow}
+                    </span>
                     <h3>{card.title}</h3>
                     <p>{card.body}</p>
                     <ul className="mv-story-highlights">
@@ -575,30 +793,36 @@ export const Landing: React.FC = () => {
         <div className="mv-shell mv-section mv-demo-grid">
           <Reveal>
             <span className="mv-eyebrow">Your numbers, made simple</span>
-            <h2 style={{ fontSize: 32, fontWeight: 800, margin: "16px 0" }}>
+            <h2 style={{ fontSize: 32, fontWeight: 800, margin: '16px 0' }}>
               A report you can actually read
             </h2>
-            <p style={{ color: "var(--mv-text-dim)", fontSize: 16 }}>
-              No spreadsheets. No confusing charts. Just clear numbers that
-              tell you how your shop is doing.
+            <p style={{ color: 'var(--mv-text-dim)', fontSize: 16 }}>
+              No spreadsheets. No confusing charts. Just clear numbers that tell you how your shop
+              is doing.
             </p>
             <div className="mv-demo-list">
               <div className="mv-demo-list-item">
-                <span className="mv-demo-check"><IconCheck /></span>
+                <span className="mv-demo-check">
+                  <IconCheck />
+                </span>
                 <div>
                   <h4>Daily, weekly & monthly profit</h4>
                   <p>See how your shop is doing at a glance.</p>
                 </div>
               </div>
               <div className="mv-demo-list-item">
-                <span className="mv-demo-check"><IconCheck /></span>
+                <span className="mv-demo-check">
+                  <IconCheck />
+                </span>
                 <div>
                   <h4>Know your best-selling product</h4>
                   <p>So you always know what to restock first.</p>
                 </div>
               </div>
               <div className="mv-demo-list-item">
-                <span className="mv-demo-check"><IconCheck /></span>
+                <span className="mv-demo-check">
+                  <IconCheck />
+                </span>
                 <div>
                   <h4>Download or share any report</h4>
                   <p>Send to your bank, your NGO, or a loan officer.</p>
@@ -614,16 +838,22 @@ export const Landing: React.FC = () => {
                 <span>Mon – Sun</span>
               </div>
               <div className="mv-bars">
-                <div className="mv-bar" style={{ height: "48%" }} />
-                <div className="mv-bar" style={{ height: "66%" }} />
-                <div className="mv-bar" style={{ height: "40%" }} />
-                <div className="mv-bar" style={{ height: "78%" }} />
-                <div className="mv-bar" style={{ height: "58%" }} />
-                <div className="mv-bar" style={{ height: "70%" }} />
-                <div className="mv-bar mv-bar-today" style={{ height: "92%" }} />
+                <div className="mv-bar" style={{ height: '48%' }} />
+                <div className="mv-bar" style={{ height: '66%' }} />
+                <div className="mv-bar" style={{ height: '40%' }} />
+                <div className="mv-bar" style={{ height: '78%' }} />
+                <div className="mv-bar" style={{ height: '58%' }} />
+                <div className="mv-bar" style={{ height: '70%' }} />
+                <div className="mv-bar mv-bar-today" style={{ height: '92%' }} />
               </div>
               <div className="mv-bars-labels">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
               </div>
               <div className="mv-report-foot">
                 <div className="mv-report-foot-item">
@@ -649,8 +879,8 @@ export const Landing: React.FC = () => {
         <div className="mv-shell">
           <Reveal className="mv-testimonial">
             <p className="mv-testimonial-quote">
-              "Before, I no know if I dey make profit or loss. Now, I check my
-              phone before I close my shop, and I <span>see my real money.</span>"
+              "Before, I no know if I dey make profit or loss. Now, I check my phone before I close
+              my shop, and I <span>see my real money.</span>"
             </p>
             <div className="mv-testimonial-person">
               <div className="mv-avatar">MN</div>
@@ -735,22 +965,39 @@ export const Landing: React.FC = () => {
             <div className="mv-footer-brand">
               <a href="/" className="mv-logo" aria-label="Miniventory home">
                 <svg className="mv-logo-mark" viewBox="0 0 34 34" fill="none">
-                  <path d="M17 2 30 9v16L17 32 4 25V9L17 2Z" stroke="#22d3ee" strokeWidth="2" strokeLinejoin="round" />
-                  <path d="M17 2v15M17 17 4 9M17 17l13-8M17 17v15" stroke="#22d3ee" strokeWidth="2" strokeLinejoin="round" />
+                  <path
+                    d="M17 2 30 9v16L17 32 4 25V9L17 2Z"
+                    stroke="#22d3ee"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M17 2v15M17 17 4 9M17 17l13-8M17 17v15"
+                    stroke="#22d3ee"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 <span>
                   <span className="mv-logo-mini">Mini</span>
                   <span className="mv-logo-ventory">ventory</span>
                 </span>
               </a>
-              <p>Simple business record keeping for every entrepreneur — built for the realities of African small businesses.</p>
+              <p>
+                Simple business record keeping for every entrepreneur — built for the realities of
+                African small businesses.
+              </p>
             </div>
 
             <div className="mv-footer-col">
               <h4>Product</h4>
               <ul>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
+                <li>
+                  <a href="#features">Features</a>
+                </li>
+                <li>
+                  <a href="#how-it-works">How It Works</a>
+                </li>
                 {/* <li><a href="#pricing">Pricing</a></li> */}
               </ul>
             </div>
@@ -760,16 +1007,24 @@ export const Landing: React.FC = () => {
               <ul>
                 {/* <li><a href="/about">About</a></li> */}
                 {/* <li><a href="/contact">Contact Us</a></li> */}
-                <li><a href="/dashboard">Go to Dashboard</a></li>
+                <li>
+                  <a href="/dashboard">Go to Dashboard</a>
+                </li>
               </ul>
             </div>
 
             <div className="mv-footer-col">
               <h4>Languages</h4>
               <ul>
-                <li><a href="#">English</a></li>
-                <li><a href="#">Pidgin</a></li>
-                <li><a href="#">Igbo · Yoruba · Hausa</a></li>
+                <li>
+                  <a href="#">English</a>
+                </li>
+                <li>
+                  <a href="#">Pidgin</a>
+                </li>
+                <li>
+                  <a href="#">Igbo · Yoruba · Hausa</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -783,5 +1038,3 @@ export const Landing: React.FC = () => {
     </div>
   );
 };
-
-

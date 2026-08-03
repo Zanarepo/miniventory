@@ -277,7 +277,7 @@ export const Expenses: React.FC = () => {
               }}
               options={[
                 { value: '', label: 'All Categories' },
-                ...categories.map(c => ({ value: c.id, label: c.name }))
+                ...categories.map((c) => ({ value: c.id, label: c.name })),
               ]}
             />
             <CustomSelect
@@ -294,7 +294,7 @@ export const Expenses: React.FC = () => {
                 { value: 'POS', label: '💳 POS' },
                 { value: 'TRANSFER', label: '🏦 Transfer' },
                 { value: 'MOBILE_MONEY', label: '📱 Mobile Money' },
-                { value: 'OTHER', label: '⚙️ Other' }
+                { value: 'OTHER', label: '⚙️ Other' },
               ]}
             />
           </div>

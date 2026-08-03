@@ -45,11 +45,7 @@ export const AuthLayout: React.FC = () => {
             gap: '10px',
           }}
         >
-          <svg
-            viewBox="0 0 34 34"
-            fill="none"
-            style={{ width: 32, height: 32, flexShrink: 0 }}
-          >
+          <svg viewBox="0 0 34 34" fill="none" style={{ width: 32, height: 32, flexShrink: 0 }}>
             <path
               d="M17 2 30 9v16L17 32 4 25V9L17 2Z"
               stroke="var(--brand-primary)"

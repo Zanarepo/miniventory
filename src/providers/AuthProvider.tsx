@@ -116,7 +116,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     },
   ) => {
     const formattedEmail = formatAuthIdentifier(identifier);
-    const defaultPassword = passwordOrPin || `Miniventory!${Math.random().toString(36).slice(-8)}A1`;
+    const defaultPassword =
+      passwordOrPin || `Miniventory!${Math.random().toString(36).slice(-8)}A1`;
 
     const { error } = await supabase.auth.signUp({
       email: formattedEmail,

@@ -19,7 +19,8 @@ import { useCustomers } from '../hooks/useCustomers';
 export const NewSale: React.FC = () => {
   const { t } = useLanguage();
   const { products, categories } = useInventory();
-  const { cart, subtotal, addToCart, updateQuantity, updateItemPrice, removeFromCart, checkout } = useCart();
+  const { cart, subtotal, addToCart, updateQuantity, updateItemPrice, removeFromCart, checkout } =
+    useCart();
   const { getCurrencySymbol } = useBusiness();
   const currSymbol = getCurrencySymbol();
   const { logAction } = useAuditLog();
@@ -40,7 +41,7 @@ export const NewSale: React.FC = () => {
   const { customers, addCustomer } = useCustomers();
   const [customerId, setCustomerId] = useState<string>('');
   const [newCustomerName, setNewCustomerName] = useState<string>('');
-  
+
   const [amountPaidInput, setAmountPaidInput] = useState<string>('');
   const [isSplitPayment, setIsSplitPayment] = useState(false);
 
@@ -53,7 +54,7 @@ export const NewSale: React.FC = () => {
     TRANSFER: '',
     MOBILE_MONEY: '',
     OTHER: '',
-    SPLIT: ''
+    SPLIT: '',
   });
 
   const formatCurrency = (val: number) =>
@@ -83,7 +84,10 @@ export const NewSale: React.FC = () => {
     const requestedQty = isBulk && product.conversion_ratio ? product.conversion_ratio : 1;
 
     if (remainingStock <= 0 || (isBulk && remainingStock < requestedQty)) {
-      setToast({ message: `Not enough stock. Only ${product.current_stock} available.`, type: 'error' });
+      setToast({
+        message: `Not enough stock. Only ${product.current_stock} available.`,
+        type: 'error',
+      });
       return;
     }
 
@@ -91,9 +95,10 @@ export const NewSale: React.FC = () => {
     const qtyToAdd = Math.min(requestedQty, remainingStock);
 
     // Pass custom price if it's a bulk purchase to apply the bulk discount
-    const customPrice = isBulk && product.bulk_selling_price 
-      ? Number(product.bulk_selling_price) / (product.conversion_ratio || 1) 
-      : undefined;
+    const customPrice =
+      isBulk && product.bulk_selling_price
+        ? Number(product.bulk_selling_price) / (product.conversion_ratio || 1)
+        : undefined;
 
     addToCart(product, qtyToAdd, undefined, customPrice);
     setToast({ message: `${product.product_name} added`, type: 'success' });
@@ -117,7 +122,7 @@ export const NewSale: React.FC = () => {
         .filter(([_, amt]) => parseFloat(amt) > 0)
         .map(([method, amt]) => ({
           payment_method: method as PaymentMethod,
-          amount: parseFloat(amt)
+          amount: parseFloat(amt),
         }));
       finalAmountPaid = finalSalePayments.reduce((sum, sp) => sum + sp.amount, 0);
     } else {
@@ -127,10 +132,10 @@ export const NewSale: React.FC = () => {
     }
 
     const { success } = await checkout(
-      isSplitPayment ? 'SPLIT' : confirmMethod, 
-      customerId || undefined, 
-      finalAmountPaid, 
-      finalSalePayments
+      isSplitPayment ? 'SPLIT' : confirmMethod,
+      customerId || undefined,
+      finalAmountPaid,
+      finalSalePayments,
     );
     setIsProcessing(false);
 
@@ -203,13 +208,13 @@ export const NewSale: React.FC = () => {
   const handleSaveDiscount = (e: React.FormEvent) => {
     e.preventDefault();
     if (!discountItem) return;
-    
+
     if (!discountPriceInput.trim()) {
       updateItemPrice(discountItem.product.id, null);
     } else {
       updateItemPrice(discountItem.product.id, parseFloat(discountPriceInput));
     }
-    
+
     setDiscountItem(null);
     setDiscountPriceInput('');
   };
@@ -354,7 +359,7 @@ export const NewSale: React.FC = () => {
                 const cat = categories.find((c) => c.id === item.product.category_id);
                 const categoryName = cat ? cat.name : 'General';
                 const isDecimalQty = item.quantity % 1 !== 0;
-                const mode = isDecimalQty ? 'amount' : (inputModes[item.product.id] || 'qty');
+                const mode = isDecimalQty ? 'amount' : inputModes[item.product.id] || 'qty';
                 return (
                   <div key={item.product.id} style={cartItemStyle}>
                     <div style={{ minWidth: 0, flex: 1 }}>
@@ -373,64 +378,191 @@ export const NewSale: React.FC = () => {
                         {item.custom_name || item.product.product_name}
                       </strong>
                       {item.is_discounted && (
-                        <span style={{ marginLeft: '8px', fontSize: '0.65rem', backgroundColor: 'var(--brand-danger)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                        <span
+                          style={{
+                            marginLeft: '8px',
+                            fontSize: '0.65rem',
+                            backgroundColor: 'var(--brand-danger)',
+                            color: 'white',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontWeight: 'bold',
+                          }}
+                        >
                           Discount
                         </span>
                       )}
                       <div
                         style={{ color: 'var(--brand-primary)', fontWeight: 800, marginTop: '2px' }}
                       >
-                        {formatCurrency((item.custom_price ?? Number(item.product.selling_price)) * item.quantity)}
+                        {formatCurrency(
+                          (item.custom_price ?? Number(item.product.selling_price)) * item.quantity,
+                        )}
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                        <div style={{ display: 'flex', gap: '4px', backgroundColor: 'var(--bg-app)', padding: '2px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-end',
+                          gap: '4px',
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '4px',
+                            backgroundColor: 'var(--bg-app)',
+                            padding: '2px',
+                            borderRadius: 'var(--radius-sm)',
+                            border: '1px solid var(--border-color)',
+                          }}
+                        >
                           <button
                             disabled={isDecimalQty}
-                            style={{ padding: '2px 8px', fontSize: '0.7rem', fontWeight: 600, borderRadius: '4px', backgroundColor: mode === 'qty' ? 'var(--brand-primary)' : 'transparent', color: mode === 'qty' ? 'white' : 'var(--text-muted)', border: 'none', cursor: isDecimalQty ? 'not-allowed' : 'pointer', opacity: isDecimalQty ? 0.5 : 1 }}
-                            onClick={() => setInputModes(prev => ({ ...prev, [item.product.id]: 'qty' }))}
+                            style={{
+                              padding: '2px 8px',
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              borderRadius: '4px',
+                              backgroundColor:
+                                mode === 'qty' ? 'var(--brand-primary)' : 'transparent',
+                              color: mode === 'qty' ? 'white' : 'var(--text-muted)',
+                              border: 'none',
+                              cursor: isDecimalQty ? 'not-allowed' : 'pointer',
+                              opacity: isDecimalQty ? 0.5 : 1,
+                            }}
+                            onClick={() =>
+                              setInputModes((prev) => ({ ...prev, [item.product.id]: 'qty' }))
+                            }
                           >
                             QTY
                           </button>
                           <button
-                            style={{ padding: '2px 8px', fontSize: '0.7rem', fontWeight: 600, borderRadius: '4px', backgroundColor: mode === 'amount' ? 'var(--brand-primary)' : 'transparent', color: mode === 'amount' ? 'white' : 'var(--text-muted)', border: 'none', cursor: 'pointer' }}
-                            onClick={() => setInputModes(prev => ({ ...prev, [item.product.id]: 'amount' }))}
+                            style={{
+                              padding: '2px 8px',
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              borderRadius: '4px',
+                              backgroundColor:
+                                mode === 'amount' ? 'var(--brand-primary)' : 'transparent',
+                              color: mode === 'amount' ? 'white' : 'var(--text-muted)',
+                              border: 'none',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() =>
+                              setInputModes((prev) => ({ ...prev, [item.product.id]: 'amount' }))
+                            }
                           >
                             AMT
                           </button>
                         </div>
                         {mode === 'qty' ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              marginTop: '4px',
+                            }}
+                          >
                             <button
-                              style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--border-color)', background: 'var(--bg-app)', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
+                              style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '50%',
+                                border: '1px solid var(--border-color)',
+                                background: 'var(--bg-app)',
+                                color: 'var(--text-main)',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                              }}
                               onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                             >
                               -
                             </button>
-                            <span style={{ width: '36px', textAlign: 'center', fontWeight: 800, fontSize: '1rem' }}>
+                            <span
+                              style={{
+                                width: '36px',
+                                textAlign: 'center',
+                                fontWeight: 800,
+                                fontSize: '1rem',
+                              }}
+                            >
                               {Number(item.quantity).toFixed(2).replace(/\.00$/, '')}
                             </span>
                             <button
-                              style={{ width: '28px', height: '28px', borderRadius: '50%', border: '1px solid var(--border-color)', background: 'var(--bg-app)', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}
+                              style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '50%',
+                                border: '1px solid var(--border-color)',
+                                background: 'var(--bg-app)',
+                                color: 'var(--text-main)',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: 700,
+                              }}
                               onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                             >
                               +
                             </button>
                           </div>
                         ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '2px 8px', backgroundColor: 'var(--bg-input)' }}>
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>{currSymbol}</span>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              marginTop: '4px',
+                              border: '1px solid var(--border-color)',
+                              borderRadius: 'var(--radius-sm)',
+                              padding: '2px 8px',
+                              backgroundColor: 'var(--bg-input)',
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: '0.85rem',
+                                color: 'var(--text-muted)',
+                                fontWeight: 600,
+                              }}
+                            >
+                              {currSymbol}
+                            </span>
                             <input
                               type="number"
                               min="0"
                               step="0.01"
-                              style={{ width: '60px', border: 'none', background: 'transparent', color: 'var(--text-main)', fontWeight: 700, fontSize: '0.95rem', textAlign: 'right', outline: 'none' }}
-                              value={Number((item.quantity * (item.custom_price ?? Number(item.product.selling_price))).toFixed(2))}
+                              style={{
+                                width: '60px',
+                                border: 'none',
+                                background: 'transparent',
+                                color: 'var(--text-main)',
+                                fontWeight: 700,
+                                fontSize: '0.95rem',
+                                textAlign: 'right',
+                                outline: 'none',
+                              }}
+                              value={Number(
+                                (
+                                  item.quantity *
+                                  (item.custom_price ?? Number(item.product.selling_price))
+                                ).toFixed(2),
+                              )}
                               onChange={(e) => {
                                 const amt = parseFloat(e.target.value) || 0;
-                                updateQuantity(item.product.id, amt / (item.custom_price ?? Number(item.product.selling_price)));
+                                updateQuantity(
+                                  item.product.id,
+                                  amt / (item.custom_price ?? Number(item.product.selling_price)),
+                                );
                               }}
                             />
                           </div>
@@ -440,7 +572,11 @@ export const NewSale: React.FC = () => {
                         <button
                           onClick={() => {
                             setDiscountItem(item);
-                            setDiscountPriceInput(item.custom_price ? item.custom_price.toString() : item.product.selling_price.toString());
+                            setDiscountPriceInput(
+                              item.custom_price
+                                ? item.custom_price.toString()
+                                : item.product.selling_price.toString(),
+                            );
                           }}
                           style={{
                             background: 'transparent',
@@ -585,10 +721,25 @@ export const NewSale: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {p.bulk_unit ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px',
+                        alignItems: 'flex-end',
+                      }}
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>1 {p.bulk_unit}</span>
-                        <span style={{ fontWeight: 800, color: 'var(--brand-primary)', fontSize: '0.95rem' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          1 {p.bulk_unit}
+                        </span>
+                        <span
+                          style={{
+                            fontWeight: 800,
+                            color: 'var(--brand-primary)',
+                            fontSize: '0.95rem',
+                          }}
+                        >
                           {formatCurrency(Number(p.bulk_selling_price))}
                         </span>
                         <Button
@@ -602,8 +753,16 @@ export const NewSale: React.FC = () => {
                         </Button>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>1 {p.unit}</span>
-                        <span style={{ fontWeight: 800, color: 'var(--brand-primary)', fontSize: '0.95rem' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          1 {p.unit}
+                        </span>
+                        <span
+                          style={{
+                            fontWeight: 800,
+                            color: 'var(--brand-primary)',
+                            fontSize: '0.95rem',
+                          }}
+                        >
                           {formatCurrency(Number(p.selling_price))}
                         </span>
                         <Button
@@ -620,7 +779,11 @@ export const NewSale: React.FC = () => {
                   ) : (
                     <>
                       <span
-                        style={{ fontWeight: 850, color: 'var(--brand-primary)', fontSize: '1.1rem' }}
+                        style={{
+                          fontWeight: 850,
+                          color: 'var(--brand-primary)',
+                          fontSize: '1.1rem',
+                        }}
                       >
                         {formatCurrency(Number(p.selling_price))}
                       </span>
@@ -667,7 +830,10 @@ export const NewSale: React.FC = () => {
         onClose={() => setIsCustomItemOpen(false)}
         title="Add Custom Item"
       >
-        <form onSubmit={handleAddCustomItem} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+        <form
+          onSubmit={handleAddCustomItem}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}
+        >
           <Input
             label="Item Name"
             placeholder="e.g. Mixed Meat, Special Order"
@@ -686,7 +852,9 @@ export const NewSale: React.FC = () => {
             onChange={(e) => setCustomItemAmount(e.target.value)}
             required
           />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}
+          >
             <Button type="button" variant="ghost" onClick={() => setIsCustomItemOpen(false)}>
               Cancel
             </Button>
@@ -717,7 +885,9 @@ export const NewSale: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <span style={{ color: 'var(--text-muted)' }}>Payment Method:</span>
-              <strong style={{ color: 'var(--text-main)' }}>{isSplitPayment ? 'SPLIT PAYMENT / CREDIT' : getMethodLabel(confirmMethod)}</strong>
+              <strong style={{ color: 'var(--text-main)' }}>
+                {isSplitPayment ? 'SPLIT PAYMENT / CREDIT' : getMethodLabel(confirmMethod)}
+              </strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Total Amount:</span>
@@ -728,7 +898,9 @@ export const NewSale: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>Link Customer (Optional for full payment, Required for credit)</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
+              Link Customer (Optional for full payment, Required for credit)
+            </label>
             <div style={{ display: 'flex', gap: '8px' }}>
               <CustomSelect
                 value={customerId}
@@ -736,15 +908,15 @@ export const NewSale: React.FC = () => {
                 leftIcon={<UserCheck size={17} />}
                 options={[
                   { value: '', label: '-- Select an Existing Customer --' },
-                  ...(customers || []).map(c => ({
+                  ...(customers || []).map((c) => ({
                     value: c.id,
-                    label: `${c.name} ${c.phone ? `(${c.phone})` : ''}`
-                  }))
+                    label: `${c.name} ${c.phone ? `(${c.phone})` : ''}`,
+                  })),
                 ]}
                 style={{ flex: 1, height: '45px' }}
               />
             </div>
-            
+
             {!customerId && (
               <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                 <Input
@@ -754,9 +926,9 @@ export const NewSale: React.FC = () => {
                   onChange={(e) => setNewCustomerName(e.target.value)}
                   style={{ flex: 1 }}
                 />
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={handleQuickAddCustomer}
                   disabled={!newCustomerName.trim()}
                   style={{ padding: '0 12px' }}
@@ -768,25 +940,67 @@ export const NewSale: React.FC = () => {
           </div>
 
           {isSplitPayment ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px', padding: '12px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-elevated)' }}>
-              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>Enter Split Amounts</strong>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                marginTop: '8px',
+                padding: '12px',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--bg-elevated)',
+              }}
+            >
+              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                Enter Split Amounts
+              </strong>
               {['CASH', 'POS', 'TRANSFER', 'MOBILE_MONEY'].map((method) => (
                 <div key={method} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '80px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{method}</span>
-                  <Input 
+                  <span style={{ width: '80px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    {method}
+                  </span>
+                  <Input
                     type="number"
                     min="0"
                     step="any"
                     placeholder="0.00"
                     value={splitAmounts[method as PaymentMethod] || ''}
-                    onChange={(e) => setSplitAmounts(prev => ({ ...prev, [method]: e.target.value }))}
+                    onChange={(e) =>
+                      setSplitAmounts((prev) => ({ ...prev, [method]: e.target.value }))
+                    }
                   />
                 </div>
               ))}
-              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed var(--border-color)', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Total Entered:</span>
-                <strong style={{ color: Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0) < subtotal ? 'var(--brand-danger)' : 'var(--brand-primary)' }}>
-                  {formatCurrency(Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0))}
+              <div
+                style={{
+                  marginTop: '8px',
+                  paddingTop: '8px',
+                  borderTop: '1px dashed var(--border-color)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  Total Entered:
+                </span>
+                <strong
+                  style={{
+                    color:
+                      Object.entries(splitAmounts).reduce(
+                        (acc, [_, val]) => acc + (parseFloat(val) || 0),
+                        0,
+                      ) < subtotal
+                        ? 'var(--brand-danger)'
+                        : 'var(--brand-primary)',
+                  }}
+                >
+                  {formatCurrency(
+                    Object.entries(splitAmounts).reduce(
+                      (acc, [_, val]) => acc + (parseFloat(val) || 0),
+                      0,
+                    ),
+                  )}
                 </strong>
               </div>
             </div>
@@ -804,18 +1018,53 @@ export const NewSale: React.FC = () => {
               />
             </div>
           )}
-          
-          {(!customerId && (isSplitPayment ? Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0) < subtotal : (amountPaidInput.trim() ? parseFloat(amountPaidInput) < subtotal : false))) && (
-            <div style={{ marginTop: '12px', padding: '12px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(255,165,0,0.1)', border: '1px solid rgba(255,165,0,0.3)', color: 'var(--text-main)', fontSize: '0.85rem' }}>
-              <p style={{ margin: 0 }}>To record a credit sale or partial payment, you must select or add a customer above.</p>
-            </div>
-          )}
-          
-          {isSplitPayment && Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0) > subtotal && (
-            <div style={{ marginTop: '12px', padding: '12px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--brand-danger)', fontSize: '0.85rem' }}>
-              <p style={{ margin: 0 }}>Total split amounts cannot exceed the sale subtotal.</p>
-            </div>
-          )}
+
+          {!customerId &&
+            (isSplitPayment
+              ? Object.entries(splitAmounts).reduce(
+                  (acc, [_, val]) => acc + (parseFloat(val) || 0),
+                  0,
+                ) < subtotal
+              : amountPaidInput.trim()
+                ? parseFloat(amountPaidInput) < subtotal
+                : false) && (
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '12px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'rgba(255,165,0,0.1)',
+                  border: '1px solid rgba(255,165,0,0.3)',
+                  color: 'var(--text-main)',
+                  fontSize: '0.85rem',
+                }}
+              >
+                <p style={{ margin: 0 }}>
+                  To record a credit sale or partial payment, you must select or add a customer
+                  above.
+                </p>
+              </div>
+            )}
+
+          {isSplitPayment &&
+            Object.entries(splitAmounts).reduce(
+              (acc, [_, val]) => acc + (parseFloat(val) || 0),
+              0,
+            ) > subtotal && (
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '12px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'rgba(239,68,68,0.1)',
+                  border: '1px solid rgba(239,68,68,0.3)',
+                  color: 'var(--brand-danger)',
+                  fontSize: '0.85rem',
+                }}
+              >
+                <p style={{ margin: 0 }}>Total split amounts cannot exceed the sale subtotal.</p>
+              </div>
+            )}
         </div>
         <div
           style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}
@@ -823,14 +1072,26 @@ export const NewSale: React.FC = () => {
           <Button variant="ghost" onClick={() => setIsConfirmOpen(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="primary" 
-            size="sm" 
+          <Button
+            variant="primary"
+            size="sm"
             onClick={handleCheckout}
             disabled={
-              isProcessing || 
-              (!customerId && (isSplitPayment ? Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0) < subtotal : (amountPaidInput.trim() ? parseFloat(amountPaidInput) < subtotal : false))) ||
-              (isSplitPayment && Object.entries(splitAmounts).reduce((acc, [_, val]) => acc + (parseFloat(val) || 0), 0) > subtotal)
+              isProcessing ||
+              (!customerId &&
+                (isSplitPayment
+                  ? Object.entries(splitAmounts).reduce(
+                      (acc, [_, val]) => acc + (parseFloat(val) || 0),
+                      0,
+                    ) < subtotal
+                  : amountPaidInput.trim()
+                    ? parseFloat(amountPaidInput) < subtotal
+                    : false)) ||
+              (isSplitPayment &&
+                Object.entries(splitAmounts).reduce(
+                  (acc, [_, val]) => acc + (parseFloat(val) || 0),
+                  0,
+                ) > subtotal)
             }
           >
             Confirm Checkout
@@ -839,14 +1100,14 @@ export const NewSale: React.FC = () => {
       </Modal>
 
       {/* Discount Modal */}
-      <Modal
-        isOpen={!!discountItem}
-        onClose={() => setDiscountItem(null)}
-        title="Apply Discount"
-      >
-        <form onSubmit={handleSaveDiscount} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+      <Modal isOpen={!!discountItem} onClose={() => setDiscountItem(null)} title="Apply Discount">
+        <form
+          onSubmit={handleSaveDiscount}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}
+        >
           <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-            Original Unit Price: <strong>{formatCurrency(discountItem?.product.selling_price || 0)}</strong>
+            Original Unit Price:{' '}
+            <strong>{formatCurrency(discountItem?.product.selling_price || 0)}</strong>
           </div>
           <Input
             label={`New Unit Price (${currSymbol})`}
@@ -878,7 +1139,12 @@ export const NewSale: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              style={{ width: '100%', marginTop: '8px', color: 'var(--brand-danger)', borderColor: 'var(--brand-danger)' }}
+              style={{
+                width: '100%',
+                marginTop: '8px',
+                color: 'var(--brand-danger)',
+                borderColor: 'var(--brand-danger)',
+              }}
               onClick={() => {
                 updateItemPrice(discountItem.product.id, null);
                 setDiscountItem(null);

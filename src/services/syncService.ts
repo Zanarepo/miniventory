@@ -139,7 +139,11 @@ export const processSyncQueue = async (): Promise<number> => {
           }
         } else if (item.entity === 'sale') {
           if (item.action === 'CREATE') {
-            const payload = item.payload as { sale: Sale; saleItems: SaleItem[]; salePayments?: SalePayment[] };
+            const payload = item.payload as {
+              sale: Sale;
+              saleItems: SaleItem[];
+              salePayments?: SalePayment[];
+            };
             const { error, data } = await supabase.rpc('process_offline_sale', {
               p_sale: payload.sale,
               p_sale_items: payload.saleItems,

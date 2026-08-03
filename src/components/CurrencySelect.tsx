@@ -33,9 +33,9 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
           onChange={(val) => onChange(val)}
           required={required}
           leftIcon={<Coins size={18} />}
-          options={SUPPORTED_CURRENCIES.map(curr => ({
+          options={SUPPORTED_CURRENCIES.map((curr) => ({
             value: curr.code,
-            label: `${curr.symbol} — ${curr.name} (${curr.code})`
+            label: `${curr.symbol} — ${curr.name} (${curr.code})`,
           }))}
           className={errorText ? 'has-error' : ''}
           style={{ width: '100%', height: '48px', backgroundColor: 'var(--bg-input)' }}

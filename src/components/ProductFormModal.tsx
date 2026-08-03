@@ -41,18 +41,18 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [sellingPrice, setSellingPrice] = useState('');
   const [unitSelect, setUnitSelect] = useState('pcs');
   const [customUnit, setCustomUnit] = useState('');
-  
+
   // Conversational Bulk unit state
   const [hasLargePack, setHasLargePack] = useState(false);
   const [largePackName, setLargePackName] = useState('carton');
   const [piecesPerPack, setPiecesPerPack] = useState('12');
   const [largePackCost, setLargePackCost] = useState('');
   const [largePackSelling, setLargePackSelling] = useState('');
-  
+
   // Stock state
   const [stockLargePack, setStockLargePack] = useState('0');
   const [stockBaseUnit, setStockBaseUnit] = useState('0');
-  
+
   const [minimumStock, setMinimumStock] = useState('5');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -137,7 +137,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     const isDuplicate = products.some(
       (p) =>
         p.product_name.toLowerCase() === productName.trim().toLowerCase() &&
-        (!isEditing || p.id !== productToEdit?.id)
+        (!isEditing || p.id !== productToEdit?.id),
     );
 
     if (isDuplicate) {
@@ -152,8 +152,10 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     let finalCost: number;
     let finalSelling: number;
     let finalStock: number;
-    
-    let bCost = 0, bSelling = 0, bRatio = 0;
+
+    let bCost = 0,
+      bSelling = 0,
+      bRatio = 0;
 
     if (hasLargePack) {
       bCost = parseFloat(largePackCost);
@@ -169,16 +171,23 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         setErrorMessage('Quantity inside the large pack must be greater than 1');
         return;
       }
-      if (isNaN(bCost) || bCost < 0 || isNaN(bSelling) || bSelling < 0 || isNaN(finalSelling) || finalSelling < 0) {
+      if (
+        isNaN(bCost) ||
+        bCost < 0 ||
+        isNaN(bSelling) ||
+        bSelling < 0 ||
+        isNaN(finalSelling) ||
+        finalSelling < 0
+      ) {
         setErrorMessage('Please enter valid numerical amounts for prices');
         return;
       }
 
       finalCost = bCost / bRatio;
-      
+
       const sLarge = parseFloat(stockLargePack) || 0;
       const sBase = parseFloat(stockBaseUnit) || 0;
-      finalStock = (sLarge * bRatio) + sBase;
+      finalStock = sLarge * bRatio + sBase;
     } else {
       finalCost = parseFloat(costPrice);
       finalSelling = parseFloat(sellingPrice);
@@ -202,17 +211,19 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       selling_price: finalSelling,
       unit: finalUnit,
       minimum_stock: parseFloat(minimumStock) || 5,
-      ...(hasLargePack ? {
-        bulk_unit: largePackName.trim(),
-        conversion_ratio: bRatio,
-        bulk_cost_price: bCost,
-        bulk_selling_price: bSelling,
-      } : {
-        bulk_unit: undefined,
-        conversion_ratio: undefined,
-        bulk_cost_price: undefined,
-        bulk_selling_price: undefined,
-      })
+      ...(hasLargePack
+        ? {
+            bulk_unit: largePackName.trim(),
+            conversion_ratio: bRatio,
+            bulk_cost_price: bCost,
+            bulk_selling_price: bSelling,
+          }
+        : {
+            bulk_unit: undefined,
+            conversion_ratio: undefined,
+            bulk_cost_price: undefined,
+            bulk_selling_price: undefined,
+          }),
     };
 
     const result =
@@ -345,8 +356,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               leftIcon={<Layers size={17} />}
               className="input-field"
               options={[
-                ...PRESET_UNITS.map(u => ({ value: u, label: u.toUpperCase() })),
-                { value: 'other', label: 'Other (Custom Unit)' }
+                ...PRESET_UNITS.map((u) => ({ value: u, label: u.toUpperCase() })),
+                { value: 'other', label: 'Other (Custom Unit)' },
               ]}
               style={{ width: '100%', height: '48px' }}
             />
@@ -367,22 +378,53 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         )}
 
         <div className="col-span-2">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '12px 0', padding: '16px', backgroundColor: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-            <input 
-              type="checkbox" 
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              margin: '12px 0',
+              padding: '16px',
+              backgroundColor: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-color)',
+            }}
+          >
+            <input
+              type="checkbox"
               id="has-large-pack"
-              checked={hasLargePack} 
+              checked={hasLargePack}
               onChange={(e) => setHasLargePack(e.target.checked)}
               style={{ width: '20px', height: '20px', cursor: 'pointer' }}
             />
-            <label htmlFor="has-large-pack" style={{ cursor: 'pointer', fontWeight: 700, color: 'var(--brand-primary)', fontSize: '0.95rem' }}>
+            <label
+              htmlFor="has-large-pack"
+              style={{
+                cursor: 'pointer',
+                fontWeight: 700,
+                color: 'var(--brand-primary)',
+                fontSize: '0.95rem',
+              }}
+            >
               Do you also sell this in a larger pack (like a Carton or Bag)?
             </label>
           </div>
         </div>
 
         {hasLargePack ? (
-          <div className="col-span-2" style={{ padding: '16px', backgroundColor: 'var(--card-bg-elevated, rgba(0,0,0,0.02))', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div
+            className="col-span-2"
+            style={{
+              padding: '16px',
+              backgroundColor: 'var(--card-bg-elevated, rgba(0,0,0,0.02))',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-color)',
+              marginBottom: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
             <div className="form-grid-2">
               <div className="col-span-1">
                 <Input
@@ -406,7 +448,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   required={hasLargePack}
                 />
               </div>
-              
+
               <div className="col-span-1">
                 <Input
                   label={`Cost Price to buy 1 [${largePackName || 'Carton'}]`}
@@ -449,8 +491,22 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
 
             {!isEditing && (
-              <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px dashed var(--border-color)' }}>
-                <label style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-main)', marginBottom: '8px', display: 'block' }}>
+              <div
+                style={{
+                  marginTop: '8px',
+                  paddingTop: '16px',
+                  borderTop: '1px dashed var(--border-color)',
+                }}
+              >
+                <label
+                  style={{
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    color: 'var(--text-main)',
+                    marginBottom: '8px',
+                    display: 'block',
+                  }}
+                >
                   How much stock do you have right now?
                 </label>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -478,7 +534,10 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             )}
           </div>
         ) : (
-          <div className="col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px' }}>
+          <div
+            className="col-span-2"
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px' }}
+          >
             <div className="form-grid-2">
               <div className="col-span-1">
                 <Input
