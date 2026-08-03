@@ -109,7 +109,12 @@ const IconDoc = ({ size = 20 }: IconProps) => (
    ============================================================================ */
 
 function useCountUp(target: number, durationMs = 1500) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(() => {
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    return prefersReduced ? target : 0;
+  });
 
   useEffect(() => {
     const prefersReduced =
@@ -117,7 +122,6 @@ function useCountUp(target: number, durationMs = 1500) {
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReduced) {
-      setValue(target);
       return;
     }
 

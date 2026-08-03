@@ -158,7 +158,7 @@ export const NewSale: React.FC = () => {
       setCustomerId(newId);
       setNewCustomerName('');
       setToast({ message: 'Customer added', type: 'success' });
-    } catch (err) {
+    } catch {
       setToast({ message: 'Failed to add customer', type: 'error' });
     }
   };
