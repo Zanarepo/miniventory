@@ -21,4 +21,5 @@ export * from './AdjustmentModal';
 export * from './ProductFormModal';
 export * from './InventorySummaryCard';
 export * from './Pagination';
+export * from './CustomSelect';
 export * from './dashboard';

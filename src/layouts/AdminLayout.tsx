@@ -15,7 +15,7 @@ import {
   Moon,
   Sun,
   Monitor,
-  TrendingUp,
+  Boxes,
   DollarSign,
 } from 'lucide-react';
 
@@ -104,7 +104,7 @@ export const AdminLayout: React.FC = () => {
             onClick={() => setIsSidebarOpen(false)}
             style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <TrendingUp size={28} color="var(--brand-primary)" strokeWidth={2.5} />
+            <Boxes size={28} color="var(--brand-primary)" strokeWidth={2.5} />
             <h1
               style={{
                 color: 'var(--text-main)',
@@ -115,7 +115,7 @@ export const AdminLayout: React.FC = () => {
                 fontFamily: 'var(--font-heading)',
               }}
             >
-              Biz<span className="text-gradient">Track</span>
+              Mini<span className="text-gradient">ventory</span>
             </h1>
           </Link>
 

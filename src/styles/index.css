@@ -7,11 +7,11 @@
 /* --- DESIGN TOKENS (LIGHT THEME DEFAULT) --- */
 :root {
   /* Vibrant Brand HSL Palettes */
-  --brand-primary: hsl(158, 85%, 32%); /* Commanding Executive Jade */
-  --brand-primary-hover: hsl(158, 85%, 26%); /* Deepened Hover State */
-  --brand-primary-light: hsla(158, 85%, 32%, 0.12);
-  --brand-accent: hsl(38, 95%, 52%); /* Sunset Amber Highlight */
-  --brand-cyan: hsl(188, 85%, 45%); /* Analytics & Tech Cyan */
+  --brand-primary: hsl(188, 85%, 45%); /* Analytics & Tech Cyan */
+  --brand-primary-hover: hsl(188, 85%, 35%); /* Deepened Hover State */
+  --brand-primary-light: hsla(188, 85%, 45%, 0.12);
+  --brand-secondary: hsl(38, 95%, 52%); /* Sunset Amber Highlight */
+  --brand-accent: hsl(158, 85%, 32%); /* Commanding Executive Jade */
   --brand-danger: hsl(358, 82%, 56%); /* Crimson Alert / Destructive */
   --brand-danger-light: hsla(358, 82%, 56%, 0.12);
   --brand-warning: hsl(38, 95%, 52%);
@@ -22,8 +22,9 @@
   /* Surface & Ground Tokens */
   --bg-app: hsl(220, 22%, 97%); /* Clean Quartz Light Ground */
   --bg-card: hsla(0, 0%, 100%, 0.9); /* Semi-transparent White */
-  --bg-card-hover: hsla(0, 0%, 100%, 1);
   --bg-elevated: hsl(0, 0%, 100%);
+  --bg-dropdown: hsl(0, 0%, 100%); /* Solid opaque white for dropdown menus */
+  --bg-hover: hsl(220, 18%, 93%); /* Hover state for dropdown options */
   --bg-input: hsla(220, 18%, 95%, 0.8);
   --bg-shortcut: hsla(220, 15%, 88%, 0.9);
 
@@ -63,11 +64,11 @@
 html.dark :root,
 .dark {
   /* Radiant Neon Cyber Tokens */
-  --brand-primary: hsl(158, 82%, 48%); /* Luminous Cyber Jade */
-  --brand-primary-hover: hsl(158, 82%, 54%);
-  --brand-primary-light: hsla(158, 82%, 48%, 0.15);
-  --brand-accent: hsl(38, 96%, 56%); /* Glowing Amber */
-  --brand-cyan: hsl(188, 92%, 54%); /* Neon Cyan */
+  --brand-primary: hsl(188, 92%, 54%); /* Neon Cyan */
+  --brand-primary-hover: hsl(188, 92%, 45%);
+  --brand-primary-light: hsla(188, 92%, 54%, 0.15);
+  --brand-secondary: hsl(38, 96%, 56%); /* Glowing Amber */
+  --brand-accent: hsl(158, 82%, 48%); /* Luminous Cyber Jade */
   --brand-danger: hsl(358, 88%, 62%);
   --brand-danger-light: hsla(358, 88%, 62%, 0.18);
 
@@ -76,6 +77,8 @@ html.dark :root,
   --bg-card: hsla(222, 28%, 13%, 0.72); /* Frosted Obsidian Glass */
   --bg-card-hover: hsla(222, 26%, 17%, 0.85);
   --bg-elevated: hsl(222, 26%, 18%);
+  --bg-dropdown: hsl(222, 26%, 15%); /* Solid opaque obsidian for dropdown menus */
+  --bg-hover: hsl(222, 24%, 23%); /* Hover state for dark mode dropdown options */
   --bg-input: hsla(222, 30%, 10%, 0.75);
   --bg-shortcut: hsla(222, 20%, 22%, 0.8);
 
@@ -356,14 +359,14 @@ h6 {
 /* High Contrast Select & Option Styling for Dark and Light Mode */
 select.input-field,
 select {
-  background-color: var(--bg-card, #1e293b);
+  background-color: var(--bg-dropdown, var(--bg-elevated, #1e293b));
   color: var(--text-main, #f8fafc);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
 }
 select.input-field option,
 select option {
-  background-color: var(--bg-card, #1e293b);
+  background-color: var(--bg-dropdown, var(--bg-elevated, #1e293b));
   color: var(--text-main, #ffffff);
   padding: 10px 14px;
   font-size: 0.95rem;
@@ -485,11 +488,11 @@ select option {
 
 .badge-info {
   background-color: var(--brand-info-light);
-  color: var(--brand-cyan);
+  color: var(--brand-secondary);
   border-color: hsla(188, 90%, 52%, 0.35);
 }
 .badge-info .badge-dot {
-  background-color: var(--brand-cyan);
+  background-color: var(--brand-secondary);
 }
 
 /* --- 4. GLASSMORPHIC CARDS & PANELS (.glass-panel) --- */
@@ -712,7 +715,7 @@ select option {
 
 /* Gradient Text Feature */
 .text-gradient {
-  background: linear-gradient(135deg, var(--brand-primary), var(--brand-cyan));
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;

@@ -116,7 +116,7 @@ export const BusinessComparisonChart: React.FC<BusinessComparisonChartProps> = (
     const url = URL.createObjectURL(svgBlob);
     const downloadLink = document.createElement('a');
     downloadLink.href = url;
-    downloadLink.download = `BizTrack_Comparison_${selectedMetric}_${new Date().toISOString().split('T')[0]}.svg`;
+    downloadLink.download = `Miniventory_Comparison_${selectedMetric}_${new Date().toISOString().split('T')[0]}.svg`;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -154,7 +154,7 @@ export const BusinessComparisonChart: React.FC<BusinessComparisonChartProps> = (
       const pngUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = `BizTrack_Comparison_${selectedMetric}_${new Date().toISOString().split('T')[0]}.png`;
+      downloadLink.download = `Miniventory_Comparison_${selectedMetric}_${new Date().toISOString().split('T')[0]}.png`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
@@ -399,7 +399,7 @@ export const BusinessComparisonChart: React.FC<BusinessComparisonChartProps> = (
               letterSpacing="0.04em"
               className="chart-text"
             >
-              BIZTRACK ANALYTICS — {selectedMetric.replace(/_/g, ' ').toUpperCase()} COMPARISON
+              MINIVENTORY ANALYTICS — {selectedMetric.replace(/_/g, ' ').toUpperCase()} COMPARISON
             </text>
             <line
               x1={28}

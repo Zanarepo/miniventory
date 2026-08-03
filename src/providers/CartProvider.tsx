@@ -11,7 +11,7 @@ import { useInventory } from '../hooks/useInventory';
 import { db } from '../lib/dexie';
 import { supabase } from '../lib/supabase';
 
-const CART_STORAGE_KEY = 'biztrack_cart_draft';
+const CART_STORAGE_KEY = 'miniventory_cart_draft';
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>(() => {

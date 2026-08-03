@@ -28,7 +28,7 @@ export const LandingProfitMockup: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          backgroundColor: 'var(--brand-cyan)',
+          backgroundColor: 'var(--brand-secondary)',
           color: '#000',
         }}
       >

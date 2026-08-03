@@ -15,8 +15,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
       },
       manifest: {
-        name: 'BizTrack Lite',
-        short_name: 'BizTrack',
+        name: 'Miniventory',
+        short_name: 'Miniventory',
         description: 'Simple Business Record Keeping for Everyday Entrepreneurs',
         theme_color: '#166534',
         background_color: '#f8fafc',

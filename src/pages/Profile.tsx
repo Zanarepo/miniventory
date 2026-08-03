@@ -93,7 +93,7 @@ export const Profile: React.FC = () => {
   const { business } = useBusiness();
   const { isOnline } = useNetwork();
 
-  const isEmail = user?.email && !user.email.endsWith('@biztrack-user.com');
+  const isEmail = user?.email && !user.email.endsWith('@miniventory-user.com');
 
   return (
     <div style={{ maxWidth: '820px', margin: '0 auto' }} className="animate-fade-in">
@@ -214,7 +214,7 @@ export const Profile: React.FC = () => {
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Shield size={18} color="var(--brand-cyan)" />
+              <Shield size={18} color="var(--brand-secondary)" />
               <div>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase' }}>
                   Database Security

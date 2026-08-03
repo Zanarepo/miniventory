@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { Table, LoadingSpinner, Toast } from '../../components';
+import { Table, LoadingSpinner, Toast, CustomSelect } from '../../components';
 import { Shield, ShieldAlert, User, Clock } from 'lucide-react';
 export const AdminUsers: React.FC = () => {
   const { profile } = useAuth();
@@ -85,23 +85,18 @@ export const AdminUsers: React.FC = () => {
       accessor: (row: any) => {
         if (profile?.role === 'superadmin') {
           return (
-            <select
+            <CustomSelect
               value={row.role || 'user'}
-              onChange={(e) => handleRoleChange(row.id, e.target.value)}
-              style={{
-                padding: '4px 8px',
-                borderRadius: '4px',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-card)',
-                color: 'var(--text-main)',
-                fontSize: '0.85rem',
-              }}
-            >
-              <option value="user">User</option>
-              <option value="pending_admin">Pending Admin</option>
-              <option value="admin">Admin</option>
-              <option value="superadmin">Superadmin</option>
-            </select>
+              onChange={(val) => handleRoleChange(row.id, val)}
+              leftIcon={<Shield size={14} />}
+              options={[
+                { value: 'user', label: 'User' },
+                { value: 'pending_admin', label: 'Pending Admin' },
+                { value: 'admin', label: 'Admin' },
+                { value: 'superadmin', label: 'Superadmin' },
+              ]}
+              style={{ width: '160px' }}
+            />
           );
         }
 
@@ -170,7 +165,7 @@ export const AdminUsers: React.FC = () => {
           Platform Users
         </h1>
         <p style={{ margin: 0, color: 'var(--text-muted)' }}>
-          Manage all registered users on the BizTrack platform.
+          Manage all registered users on the Miniventory platform.
         </p>
       </div>
 

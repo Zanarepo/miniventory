@@ -514,7 +514,7 @@ export class ReportingService {
   ): Promise<void> {
     const wb = XLSX.utils.book_new();
     const data = [
-      [`BizTrack Lite Report - ${sheetTitle}`, ''],
+      [`Miniventory Report - ${sheetTitle}`, ''],
       ['Generated:', new Date().toLocaleString()],
       [],
       headers,
@@ -577,7 +577,7 @@ export class ReportingService {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text(businessName || 'BizTrack Lite Business Report', 14, 12);
+    doc.text(businessName || 'Miniventory Business Report', 14, 12);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
     doc.text(`${reportTitle} • Period: ${periodLabel}`, 14, 20);
@@ -649,7 +649,7 @@ export class ReportingService {
       doc.setFontSize(8);
       doc.setTextColor(120, 120, 120);
       doc.text(
-        `Generated directly from BizTrack Lite • ${new Date().toLocaleString()} • Page ${i} of ${totalPages}`,
+        `Generated directly from Miniventory • ${new Date().toLocaleString()} • Page ${i} of ${totalPages}`,
         14,
         pageHeight - 10,
       );

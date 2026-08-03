@@ -67,7 +67,7 @@ export interface CachedAuditLog {
   status: 'synced' | 'pending';
 }
 
-export class BizTrackDatabase extends Dexie {
+export class MiniventoryDatabase extends Dexie {
   auditLogs!: EntityTable<CachedAuditLog, 'id'>;
   syncQueue!: EntityTable<SyncQueueItem, 'id'>;
   cachedProducts!: EntityTable<CachedProduct, 'id'>;
@@ -87,7 +87,7 @@ export class BizTrackDatabase extends Dexie {
   reportHistory!: EntityTable<ReportHistory, 'id'>;
 
   constructor() {
-    super('BizTrackDB');
+    super('MiniventoryDB');
     this.version(1).stores({
       syncQueue: '++id, action, entity, status, createdAt',
       cachedProducts: 'id, name, price, stock, updatedAt',
@@ -218,4 +218,4 @@ export class BizTrackDatabase extends Dexie {
   }
 }
 
-export const db = new BizTrackDatabase();
+export const db = new MiniventoryDatabase();

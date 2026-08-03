@@ -15,6 +15,7 @@ import {
   Moon,
   Sun,
   Monitor,
+  Boxes,
   TrendingUp,
   Package,
   History,
@@ -112,7 +113,7 @@ export const AppLayout: React.FC = () => {
             onClick={() => setIsSidebarOpen(false)}
             style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <TrendingUp size={28} color="var(--brand-primary)" strokeWidth={2.5} />
+            <Boxes size={28} color="var(--brand-primary)" strokeWidth={2.5} />
             <h1
               style={{
                 color: 'var(--text-main)',
@@ -123,7 +124,7 @@ export const AppLayout: React.FC = () => {
                 fontFamily: 'var(--font-heading)',
               }}
             >
-              Biz<span className="text-gradient">Track</span>
+              Mini<span className="text-gradient">ventory</span>
             </h1>
           </Link>
 
@@ -371,7 +372,7 @@ export const AppLayout: React.FC = () => {
               ) : theme === 'light' ? (
                 <Sun size={15} color="var(--brand-warning)" />
               ) : (
-                <Monitor size={15} color="var(--brand-cyan)" />
+                <Monitor size={15} color="var(--brand-secondary)" />
               )}
               <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>
                 {theme}
@@ -395,7 +396,7 @@ export const AppLayout: React.FC = () => {
             backgroundColor: 'var(--bg-card)',
           }}
         >
-          BizTrack © 2026 — Simple Financial Record Keeping for African Enterprises.
+          Miniventory © 2026 — Simple Financial Record Keeping for African Enterprises.
         </footer>
       </div>
 

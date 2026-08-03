@@ -15,7 +15,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({ isOpen, on
   const isAndroid = /android/i.test(navigator.userAgent);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Install BizTrack App">
+    <Modal isOpen={isOpen} onClose={onClose} title="Install Miniventory App">
       <div style={{ textAlign: 'center', padding: '10px 0 20px' }}>
         <div
           style={{
@@ -53,7 +53,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({ isOpen, on
           }}
         >
           Your browser requires you to install the app manually. Follow these quick steps to add
-          BizTrack to your home screen for easy access.
+          Miniventory to your home screen for easy access.
         </p>
 
         <div
@@ -298,7 +298,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({ isOpen, on
                   <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                     Click the 3 dots (⋮) in the top right, go to{' '}
                     <strong>Cast, save, and share</strong>, and click{' '}
-                    <strong>Install BizTrack</strong> (or Open in BizTrack).
+                    <strong>Install Miniventory</strong> (or Open in Miniventory).
                   </p>
                 </div>
               </div>

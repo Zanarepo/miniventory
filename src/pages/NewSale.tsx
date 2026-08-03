@@ -9,7 +9,8 @@ import { Button } from '../components/Button';
 import { SearchInput } from '../components/SearchInput';
 import { Toast } from '../components/Toast';
 import { Modal } from '../components/Modal';
-import { Trash2, Plus, ShoppingCart, Tag } from 'lucide-react';
+import { CustomSelect } from '../components/CustomSelect';
+import { Trash2, Plus, ShoppingCart, Tag, UserCheck } from 'lucide-react';
 import type { PaymentMethod } from '../types/sales';
 import { db } from '../lib/dexie';
 import { Input } from '../components/Input';
@@ -729,17 +730,19 @@ export const NewSale: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
             <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>Link Customer (Optional for full payment, Required for credit)</label>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <select
+              <CustomSelect
                 value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                className="input-field"
-                style={{ flex: 1, padding: '10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)' }}
-              >
-                <option value="">-- Select an Existing Customer --</option>
-                {customers?.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} {c.phone ? `(${c.phone})` : ''}</option>
-                ))}
-              </select>
+                onChange={(val) => setCustomerId(val)}
+                leftIcon={<UserCheck size={17} />}
+                options={[
+                  { value: '', label: '-- Select an Existing Customer --' },
+                  ...(customers || []).map(c => ({
+                    value: c.id,
+                    label: `${c.name} ${c.phone ? `(${c.phone})` : ''}`
+                  }))
+                ]}
+                style={{ flex: 1, height: '45px' }}
+              />
             </div>
             
             {!customerId && (

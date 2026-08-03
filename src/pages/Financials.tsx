@@ -523,7 +523,7 @@ export const Financials: React.FC = () => {
                 </span>
                 <div
                   style={{
-                    color: 'var(--brand-cyan)',
+                    color: 'var(--brand-secondary)',
                     padding: '6px',
                     borderRadius: '50%',
                     backgroundColor: 'rgba(6, 182, 212, 0.1)',

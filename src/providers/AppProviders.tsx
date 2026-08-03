@@ -26,7 +26,7 @@ interface AppProvidersProps {
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system" storageKey="biztrack-ui-theme">
+      <ThemeProvider defaultTheme="system" storageKey="miniventory-ui-theme">
         <LanguageProvider>
           <AuthProvider>
             <NetworkProvider>

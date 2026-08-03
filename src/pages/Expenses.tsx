@@ -10,7 +10,7 @@ import { Pagination } from '../components/Pagination';
 import { Toast } from '../components/Toast';
 import { Modal } from '../components/Modal';
 import { CustomSelect } from '../components/CustomSelect';
-import { Plus, Edit2, Trash2, Calendar, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, Calendar, FileText, Tag, CreditCard } from 'lucide-react';
 
 export const Expenses: React.FC = () => {
   const { t } = useLanguage();
@@ -216,7 +216,7 @@ export const Expenses: React.FC = () => {
             {formatCurrency(monthlyTotal)}
           </strong>
         </Card>
-        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-cyan)' }}>
+        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-secondary)' }}>
           <span
             style={{
               fontSize: '0.75rem',
@@ -268,8 +268,9 @@ export const Expenses: React.FC = () => {
           </div>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <CustomSelect
-              style={{ flex: '1 1 140px' }}
+              style={{ flex: '1 1 160px' }}
               value={filterCategoryId}
+              leftIcon={<Tag size={16} />}
               onChange={(val) => {
                 setFilterCategoryId(val);
                 setCurrentPage(1);
@@ -280,19 +281,20 @@ export const Expenses: React.FC = () => {
               ]}
             />
             <CustomSelect
-              style={{ flex: '1 1 140px' }}
+              style={{ flex: '1 1 160px' }}
               value={filterPayMethod}
+              leftIcon={<CreditCard size={16} />}
               onChange={(val) => {
                 setFilterPayMethod(val);
                 setCurrentPage(1);
               }}
               options={[
                 { value: '', label: 'All Pay Methods' },
-                { value: 'CASH', label: 'Cash' },
-                { value: 'POS', label: 'POS' },
-                { value: 'TRANSFER', label: 'Transfer' },
-                { value: 'MOBILE_MONEY', label: 'Mobile Money' },
-                { value: 'OTHER', label: 'Other' }
+                { value: 'CASH', label: '💵 Cash' },
+                { value: 'POS', label: '💳 POS' },
+                { value: 'TRANSFER', label: '🏦 Transfer' },
+                { value: 'MOBILE_MONEY', label: '📱 Mobile Money' },
+                { value: 'OTHER', label: '⚙️ Other' }
               ]}
             />
           </div>

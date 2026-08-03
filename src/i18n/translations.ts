@@ -242,7 +242,7 @@ type TranslationDictionary = Record<LanguageCode, Record<TranslationKey, string>
 
 export const TRANSLATIONS: TranslationDictionary = {
   en: {
-    appTitle: 'BizTrack',
+    appTitle: 'Miniventory',
     appTagline: 'Simple Business Record Keeping for Every Entrepreneur',
     heroBadge: '✨ Offline-First Financial Tracking',
     heroDesc:
@@ -469,13 +469,13 @@ export const TRANSLATIONS: TranslationDictionary = {
       'No complicated accounting jargon. Our Pidgin English interface makes it incredibly easy for any shop owner or attendant to log daily sales instantly, saving you hours of manual bookkeeping.',
     showcaseOfflineTitle: '100% Offline Capable',
     showcaseOfflineDesc:
-      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. BizTrack uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
+      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. Miniventory uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
     showcaseSmartTitle: 'Make Smart Decisions',
     showcaseSmartDesc:
       'Stop guessing if you are making money. Our automated Profit & Loss engine calculates your true net profit in real-time, helping you identify trends and grow your business with bank-grade security.',
   },
   pid: {
-    appTitle: 'BizTrack',
+    appTitle: 'Miniventory',
     appTagline: 'Easy book-keeping for every hustle & business person',
     heroBadge: '✨ No Internet Required! Record Better',
     heroDesc:
@@ -701,13 +701,13 @@ export const TRANSLATIONS: TranslationDictionary = {
       'No long grammar or big accounting words. Our Pidgin English design make am very easy for any shop owner or boy to write daily sales sharp sharp. E save you time wey you for use dey write inside big book.',
     showcaseOfflineTitle: 'E Dey Work Offline 100%',
     showcaseOfflineDesc:
-      'Network bad? No wahala. You fit track your goods and see low stock warning even if network no dey. BizTrack use local database to save your data sharp sharp, and e go backup go cloud securely when your network come back.',
+      'Network bad? No wahala. You fit track your goods and see low stock warning even if network no dey. Miniventory use local database to save your data sharp sharp, and e go backup go cloud securely when your network come back.',
     showcaseSmartTitle: 'Make Better Business Decision',
     showcaseSmartDesc:
       'Make you stop to dey guess if your business dey make gain. Our Profit & Loss engine go calculate your actual net profit in real-time, help you see where money dey go and grow your business with bank-level security.',
   },
   ha: {
-    appTitle: 'BizTrack',
+    appTitle: 'Miniventory',
     appTagline: 'Sauƙi wajen kiyaye lissafin kowane ɗan kasuwa',
     heroBadge: '✨ Lissafi Ko Ba Tare Da Intanet Ba',
     heroDesc:
@@ -933,13 +933,13 @@ export const TRANSLATIONS: TranslationDictionary = {
       'No complicated accounting jargon. Our Pidgin English interface makes it incredibly easy for any shop owner or attendant to log daily sales instantly, saving you hours of manual bookkeeping.',
     showcaseOfflineTitle: '100% Offline Capable',
     showcaseOfflineDesc:
-      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. BizTrack uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
+      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. Miniventory uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
     showcaseSmartTitle: 'Make Smart Decisions',
     showcaseSmartDesc:
       'Stop guessing if you are making money. Our automated Profit & Loss engine calculates your true net profit in real-time, helping you identify trends and grow your business with bank-grade security.',
   },
   ig: {
-    appTitle: 'BizTrack',
+    appTitle: 'Miniventory',
     appTagline: 'Ndekọ ahịa dị mfe maka ndị na-azụ ahịa dum',
     heroBadge: '✨ Ahịa Na-arụ Yana Mgbe Adighi Internet',
     heroDesc:
@@ -1181,13 +1181,13 @@ export const TRANSLATIONS: TranslationDictionary = {
       'No complicated accounting jargon. Our Pidgin English interface makes it incredibly easy for any shop owner or attendant to log daily sales instantly, saving you hours of manual bookkeeping.',
     showcaseOfflineTitle: '100% Offline Capable',
     showcaseOfflineDesc:
-      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. BizTrack uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
+      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. Miniventory uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
     showcaseSmartTitle: 'Make Smart Decisions',
     showcaseSmartDesc:
       'Stop guessing if you are making money. Our automated Profit & Loss engine calculates your true net profit in real-time, helping you identify trends and grow your business with bank-grade security.',
   },
   yo: {
-    appTitle: 'BizTrack',
+    appTitle: 'Miniventory',
     appTagline: 'Ọkàn ni iṣakoso owo ati kikọ asiko owo fun gbogbo oniṣowo',
     heroBadge: '✨ Ṣíṣàkósò Owo Láláisi Internet Lori Eko Gbagede',
     heroDesc:
@@ -1438,7 +1438,7 @@ export const TRANSLATIONS: TranslationDictionary = {
       'No complicated accounting jargon. Our Pidgin English interface makes it incredibly easy for any shop owner or attendant to log daily sales instantly, saving you hours of manual bookkeeping.',
     showcaseOfflineTitle: '100% Offline Capable',
     showcaseOfflineDesc:
-      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. BizTrack uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
+      'Bad network? No problem. Track your inventory and receive low stock alerts entirely offline. Miniventory uses advanced local databases to save your data instantly, syncing securely to the cloud only when your connection returns.',
     showcaseSmartTitle: 'Make Smart Decisions',
     showcaseSmartDesc:
       'Stop guessing if you are making money. Our automated Profit & Loss engine calculates your true net profit in real-time, helping you identify trends and grow your business with bank-grade security.',

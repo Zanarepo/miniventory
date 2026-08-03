@@ -144,7 +144,7 @@ export const LandingFeatureShowcase: React.FC = () => {
             <div
               style={{
                 padding: '12px',
-                backgroundColor: 'var(--brand-cyan)',
+                backgroundColor: 'var(--brand-secondary)',
                 borderRadius: '12px',
                 color: '#1a1a1a',
               }}

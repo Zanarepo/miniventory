@@ -16,7 +16,7 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   children,
   defaultLang = 'en',
-  storageKey = 'biztrack-trader-language',
+  storageKey = 'miniventory-trader-language',
 }) => {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     try {

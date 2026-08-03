@@ -2,7 +2,7 @@ import React, { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
-import { Button, Input, Toast } from '../components';
+import { Button, Input, Toast, CustomSelect } from '../components';
 import { User, Phone, Lock, HelpCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const SECURITY_QUESTIONS = [
@@ -67,22 +67,6 @@ export const Register: React.FC = () => {
       );
       setTimeout(() => navigate('/login'), 2000);
     }
-  };
-
-  const selectStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '11px 14px',
-    borderRadius: 'var(--radius-md)',
-    border: '1px solid var(--border-color)',
-    backgroundColor: 'var(--bg-card)',
-    color: 'var(--text-main)',
-    fontSize: '0.95rem',
-    fontFamily: 'var(--font-sans)',
-    fontWeight: 500,
-    outline: 'none',
-    boxShadow: 'var(--shadow-sm)',
-    transition: 'border-color var(--transition-fast), box-shadow var(--transition-fast)',
-    margin: 0,
   };
 
   return (
@@ -163,19 +147,13 @@ export const Register: React.FC = () => {
           <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>
             {t('securityQuestionLabel')}
           </label>
-          <select
+          <CustomSelect
             value={securityQuestion}
-            onChange={(e) => setSecurityQuestion(e.target.value)}
-            style={selectStyle}
-            onFocus={(e) => (e.target.style.boxShadow = 'var(--focus-ring)')}
-            onBlur={(e) => (e.target.style.boxShadow = 'var(--shadow-sm)')}
-          >
-            {SECURITY_QUESTIONS.map((q, idx) => (
-              <option key={idx} value={q}>
-                {q}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setSecurityQuestion(val)}
+            leftIcon={<HelpCircle size={17} />}
+            options={SECURITY_QUESTIONS.map((q) => ({ value: q, label: q }))}
+            style={{ width: '100%', height: '45px' }}
+          />
         </div>
 
         <div className="col-span-2">

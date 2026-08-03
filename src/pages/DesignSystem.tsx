@@ -183,7 +183,7 @@ export const DesignSystem: React.FC = () => {
             <Sparkles size={14} style={{ marginRight: '4px' }} /> Design Architecture Showcase
           </span>
           <h1 style={{ fontSize: '2.5rem', margin: '8px 0', letterSpacing: '-0.04em' }}>
-            BizTrack <span className="text-gradient">Cyber-Enterprise Glass</span> OS
+            Miniventory <span className="text-gradient">Cyber-Enterprise Glass</span> OS
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '700px' }}>
             A tactile, high-contrast design system featuring HSL color aesthetics, frosted glass
@@ -209,7 +209,7 @@ export const DesignSystem: React.FC = () => {
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         {swatchStyle('var(--brand-primary)', 'Cyber Jade (Primary)', 'hsl(158, 85%, 32% / 48%)')}
         {swatchStyle('var(--brand-accent)', 'Sunset Amber (Accent)', 'hsl(38, 95%, 55%)')}
-        {swatchStyle('var(--brand-cyan)', 'Analytics Cyan', 'hsl(188, 92%, 52%)')}
+        {swatchStyle('var(--brand-secondary)', 'Analytics Cyan', 'hsl(188, 92%, 52%)')}
         {swatchStyle('var(--brand-danger)', 'Crimson Alert', 'hsl(358, 82%, 58%)')}
         {swatchStyle('var(--bg-card)', 'Frosted Glass Surface', 'hsla(222, 28%, 13%, 0.75)')}
         {swatchStyle('var(--bg-app)', 'Base Obsidian Ground', 'hsl(222, 38%, 7%)')}

@@ -14,7 +14,7 @@ export const formatAuthIdentifier = (identifier: string): string => {
   const numericOnly = clean.replace(/[^0-9+]/g, '');
 
   // Create a synthetic backend email domain so Supabase Auth receives valid email schema behind the scenes
-  return `${numericOnly}@biztrack-user.com`;
+  return `${numericOnly}@miniventory-user.com`;
 };
 
 /**
@@ -22,8 +22,8 @@ export const formatAuthIdentifier = (identifier: string): string => {
  */
 export const extractDisplayIdentifier = (backendEmail?: string): string => {
   if (!backendEmail) return '';
-  if (backendEmail.endsWith('@biztrack-user.com')) {
-    return backendEmail.replace('@biztrack-user.com', '');
+  if (backendEmail.endsWith('@miniventory-user.com')) {
+    return backendEmail.replace('@miniventory-user.com', '');
   }
   return backendEmail;
 };

@@ -1,5 +1,5 @@
 /**
- * Data architecture for BizTrack Business entities and settings.
+ * Data architecture for Miniventory Business entities and settings.
  * Every user in Sprint 1 owns one business that all future financial records (inventory, sales, expenses) will reference.
  */
 export interface Business {

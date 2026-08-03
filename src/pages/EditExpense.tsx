@@ -6,7 +6,8 @@ import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Toast } from '../components/Toast';
-import { ArrowLeft } from 'lucide-react';
+import { CustomSelect } from '../components/CustomSelect';
+import { ArrowLeft, Tag, CreditCard } from 'lucide-react';
 
 export const EditExpense: React.FC = () => {
   const { t } = useLanguage();
@@ -143,19 +144,19 @@ export const EditExpense: React.FC = () => {
             <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
               {t('fieldCategory')} *
             </label>
-            <select
-              style={selectStyle}
+            <CustomSelect
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              required
-            >
-              <option value="">-- Select Category --</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setCategoryId(val)}
+              leftIcon={<Tag size={17} />}
+              options={[
+                { value: '', label: '-- Select Category --' },
+                ...categories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                })),
+              ]}
+              style={{ width: '100%', height: '45px' }}
+            />
           </div>
 
           <div style={formGroupStyle}>
@@ -176,18 +177,19 @@ export const EditExpense: React.FC = () => {
             <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
               {t('fieldExpensePayMethod')} *
             </label>
-            <select
-              style={selectStyle}
+            <CustomSelect
               value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              required
-            >
-              <option value="CASH">💵 {t('payMethodCash')}</option>
-              <option value="POS">💳 {t('payMethodPOS')}</option>
-              <option value="TRANSFER">🏦 {t('payMethodTransfer')}</option>
-              <option value="MOBILE_MONEY">📱 Mobile Money</option>
-              <option value="OTHER">⚙️ Other</option>
-            </select>
+              onChange={(val) => setPaymentMethod(val)}
+              leftIcon={<CreditCard size={17} />}
+              options={[
+                { value: 'CASH', label: `💵 ${t('payMethodCash')}` },
+                { value: 'POS', label: `💳 ${t('payMethodPOS')}` },
+                { value: 'TRANSFER', label: `🏦 ${t('payMethodTransfer')}` },
+                { value: 'MOBILE_MONEY', label: '📱 Mobile Money' },
+                { value: 'OTHER', label: '⚙️ Other' },
+              ]}
+              style={{ width: '100%', height: '45px' }}
+            />
           </div>
 
           <div style={formGroupStyle}>

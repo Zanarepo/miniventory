@@ -274,7 +274,7 @@ export const SalesHistory: React.FC = () => {
         </Card>
         <Card
           className="p-4 border-l-4 border-l-indigo-500"
-          style={{ padding: '16px', borderLeft: '4px solid var(--brand-cyan)' }}
+          style={{ padding: '16px', borderLeft: '4px solid var(--brand-secondary)' }}
         >
           <p
             style={{

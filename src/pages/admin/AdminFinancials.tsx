@@ -174,7 +174,7 @@ export const AdminFinancials: React.FC = () => {
     link.href = url;
     link.setAttribute(
       'download',
-      `BizTrack_Company_Financials_Report_${new Date().toISOString().split('T')[0]}.csv`,
+      `Miniventory_Company_Financials_Report_${new Date().toISOString().split('T')[0]}.csv`,
     );
     document.body.appendChild(link);
     link.click();

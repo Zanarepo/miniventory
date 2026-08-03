@@ -136,7 +136,7 @@ export const AdminBusinesses: React.FC = () => {
           Platform Businesses
         </h1>
         <p style={{ margin: 0, color: 'var(--text-muted)' }}>
-          Manage all businesses created on the BizTrack platform.
+          Manage all businesses created on the Miniventory platform.
         </p>
       </div>
 

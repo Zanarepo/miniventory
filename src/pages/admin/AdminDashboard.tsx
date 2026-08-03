@@ -199,7 +199,7 @@ export const AdminDashboard: React.FC = () => {
           Platform Overview
         </h1>
         <p style={{ margin: 0, color: 'var(--text-muted)' }}>
-          High-level metrics for the BizTrack platform.
+          High-level metrics for the Miniventory platform.
         </p>
       </div>
 
