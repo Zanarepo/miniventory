@@ -1,5 +1,5 @@
-import React, { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, type FormEvent } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 import { Button, Input, Toast } from '../components';
@@ -17,6 +17,21 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (searchParams.get('verified') === 'true') {
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('Email confirmed successfully! You can now log in.');
+        searchParams.delete('verified');
+        setSearchParams(searchParams, { replace: true });
+      }, 0);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [searchParams, setSearchParams]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

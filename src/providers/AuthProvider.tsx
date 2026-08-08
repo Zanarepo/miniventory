@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       password: defaultPassword,
       options: {
         data: metadata || {},
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/login?verified=true`,
       },
     });
     return { error: error as Error | null };
