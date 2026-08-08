@@ -31,6 +31,9 @@ const PendingVerification = React.lazy(() =>
 const ForgotPassword = React.lazy(() =>
   import('../pages/ForgotPassword').then((module) => ({ default: module.ForgotPassword })),
 );
+const ResetPassword = React.lazy(() =>
+  import('../pages/ResetPassword').then((module) => ({ default: module.ResetPassword })),
+);
 const NotFound = React.lazy(() =>
   import('../pages/NotFound').then((module) => ({ default: module.NotFound })),
 );
@@ -125,6 +128,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/admin-signup" element={<AdminSignup />} />
           <Route path="/pending-verification" element={<PendingVerification />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* Protected Onboarding Screen for Authenticated Users without a Business */}
           <Route element={<ProtectedRoute requireBusiness={false} />}>
             <Route path="/onboarding" element={<BusinessOnboarding />} />

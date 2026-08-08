@@ -65,12 +65,12 @@ const ProfileForm: React.FC<{
         />
       </div>
 
-      <div className="col-span-2 form-action-row">
+      <div className="col-span-2" style={{ marginTop: '10px' }}>
         <Button
           type="submit"
           variant="primary"
-          size="md"
-          style={{ minWidth: '200px' }}
+          size="sm"
+          style={{ width: '100%' }}
           isLoading={isLoading}
           leftIcon={<Save size={18} />}
         >
@@ -108,10 +108,10 @@ export const Profile: React.FC = () => {
         }}
       >
         <div>
-          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)' }}>
+          <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)' }}>
             👤 Owner Profile & Credentials
           </h2>
-          <p style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+          <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Manage your personal entrepreneur identity and view active account security permissions.
           </p>
         </div>
@@ -131,16 +131,16 @@ export const Profile: React.FC = () => {
         </Badge>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <Card title="Entrepreneur Account Details" style={{ padding: '28px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <Card title="Entrepreneur Account Details" style={{ padding: '16px' }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '16px',
-              marginBottom: '24px',
+              gap: '12px',
+              marginBottom: '16px',
               borderBottom: '1px solid var(--border-color)',
-              paddingBottom: '20px',
+              paddingBottom: '16px',
             }}
           >
             <div
@@ -187,7 +187,7 @@ export const Profile: React.FC = () => {
           <ProfileForm initialProfile={profile} isOnline={isOnline} onUpdate={updateProfile} />
         </Card>
 
-        <Card title="Account Identifiers & Recovery Status" style={{ padding: '24px' }}>
+        <Card title="Account Identifiers & Recovery Status" style={{ padding: '16px' }}>
           <div
             style={{
               display: 'grid',

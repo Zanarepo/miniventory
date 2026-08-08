@@ -124,6 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       password: defaultPassword,
       options: {
         data: metadata || {},
+        emailRedirectTo: window.location.origin,
       },
     });
     return { error: error as Error | null };
@@ -137,7 +138,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(formatAuthIdentifier(email));
+    const { error } = await supabase.auth.resetPasswordForEmail(formatAuthIdentifier(email), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
     return { error: error as Error | null };
   };
 

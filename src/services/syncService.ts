@@ -155,6 +155,37 @@ export const processSyncQueue = async (): Promise<number> => {
             } else {
               await handleFailedSync(item.id!, error || new Error('RPC failed'));
             }
+          } else if (item.action === 'UPDATE') {
+            const payload = item.payload as Partial<Sale> & { id: string } & Record<string, any>;
+            // Strip UI-only fields to avoid Postgres unknown column errors
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { productNames, itemCount, firstItemName, hasDiscount, ...dbPayload } = payload;
+            const { error } = await supabase.from('sales').update(dbPayload).eq('id', dbPayload.id);
+            if (!error) {
+              await db.syncQueue.delete(item.id!);
+              syncedCount++;
+            } else {
+              await handleFailedSync(item.id!, error);
+            }
+          }
+        } else if (item.entity === 'sale_item') {
+          if (item.action === 'UPDATE') {
+            const payload = item.payload as Partial<SaleItem> & { id: string } & Record<
+                string,
+                any
+              >;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { product_name, ...dbPayload } = payload;
+            const { error } = await supabase
+              .from('sale_items')
+              .update(dbPayload)
+              .eq('id', dbPayload.id);
+            if (!error) {
+              await db.syncQueue.delete(item.id!);
+              syncedCount++;
+            } else {
+              await handleFailedSync(item.id!, error);
+            }
           }
         } else if (item.entity === 'customer') {
           if (item.action === 'CREATE') {

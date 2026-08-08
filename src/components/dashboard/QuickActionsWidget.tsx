@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '..';
 import { useLanguage } from '../../hooks/useLanguage';
-import { PlusCircle, Package, Receipt, Layers, BarChart2, Zap, ArrowRight } from 'lucide-react';
+import { PlusCircle, Package, Receipt, Layers, BarChart2, Zap } from 'lucide-react';
 
 export const QuickActionsWidget: React.FC = () => {
   const navigate = useNavigate();
@@ -76,19 +76,19 @@ export const QuickActionsWidget: React.FC = () => {
     <Card
       className="glass-panel"
       style={{
-        padding: '22px 24px',
-        marginBottom: '28px',
+        padding: '16px',
+        marginBottom: '20px',
         background:
           'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
         border: '1px solid var(--border-color)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
         <div
           style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '10px',
+            width: '28px',
+            height: '28px',
+            borderRadius: '8px',
             backgroundColor: 'rgba(245, 158, 11, 0.15)',
             color: '#f59e0b',
             display: 'flex',
@@ -96,30 +96,25 @@ export const QuickActionsWidget: React.FC = () => {
             justifyContent: 'center',
           }}
         >
-          <Zap size={20} />
+          <Zap size={16} />
         </div>
-        <div>
-          <h3
-            style={{
-              fontSize: '1.15rem',
-              fontWeight: 800,
-              color: 'var(--text-main)',
-              margin: '0 0 2px',
-            }}
-          >
-            {t('dashQuickActionsTitle')}
-          </h3>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
-            {t('heroBadge')}
-          </p>
-        </div>
+        <h3
+          style={{
+            fontSize: '0.95rem',
+            fontWeight: 800,
+            color: 'var(--text-main)',
+            margin: 0,
+          }}
+        >
+          {t('dashQuickActionsTitle')}
+        </h3>
       </div>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '14px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '10px',
         }}
       >
         {actions.map((action, index) => {
@@ -142,22 +137,23 @@ export const QuickActionsWidget: React.FC = () => {
               onClick={handleClick}
               style={{
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '16px 18px',
-                borderRadius: '12px',
+                alignItems: 'center',
+                padding: '10px 12px',
+                borderRadius: '10px',
                 backgroundColor: action.primary ? action.bgColor : 'rgba(0,0,0,0.02)',
                 border: `1px solid ${action.primary ? action.color : 'var(--border-color)'}`,
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                transition: 'all 0.15s ease',
                 position: 'relative',
-                overflow: 'hidden',
-                boxShadow: action.primary ? `0 4px 12px ${action.color}20` : 'none',
+                boxShadow: action.primary ? `0 2px 8px ${action.color}15` : 'none',
+                gap: '10px',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 6px 16px ${action.color}30`;
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = action.primary
+                  ? `0 4px 12px ${action.color}25`
+                  : '0 2px 8px rgba(0,0,0,0.05)';
                 e.currentTarget.style.backgroundColor = action.primary
                   ? action.bgColor
                   : 'rgba(0,0,0,0.04)';
@@ -165,7 +161,7 @@ export const QuickActionsWidget: React.FC = () => {
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'none';
                 e.currentTarget.style.boxShadow = action.primary
-                  ? `0 4px 12px ${action.color}20`
+                  ? `0 2px 8px ${action.color}15`
                   : 'none';
                 e.currentTarget.style.backgroundColor = action.primary
                   ? action.bgColor
@@ -174,46 +170,34 @@ export const QuickActionsWidget: React.FC = () => {
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '10px',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '8px',
                   backgroundColor: action.primary ? action.color : 'rgba(0,0,0,0.05)',
                   color: action.primary ? '#fff' : 'var(--text-main)',
                   display: 'flex',
+                  flexShrink: 0,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: '14px',
                 }}
               >
-                <Icon size={20} />
+                <Icon size={16} />
               </div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <h4
-                    style={{
-                      fontSize: '0.95rem',
-                      fontWeight: 700,
-                      color: 'var(--text-main)',
-                      margin: '0 0 2px',
-                    }}
-                  >
-                    {action.label}
-                  </h4>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                    {action.subtitle}
-                  </p>
-                </div>
-                <div style={{ color: action.color, opacity: 0.8 }}>
-                  <ArrowRight size={16} />
-                </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h4
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: 'var(--text-main)',
+                    margin: 0,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {action.label}
+                </h4>
               </div>
             </button>
           );

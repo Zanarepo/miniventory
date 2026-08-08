@@ -12,7 +12,8 @@ export type StockMovementType =
   | 'Stock Adjustment Decrease'
   | 'Damaged Stock'
   | 'Returned Stock'
-  | 'Sales Deduction';
+  | 'Sales Deduction'
+  | 'Void Restock';
 
 export interface Product {
   id: string;

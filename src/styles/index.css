@@ -1000,3 +1000,41 @@ select option {
     gap: 16px !important;
   }
 }
+/* --- 12. RESPONSIVE PERIOD FILTERS --- */
+.report-period-filters {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.report-period-btn {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  cursor: pointer;
+  background-color: var(--bg-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.report-period-btn.active {
+  background-color: var(--brand-primary);
+  color: white;
+  border-color: var(--brand-primary);
+}
+
+@media (max-width: 767px) {
+  .report-period-filters {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+
+  .report-period-btn {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+}

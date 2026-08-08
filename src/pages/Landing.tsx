@@ -4,6 +4,7 @@ import { LanguageSelector } from '../components/LanguageSelector';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useLanguage } from '../hooks/useLanguage';
 import { useAuth } from '../hooks/useAuth';
+import { LandingHowToUse } from '../components/landing/LandingHowToUse';
 import '../styles/landing.css';
 import analyticsImg from '../assets/Analytics.png';
 import offlineSyncImg from '../assets/OfflineSync.png';
@@ -708,6 +709,9 @@ export const Landing: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* ---------------- Interactive Step-by-Step Guide ---------------- */}
+      <LandingHowToUse />
 
       {/* ---------------- Story Section ---------------- */}
       <section className="mv-section mv-story-section" id="story">

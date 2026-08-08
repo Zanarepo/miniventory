@@ -94,7 +94,12 @@ export function useProfitTrend(
           const dateStr = d.toISOString().split('T')[0];
           const label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 
-          const daySales = allSales.filter((s) => (s.created_at || '').split('T')[0] === dateStr);
+          const daySales = allSales.filter(
+            (s) =>
+              (s.created_at || '').split('T')[0] === dateStr &&
+              s.payment_status !== 'VOIDED' &&
+              !s.receipt_number.includes('[VOID'),
+          );
           const dayExps = activeExpenses.filter((e) => e.expense_date === dateStr);
 
           const revenue = daySales.reduce((sum, s) => sum + (Number(s.total_amount) || 0), 0);
@@ -133,7 +138,12 @@ export function useProfitTrend(
 
           const weekSales = allSales.filter((s) => {
             const sd = (s.created_at || '').split('T')[0];
-            return sd >= startStr && sd <= endStr;
+            return (
+              sd >= startStr &&
+              sd <= endStr &&
+              s.payment_status !== 'VOIDED' &&
+              !s.receipt_number.includes('[VOID')
+            );
           });
           const weekExps = activeExpenses.filter((e) => {
             const ed = e.expense_date || '';
@@ -168,7 +178,12 @@ export function useProfitTrend(
           const monthPrefix = `${year}-${month}`;
           const label = d.toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
 
-          const monthSales = allSales.filter((s) => (s.created_at || '').startsWith(monthPrefix));
+          const monthSales = allSales.filter(
+            (s) =>
+              (s.created_at || '').startsWith(monthPrefix) &&
+              s.payment_status !== 'VOIDED' &&
+              !s.receipt_number.includes('[VOID'),
+          );
           const monthExps = activeExpenses.filter((e) =>
             (e.expense_date || '').startsWith(monthPrefix),
           );

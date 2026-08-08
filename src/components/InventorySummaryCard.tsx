@@ -5,22 +5,63 @@ import { useBusiness } from '../hooks/useBusiness';
 import { useLanguage } from '../hooks/useLanguage';
 import { Package, AlertTriangle, XCircle, TrendingUp } from 'lucide-react';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatFull: (v: number) => string;
+  formatCompact: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatFull, formatCompact, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatFull(value);
+  const compactValue = formatCompact(value);
+  return (
+    <span
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'inline-block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </span>
+  );
+};
+
 export const InventorySummaryCard: React.FC = () => {
   const { products, totalValuation, lowStockCount, outOfStockCount } = useInventory();
   const { getCurrencySymbol } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
-  const formattedValuation = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(totalValuation);
+  const formatCurrency = React.useCallback(
+    (val: number) =>
+      `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    [currSymbol],
+  );
+
+  const formatCompactCurrency = React.useCallback(
+    (num: number) => {
+      if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+      if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+      return `${currSymbol}${Number(num).toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })}`;
+    },
+    [currSymbol],
+  );
+
+  const formatNumber = (val: number) => Number(val).toLocaleString();
+  const formatCompactNumber = (num: number) => {
+    if (num >= 1e9) return `${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+    if (num >= 1e6) return `${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+    if (num >= 1e3) return `${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+    return formatNumber(num);
+  };
 
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(165px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: '12px',
         marginBottom: '22px',
       }}
@@ -28,7 +69,7 @@ export const InventorySummaryCard: React.FC = () => {
       {/* Total Items */}
       <Card
         style={{
-          padding: '14px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -73,7 +114,10 @@ export const InventorySummaryCard: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-          <span
+          <ClickableAmount
+            value={products.length}
+            formatFull={formatNumber}
+            formatCompact={formatCompactNumber}
             style={{
               fontSize: '1.28rem',
               fontWeight: 800,
@@ -81,9 +125,7 @@ export const InventorySummaryCard: React.FC = () => {
               letterSpacing: '-0.02em',
               lineHeight: '1.1',
             }}
-          >
-            {products.length}
-          </span>
+          />
           <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             {t('unitItems')}
           </span>
@@ -93,7 +135,7 @@ export const InventorySummaryCard: React.FC = () => {
       {/* Total Value */}
       <Card
         style={{
-          padding: '14px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -138,7 +180,10 @@ export const InventorySummaryCard: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-          <span
+          <ClickableAmount
+            value={totalValuation}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
             style={{
               fontSize: '1.28rem',
               fontWeight: 800,
@@ -147,17 +192,14 @@ export const InventorySummaryCard: React.FC = () => {
               lineHeight: '1.1',
               wordBreak: 'break-word',
             }}
-          >
-            {currSymbol}
-            {formattedValuation}
-          </span>
+          />
         </div>
       </Card>
 
       {/* Low Stock Warnings */}
       <Card
         style={{
-          padding: '14px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -202,7 +244,10 @@ export const InventorySummaryCard: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-          <span
+          <ClickableAmount
+            value={lowStockCount}
+            formatFull={formatNumber}
+            formatCompact={formatCompactNumber}
             style={{
               fontSize: '1.28rem',
               fontWeight: 800,
@@ -210,9 +255,7 @@ export const InventorySummaryCard: React.FC = () => {
               letterSpacing: '-0.02em',
               lineHeight: '1.1',
             }}
-          >
-            {lowStockCount}
-          </span>
+          />
           <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             {t('unitAlerts')}
           </span>
@@ -222,7 +265,7 @@ export const InventorySummaryCard: React.FC = () => {
       {/* Out of Stock Items */}
       <Card
         style={{
-          padding: '14px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -267,7 +310,10 @@ export const InventorySummaryCard: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-          <span
+          <ClickableAmount
+            value={outOfStockCount}
+            formatFull={formatNumber}
+            formatCompact={formatCompactNumber}
             style={{
               fontSize: '1.28rem',
               fontWeight: 800,
@@ -275,9 +321,7 @@ export const InventorySummaryCard: React.FC = () => {
               letterSpacing: '-0.02em',
               lineHeight: '1.1',
             }}
-          >
-            {outOfStockCount}
-          </span>
+          />
           <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             {t('unitItems')}
           </span>

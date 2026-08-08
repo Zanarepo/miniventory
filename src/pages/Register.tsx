@@ -41,14 +41,15 @@ export const Register: React.FC = () => {
       return;
     }
 
-    if (!securityAnswer.trim()) {
+    const isPhone = !identifier.includes('@');
+
+    if (isPhone && !securityAnswer.trim()) {
       setErrorMessage('Please provide an answer to your security recovery question.');
       return;
     }
 
     setIsLoading(true);
 
-    const isPhone = !identifier.includes('@');
     const phoneValue = isPhone ? identifier : '';
 
     const { error } = await signUp(identifier, pinOrPassword, {
@@ -62,10 +63,16 @@ export const Register: React.FC = () => {
     if (error) {
       setErrorMessage(error.message || 'Error creating account. Please check your details.');
     } else {
-      setSuccessMessage(
-        'Business account registered successfully! You can now sign in with your Phone and PIN.',
-      );
-      setTimeout(() => navigate('/login'), 2000);
+      if (identifier.includes('@')) {
+        setSuccessMessage(
+          'Account registered successfully! Please check your email inbox to verify your account before logging in.',
+        );
+      } else {
+        setSuccessMessage(
+          'Business account registered successfully! You can now sign in with your Phone and PIN.',
+        );
+      }
+      setTimeout(() => navigate('/login'), 4000);
     }
   };
 
@@ -143,31 +150,35 @@ export const Register: React.FC = () => {
           }
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>
-            {t('securityQuestionLabel')}
-          </label>
-          <CustomSelect
-            value={securityQuestion}
-            onChange={(val) => setSecurityQuestion(val)}
-            leftIcon={<HelpCircle size={17} />}
-            options={SECURITY_QUESTIONS.map((q) => ({ value: q, label: q }))}
-            style={{ width: '100%', height: '45px' }}
-          />
-        </div>
+        {!identifier.includes('@') && (
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                {t('securityQuestionLabel')}
+              </label>
+              <CustomSelect
+                value={securityQuestion}
+                onChange={(val) => setSecurityQuestion(val)}
+                leftIcon={<HelpCircle size={17} />}
+                options={SECURITY_QUESTIONS.map((q) => ({ value: q, label: q }))}
+                style={{ width: '100%', height: '45px' }}
+              />
+            </div>
 
-        <div className="col-span-2">
-          <Input
-            label={t('secretAnswerLabel')}
-            type="text"
-            placeholder={t('secretAnswerPlaceholder')}
-            value={securityAnswer}
-            onChange={(e) => setSecurityAnswer(e.target.value)}
-            required
-            helperText={t('secretAnswerHelper')}
-            leftIcon={<HelpCircle size={17} />}
-          />
-        </div>
+            <div className="col-span-2">
+              <Input
+                label={t('secretAnswerLabel')}
+                type="text"
+                placeholder={t('secretAnswerPlaceholder')}
+                value={securityAnswer}
+                onChange={(e) => setSecurityAnswer(e.target.value)}
+                required
+                helperText={t('secretAnswerHelper')}
+                leftIcon={<HelpCircle size={17} />}
+              />
+            </div>
+          </>
+        )}
 
         <div className="col-span-2">
           <Button

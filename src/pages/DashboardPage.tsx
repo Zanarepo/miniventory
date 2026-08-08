@@ -38,7 +38,6 @@ import {
   Wallet,
   Package,
   Layers,
-  Calendar,
   Sparkles,
   PlusCircle,
   Activity,
@@ -114,16 +113,16 @@ export const DashboardPage: React.FC = () => {
     setTopSellingDays(opt.days);
   };
 
+  const formatCompactValue = (num: number) => {
+    if (num >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1e3) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    return num.toLocaleString();
+  };
+
   // Get currency symbol
   const currencyObj = SUPPORTED_CURRENCIES.find((c) => c.code === business?.currency);
   const currencySymbol = currencyObj?.symbol || '₦';
-
-  const formattedDate = new Date().toLocaleDateString(undefined, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
 
   if (isLoading) {
     return (
@@ -161,58 +160,35 @@ export const DashboardPage: React.FC = () => {
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: '12px',
           borderBottom: '1px solid var(--border-color)',
-          paddingBottom: '20px',
+          paddingBottom: '16px',
         }}
       >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{ color: 'var(--brand-primary)', display: 'flex' }}>
-              <Activity size={24} />
-            </span>
-            <h1
-              style={{
-                fontSize: '1.9rem',
-                fontWeight: 800,
-                color: 'var(--text-main)',
-                margin: 0,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {business?.business_name || 'Executive'} Dashboard
-            </h1>
-          </div>
-          <p
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ color: 'var(--brand-primary)', display: 'flex' }}>
+            <Activity size={20} />
+          </span>
+          <h1
             style={{
-              color: 'var(--text-muted)',
+              fontSize: '1.4rem',
+              fontWeight: 800,
+              color: 'var(--text-main)',
               margin: 0,
-              fontSize: '0.95rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
+              letterSpacing: '-0.01em',
             }}
           >
-            <span>
-              Welcome back, <strong>{profile?.full_name || user?.email || 'Entrepreneur'}</strong>!
-            </span>
-            <span>•</span>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                color: 'var(--text-main)',
-              }}
-            >
-              <Calendar size={15} /> {formattedDate}
-            </span>
-          </p>
+            {business?.business_name || 'Dashboard'}
+          </h1>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            Welcome,{' '}
+            <strong>{profile?.full_name || user?.email?.split('@')[0] || 'Entrepreneur'}</strong>
+          </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <div onClick={() => setIsSyncCenterOpen(true)}>
             <SyncIndicator />
           </div>
@@ -220,18 +196,19 @@ export const DashboardPage: React.FC = () => {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              backgroundColor: 'rgba(46, 125, 50, 0.12)',
-              border: '1px solid rgba(46, 125, 50, 0.3)',
+              gap: '4px',
+              padding: '4px 10px',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              border: '1px solid rgba(46, 125, 50, 0.2)',
               color: '#2e7d32',
-              fontSize: '0.82rem',
-              fontWeight: 700,
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
             }}
           >
-            <CheckCircle2 size={15} />
-            <span>100% Operational Offline (No Internet Required)</span>
+            <CheckCircle2 size={14} />
+            <span>Offline Ready</span>
           </div>
         </div>
       </div>
@@ -374,14 +351,15 @@ export const DashboardPage: React.FC = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                gap: '14px',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                gap: '10px',
               }}
             >
               {/* 1. Today's Sales */}
               <KPICard
                 title={t('dashTodaySales')}
-                value={`${currencySymbol}${kpis.todaySales.toLocaleString()}`}
+                value={`${currencySymbol}${formatCompactValue(kpis.todaySales)}`}
+                fullValue={`${currencySymbol}${kpis.todaySales.toLocaleString()}`}
                 icon={<TrendingUp size={16} color="#2e7d32" />}
                 trendPercentage={kpis.todaySalesChangePerc}
                 trendLabel="vs yesterday"
@@ -393,7 +371,8 @@ export const DashboardPage: React.FC = () => {
               {/* 2. Today's Expenses */}
               <KPICard
                 title={t('dashTodayExpenses')}
-                value={`${currencySymbol}${kpis.todayExpenses.toLocaleString()}`}
+                value={`${currencySymbol}${formatCompactValue(kpis.todayExpenses)}`}
+                fullValue={`${currencySymbol}${kpis.todayExpenses.toLocaleString()}`}
                 icon={<Receipt size={16} color="#c62828" />}
                 trendPercentage={kpis.todayExpensesChangePerc}
                 trendLabel="vs yesterday"
@@ -405,7 +384,8 @@ export const DashboardPage: React.FC = () => {
               {/* 3. Today's Profit */}
               <KPICard
                 title={t('dashActualProfit')}
-                value={`${currencySymbol}${kpis.todayProfit.toLocaleString()}`}
+                value={`${currencySymbol}${formatCompactValue(kpis.todayProfit)}`}
+                fullValue={`${currencySymbol}${kpis.todayProfit.toLocaleString()}`}
                 icon={<Award size={16} color="var(--brand-primary)" />}
                 trendPercentage={kpis.todayProfitChangePerc}
                 trendLabel="vs yesterday"
@@ -417,13 +397,14 @@ export const DashboardPage: React.FC = () => {
               {/* 4. Cash Position */}
               <KPICard
                 title={t('dashAvailableCash')}
-                value={`${currencySymbol}${kpis.cashPosition.toLocaleString()}`}
+                value={`${currencySymbol}${formatCompactValue(kpis.cashPosition)}`}
+                fullValue={`${currencySymbol}${kpis.cashPosition.toLocaleString()}`}
                 icon={<Wallet size={16} color="#0288d1" />}
                 neutralTrend={true}
                 subMetrics={[
                   {
-                    label: 'In: ' + currencySymbol + kpis.cashIn.toLocaleString(),
-                    value: 'Out: ' + currencySymbol + kpis.cashOut.toLocaleString(),
+                    label: 'In: ' + currencySymbol + formatCompactValue(kpis.cashIn),
+                    value: 'Out: ' + currencySymbol + formatCompactValue(kpis.cashOut),
                     color: 'var(--text-main)',
                   },
                 ]}
@@ -434,7 +415,8 @@ export const DashboardPage: React.FC = () => {
               {/* 5. Inventory Value */}
               <KPICard
                 title={t('dashStockValue')}
-                value={`${currencySymbol}${kpis.inventoryValue.toLocaleString()}`}
+                value={`${currencySymbol}${formatCompactValue(kpis.inventoryValue)}`}
+                fullValue={`${currencySymbol}${kpis.inventoryValue.toLocaleString()}`}
                 icon={<Layers size={16} color="#7b1fa2" />}
                 neutralTrend={true}
                 accentColor="#7b1fa2"
@@ -444,7 +426,8 @@ export const DashboardPage: React.FC = () => {
               {/* 6. Products in Stock */}
               <KPICard
                 title={t('dashItemsInShop')}
-                value={`${kpis.activeProducts.toLocaleString()} Items`}
+                value={`${formatCompactValue(kpis.activeProducts)} Items`}
+                fullValue={`${kpis.activeProducts.toLocaleString()} Items`}
                 icon={<Package size={16} color="#f57c00" />}
                 neutralTrend={true}
                 accentColor="#f57c00"

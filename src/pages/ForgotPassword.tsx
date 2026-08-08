@@ -29,26 +29,29 @@ export const ForgotPassword: React.FC = () => {
     setErrorMessage(null);
     setStatusMessage(null);
 
-    // If standard email, offer both options or check question
+    // If it's an email, bypass security questions entirely
+    if (identifier.includes('@')) {
+      const { error: emailErr } = await resetPassword(identifier);
+      setIsLoading(false);
+
+      if (emailErr) {
+        setErrorMessage(emailErr.message || 'Account not found or error occurred.');
+      } else {
+        setStatusMessage(
+          'Password recovery instructions have been dispatched to your email address.',
+        );
+        // Clear identifier so they see the success message clearly
+        setIdentifier('');
+      }
+      return; // Stop execution here for emails
+    }
+
+    // Only fetch security question if it's a phone number
     const { question, error } = await fetchSecurityQuestion(identifier);
     setIsLoading(false);
 
     if (error || !question) {
-      if (identifier.includes('@')) {
-        // Fallback to standard email recovery link if no security question exists
-        const { error: emailErr } = await resetPassword(identifier);
-        if (emailErr) {
-          setErrorMessage('Account not found or error occurred.');
-        } else {
-          setStatusMessage(
-            'Password recovery instructions have been dispatched to your email address.',
-          );
-        }
-      } else {
-        setErrorMessage(
-          'We could not locate an account or security question for this phone number.',
-        );
-      }
+      setErrorMessage('We could not locate an account or security question for this phone number.');
     } else {
       setRetrievedQuestion(question);
       setStep('verify_and_reset');

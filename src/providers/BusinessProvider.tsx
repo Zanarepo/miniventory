@@ -17,6 +17,12 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
   const { isOnline } = useNetwork();
   const [business, setBusiness] = useState<Business | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [prevUserId, setPrevUserId] = useState<string | undefined>(user?.id);
+
+  if (user?.id !== prevUserId) {
+    setPrevUserId(user?.id);
+    setIsLoading(true);
+  }
 
   const fetchBusiness = useCallback(async () => {
     await Promise.resolve(); // Async microtask boundary prevents synchronous cascading setState warnings

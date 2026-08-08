@@ -77,7 +77,12 @@ export function useRevenueTrend(days: number = 30): UseRevenueTrendReturn {
 
       allSales.forEach((sale) => {
         const saleDate = (sale.created_at || '').split('T')[0];
-        if (saleDate >= earliestDate && saleDate <= latestDate) {
+        if (
+          saleDate >= earliestDate &&
+          saleDate <= latestDate &&
+          sale.payment_status !== 'VOIDED' &&
+          !sale.receipt_number.includes('[VOID')
+        ) {
           const current = revenueMap.get(saleDate) || { amount: 0, count: 0 };
           revenueMap.set(saleDate, {
             amount: current.amount + Number(sale.total_amount),

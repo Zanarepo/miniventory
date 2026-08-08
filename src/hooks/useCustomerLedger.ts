@@ -25,7 +25,12 @@ export function useCustomerLedger(customerId: string | null) {
       const customerSales = await db.sales
         .where('business_id')
         .equals(businessId)
-        .filter((s) => s.customer_id === customerId)
+        .filter(
+          (s) =>
+            s.customer_id === customerId &&
+            s.payment_status !== 'VOIDED' &&
+            !s.receipt_number.includes('[VOID'),
+        )
         .reverse()
         .sortBy('created_at');
 

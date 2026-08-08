@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Filter, Check } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 export interface DashboardFilterOption {
   id: string;
@@ -48,79 +48,39 @@ export const DashboardFilterBar: React.FC<DashboardFilterBarProps> = ({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '14px',
-        padding: '14px 20px',
-        backgroundColor: 'rgba(0,0,0,0.03)',
+        gap: '10px',
+        padding: '8px 12px',
+        backgroundColor: 'rgba(0,0,0,0.02)',
         border: '1px solid var(--border-color)',
-        borderRadius: '14px',
-        marginBottom: '26px',
+        borderRadius: '10px',
+        marginBottom: '20px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Calendar size={16} color="var(--brand-primary)" />
+        <span
           style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '10px',
-            backgroundColor: 'rgba(59, 130, 246, 0.15)',
-            color: '#3b82f6',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            fontSize: '0.75rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            fontWeight: 700,
+            color: 'var(--text-muted)',
           }}
         >
-          <Calendar size={19} />
-        </div>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <span
-              style={{
-                fontSize: '0.82rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                fontWeight: 700,
-                color: 'var(--text-muted)',
-              }}
-            >
-              Showing Records For:
-            </span>
-            <span
-              style={{
-                fontSize: '0.94rem',
-                fontWeight: 800,
-                color: 'var(--text-main)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              {currentOption.label}
-              <span
-                style={{
-                  fontSize: '0.74rem',
-                  padding: '1px 8px',
-                  borderRadius: '999px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  color: '#10b981',
-                  fontWeight: 700,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
-                <Check size={12} />
-                Active ({currentOption.days} Days)
-              </span>
-            </span>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-            {currentOption.description} • Works automatically offline without internet
-          </div>
-        </div>
+          Viewing:
+        </span>
+        <span
+          style={{
+            fontSize: '0.8rem',
+            fontWeight: 800,
+            color: 'var(--text-main)',
+          }}
+        >
+          {currentOption.label} ({currentOption.days}d)
+        </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-        <Filter size={15} style={{ color: 'var(--text-muted)', marginRight: '4px' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         {DASHBOARD_FILTERS.map((opt) => {
           const isSelected = selectedId === opt.id;
           return (
@@ -129,9 +89,9 @@ export const DashboardFilterBar: React.FC<DashboardFilterBarProps> = ({
               type="button"
               onClick={() => handleSelect(opt)}
               style={{
-                padding: '6px 12px',
-                borderRadius: '8px',
-                fontSize: '0.8rem',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                fontSize: '0.7rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 border: '1px solid',
@@ -139,6 +99,7 @@ export const DashboardFilterBar: React.FC<DashboardFilterBarProps> = ({
                 borderColor: isSelected ? '#3b82f6' : 'var(--border-color)',
                 color: isSelected ? '#ffffff' : 'var(--text-muted)',
                 transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap',
               }}
             >
               {opt.label}

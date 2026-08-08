@@ -353,18 +353,30 @@ export const AppLayout: React.FC = () => {
                   }
                 }}
                 className="btn btn-primary btn-sm"
-                style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{
+                  padding: '6px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  whiteSpace: 'nowrap',
+                }}
                 aria-label="Install App"
               >
                 <Download size={15} />
-                <span style={{ fontWeight: 700 }}>Install App</span>
+                <span style={{ fontWeight: 700 }}>Install</span>
               </button>
             )}
             <LanguageSelector />
             <button
               onClick={toggleTheme}
               className="btn btn-outline btn-sm"
-              style={{ padding: '6px 10px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{
+                padding: '6px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap',
+              }}
               aria-label="Toggle theme mode"
             >
               {theme === 'dark' ? (
@@ -374,10 +386,7 @@ export const AppLayout: React.FC = () => {
               ) : (
                 <Monitor size={15} color="var(--brand-secondary)" />
               )}
-              <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>
-                {theme}
-                <span className="theme-toggle-text-full"> Mode</span>
-              </span>
+              <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>{theme}</span>
             </button>
           </div>
         </header>

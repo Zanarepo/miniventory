@@ -624,3 +624,8 @@ Product Management Recommendation
 With Sprint 8 complete, BizTrack Lite MVP is production-ready from a functional perspective. The application now supports reliable offline operation, automatic synchronization, and resilient data handling, making it well suited for SMEs operating in environments with intermittent internet access.
 The final planned sprint, Sprint 9: Security, Quality Assurance, Performance Optimization & Production Release, should focus on production hardening rather than introducing new user-facing features. It will cover advanced security controls, audit logging, monitoring, automated testing, CI/CD enhancements, production readiness checklists, disaster recovery planning, observability, and launch activities to ensure the product is stable, secure, and ready for public release.
 
+
+
+
+
+this is at shop expenses tab super tiney and format plus clciking  effect

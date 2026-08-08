@@ -9,6 +9,7 @@ export interface KPISubMetric {
 export interface KPICardProps {
   title: string;
   value: string;
+  fullValue?: string;
   icon?: React.ReactNode;
   trendPercentage?: number;
   trendLabel?: string;
@@ -22,6 +23,7 @@ export interface KPICardProps {
 export const KPICard: React.FC<KPICardProps> = ({
   title,
   value,
+  fullValue,
   icon,
   trendPercentage,
   trendLabel = 'vs Yesterday',
@@ -31,6 +33,7 @@ export const KPICard: React.FC<KPICardProps> = ({
   accentColor = 'var(--brand-primary)',
   onClick,
 }) => {
+  const [showFull, setShowFull] = React.useState(false);
   // Compute accessible directional indicators
   let trendIcon = '→';
   let trendTextColor = 'var(--text-muted)';
@@ -51,14 +54,14 @@ export const KPICard: React.FC<KPICardProps> = ({
   }
 
   const cardStyle: React.CSSProperties = {
-    padding: '14px 16px',
+    padding: '10px 12px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     position: 'relative',
     overflow: 'hidden',
     cursor: onClick ? 'pointer' : 'default',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
     borderTop: `3px solid ${accentColor}`,
   };
 
@@ -66,50 +69,59 @@ export const KPICard: React.FC<KPICardProps> = ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '8px',
+    marginBottom: '4px',
   };
 
   const titleStyle: React.CSSProperties = {
-    fontSize: '0.75rem',
+    fontSize: '0.65rem',
     fontWeight: 700,
     color: 'var(--text-muted)',
     textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    letterSpacing: '0.02em',
     margin: 0,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginRight: '6px',
   };
 
   const iconContainerStyle: React.CSSProperties = {
-    width: '30px',
-    height: '30px',
-    borderRadius: '8px',
+    width: '22px',
+    height: '22px',
+    borderRadius: '6px',
     display: 'flex',
+    flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '1.1rem',
+    fontSize: '0.9rem',
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
     boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.08)',
   };
 
   const valueStyle: React.CSSProperties = {
-    fontSize: '1.45rem',
+    fontSize: '1.15rem',
     fontWeight: 800,
     color: 'var(--text-main)',
-    margin: '2px 0 6px',
-    lineHeight: 1.15,
+    margin: '0 0 6px',
+    lineHeight: 1.1,
     letterSpacing: '-0.02em',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   };
 
   const trendContainerStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '4px',
-    padding: '3px 8px',
-    borderRadius: '16px',
-    fontSize: '0.74rem',
+    gap: '2px',
+    padding: '2px 6px',
+    borderRadius: '12px',
+    fontSize: '0.65rem',
     fontWeight: 700,
     backgroundColor: trendBgColor,
     color: trendTextColor,
     width: 'fit-content',
+    whiteSpace: 'nowrap',
   };
 
   const subMetricsContainerStyle: React.CSSProperties = {
@@ -147,7 +159,18 @@ export const KPICard: React.FC<KPICardProps> = ({
           {icon && <div style={iconContainerStyle}>{icon}</div>}
         </div>
 
-        <div style={valueStyle}>{value}</div>
+        <div
+          style={{ ...valueStyle, cursor: fullValue ? 'pointer' : 'default' }}
+          title={fullValue}
+          onClick={(e) => {
+            if (fullValue) {
+              e.stopPropagation();
+              setShowFull(!showFull);
+            }
+          }}
+        >
+          {showFull && fullValue ? fullValue : value}
+        </div>
 
         {trendPercentage !== undefined && (
           <div

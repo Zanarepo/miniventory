@@ -58,10 +58,16 @@ export const useDashboard = () => {
 
       // 2. Filter today and yesterday sales
       const todaySalesList = allSales.filter(
-        (s) => (s.created_at || '').split('T')[0] === todayStr,
+        (s) =>
+          (s.created_at || '').split('T')[0] === todayStr &&
+          s.payment_status !== 'VOIDED' &&
+          !s.receipt_number.includes('[VOID'),
       );
       const yesterdaySalesList = allSales.filter(
-        (s) => (s.created_at || '').split('T')[0] === yesterdayStr,
+        (s) =>
+          (s.created_at || '').split('T')[0] === yesterdayStr &&
+          s.payment_status !== 'VOIDED' &&
+          !s.receipt_number.includes('[VOID'),
       );
 
       const todaySaleIds = new Set(todaySalesList.map((s) => s.id));

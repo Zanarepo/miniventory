@@ -16,11 +16,66 @@ import {
   Calendar,
 } from 'lucide-react';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatFull: (v: number) => string;
+  formatCompact: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatFull, formatCompact, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatFull(value);
+  const compactValue = formatCompact(value);
+  return (
+    <span
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'inline-block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </span>
+  );
+};
+
 export const InventoryHistory: React.FC = () => {
   const { transactions, products, isLoading } = useInventory();
   const { getCurrencySymbol } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
+
+  const formatCurrency = React.useCallback(
+    (val: number) =>
+      `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    [currSymbol],
+  );
+
+  const formatCompactCurrency = React.useCallback(
+    (num: number) => {
+      if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+      if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+      return `${currSymbol}${Number(num).toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })}`;
+    },
+    [currSymbol],
+  );
+
+  const formatNumber = (val: number) => Number(val).toLocaleString();
+  const formatCompactNumber = (num: number) => {
+    const absNum = Math.abs(num);
+    const sign = num < 0 ? '-' : '';
+    if (absNum >= 1e9) return `${sign}${(absNum / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+    if (absNum >= 1e6) return `${sign}${(absNum / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+    if (absNum >= 1e3) return `${sign}${(absNum / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+    return formatNumber(num);
+  };
+
+  const formatQuantity = (val: number) => {
+    return val > 0 ? `+${formatNumber(val)}` : formatNumber(val);
+  };
+  const formatCompactQuantity = (val: number) => {
+    return val > 0 ? `+${formatCompactNumber(val)}` : formatCompactNumber(val);
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -346,7 +401,11 @@ export const InventoryHistory: React.FC = () => {
                               color: isPositive ? 'var(--brand-primary)' : 'var(--brand-danger)',
                             }}
                           >
-                            {isPositive ? `+${tx.quantity}` : tx.quantity}{' '}
+                            <ClickableAmount
+                              value={tx.quantity}
+                              formatFull={formatQuantity}
+                              formatCompact={formatCompactQuantity}
+                            />{' '}
                             <span
                               style={{
                                 fontSize: '0.78rem',
@@ -360,9 +419,15 @@ export const InventoryHistory: React.FC = () => {
                           <td
                             style={{ padding: '16px', fontWeight: 600, color: 'var(--text-main)' }}
                           >
-                            {tx.unit_cost !== undefined
-                              ? `${currSymbol}${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(tx.unit_cost)}`
-                              : '—'}
+                            {tx.unit_cost !== undefined ? (
+                              <ClickableAmount
+                                value={tx.unit_cost}
+                                formatFull={formatCurrency}
+                                formatCompact={formatCompactCurrency}
+                              />
+                            ) : (
+                              '—'
+                            )}
                           </td>
                           <td
                             style={{
@@ -473,7 +538,11 @@ export const InventoryHistory: React.FC = () => {
                           color: isPositive ? 'var(--brand-primary)' : 'var(--brand-danger)',
                         }}
                       >
-                        {isPositive ? `+${tx.quantity}` : tx.quantity}{' '}
+                        <ClickableAmount
+                          value={tx.quantity}
+                          formatFull={formatQuantity}
+                          formatCompact={formatCompactQuantity}
+                        />{' '}
                         <span
                           style={{
                             fontSize: '0.78rem',
@@ -497,14 +566,12 @@ export const InventoryHistory: React.FC = () => {
                         >
                           UNIT COST
                         </span>
-                        <span
+                        <ClickableAmount
+                          value={tx.unit_cost}
+                          formatFull={formatCurrency}
+                          formatCompact={formatCompactCurrency}
                           style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)' }}
-                        >
-                          {currSymbol}
-                          {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
-                            tx.unit_cost,
-                          )}
-                        </span>
+                        />
                       </div>
                     )}
                   </div>

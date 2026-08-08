@@ -16,6 +16,26 @@ import { db } from '../lib/dexie';
 import { Input } from '../components/Input';
 import { useCustomers } from '../hooks/useCustomers';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatFull: (v: number) => string;
+  formatCompact: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatFull, formatCompact, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatFull(value);
+  const compactValue = formatCompact(value);
+  return (
+    <span
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'inline-block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </span>
+  );
+};
+
 export const NewSale: React.FC = () => {
   const { t } = useLanguage();
   const { products, categories } = useInventory();
@@ -59,6 +79,18 @@ export const NewSale: React.FC = () => {
 
   const formatCurrency = (val: number) =>
     `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const formatCompactCurrency = React.useCallback(
+    (num: number) => {
+      if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+      if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+      return `${currSymbol}${Number(num).toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })}`;
+    },
+    [currSymbol],
+  );
 
   // Filter products by search query for the lookup modal
   const filteredProducts = useMemo(() => {
@@ -343,7 +375,7 @@ export const NewSale: React.FC = () => {
         <div
           style={{
             flex: 1,
-            minHeight: '300px',
+            minHeight: '150px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: cart.length === 0 ? 'center' : 'flex-start',
@@ -638,32 +670,33 @@ export const NewSale: React.FC = () => {
             <span style={{ fontWeight: 700, color: 'var(--text-muted)', fontSize: '1.1rem' }}>
               {t('cartTotal')}
             </span>
-            <span style={{ fontSize: '2.1rem', fontWeight: 900, color: 'var(--brand-primary)' }}>
-              {formatCurrency(subtotal)}
-            </span>
+            <ClickableAmount
+              value={subtotal}
+              formatFull={formatCurrency}
+              formatCompact={formatCompactCurrency}
+              style={{ fontSize: '2.1rem', fontWeight: 900, color: 'var(--brand-primary)' }}
+            />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <Button
-                variant="outline"
-                size="sm"
-                style={{ flex: '1 1 140px', padding: '8px' }}
-                disabled={cart.length === 0 || isProcessing}
-                onClick={() => triggerConfirm('CASH')}
-              >
-                💵 {t('payMethodCash')}
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                style={{ flex: '1 1 140px', padding: '8px' }}
-                disabled={cart.length === 0 || isProcessing}
-                onClick={() => triggerConfirm('POS')}
-              >
-                💳 {t('payMethodPOS')}
-              </Button>
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <Button
+              variant="outline"
+              size="sm"
+              style={{ width: '100%', padding: '8px' }}
+              disabled={cart.length === 0 || isProcessing}
+              onClick={() => triggerConfirm('CASH')}
+            >
+              💵 {t('payMethodCash')}
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              style={{ width: '100%', padding: '8px' }}
+              disabled={cart.length === 0 || isProcessing}
+              onClick={() => triggerConfirm('POS')}
+            >
+              💳 {t('payMethodPOS')}
+            </Button>
             <Button
               variant="secondary"
               size="sm"
@@ -683,7 +716,7 @@ export const NewSale: React.FC = () => {
                 triggerConfirm('SPLIT');
               }}
             >
-              ➗ Split Payment / Credit Sale
+              ➗ Split Payment / Credit
             </Button>
           </div>
         </div>

@@ -7,6 +7,26 @@ import { useBusiness } from '../hooks/useBusiness';
 import { useLanguage } from '../hooks/useLanguage';
 import { Sliders, Edit2, Tag, Hash, Archive } from 'lucide-react';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatFull: (v: number) => string;
+  formatCompact: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatFull, formatCompact, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatFull(value);
+  const compactValue = formatCompact(value);
+  return (
+    <span
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'inline-block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </span>
+  );
+};
+
 export interface ProductCardProps {
   product: ProductWithStock;
   onAdjustStock: (product: ProductWithStock) => void;
@@ -24,15 +44,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(product.selling_price);
+  const formatCurrency = React.useCallback(
+    (val: number) =>
+      `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    [currSymbol],
+  );
 
-  const formattedCost = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(product.cost_price);
+  const formatCompactCurrency = React.useCallback(
+    (num: number) => {
+      if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+      if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+      return `${currSymbol}${Number(num).toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })}`;
+    },
+    [currSymbol],
+  );
 
   return (
     <Card
@@ -172,10 +200,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             {t('colSellingPrice')}
           </span>
-          <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--brand-primary)' }}>
-            {currSymbol}
-            {formattedPrice}
-          </span>
+          <ClickableAmount
+            value={product.selling_price}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
+            style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--brand-primary)' }}
+          />
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}> /{product.unit}</span>
         </div>
         <div>
@@ -189,10 +219,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             {t('colCostPrice')}
           </span>
-          <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            {currSymbol}
-            {formattedCost}
-          </span>
+          <ClickableAmount
+            value={product.cost_price}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
+            style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}
+          />
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}> /{product.unit}</span>
         </div>
       </div>

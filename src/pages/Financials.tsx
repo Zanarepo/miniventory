@@ -16,6 +16,109 @@ import {
 } from 'lucide-react';
 import type { PeriodSelection } from '../types/financials';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatCurrency: (v: number) => string;
+  formatCompactCurrency: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatCurrency, formatCompactCurrency, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatCurrency(value);
+  const compactValue = formatCompactCurrency(value);
+  return (
+    <strong
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </strong>
+  );
+};
+
+interface FinancialKPICardProps {
+  title: string;
+  value: number;
+  formatCurrency: (v: number) => string;
+  formatCompactCurrency: (v: number) => string;
+  subtitle: string;
+  icon: React.ReactNode;
+  iconBgColor: string;
+  iconColor: string;
+  valueColor?: string;
+  gridColumn?: string;
+}
+
+const FinancialKPICard: React.FC<FinancialKPICardProps> = ({
+  title,
+  value,
+  formatCurrency,
+  formatCompactCurrency,
+  subtitle,
+  icon,
+  iconBgColor,
+  iconColor,
+  valueColor = 'var(--text-main)',
+  gridColumn,
+}) => {
+  return (
+    <Card
+      style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px', gridColumn }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span
+          style={{
+            fontSize: '0.65rem',
+            fontWeight: 700,
+            color: 'var(--text-muted)',
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {title}
+        </span>
+        <div
+          style={{
+            color: iconColor,
+            padding: '4px',
+            borderRadius: '50%',
+            backgroundColor: iconBgColor,
+          }}
+        >
+          {icon}
+        </div>
+      </div>
+      <ClickableAmount
+        value={value}
+        formatCurrency={formatCurrency}
+        formatCompactCurrency={formatCompactCurrency}
+        style={{
+          fontSize: '1.15rem',
+          fontWeight: 900,
+          color: valueColor,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      />
+      <span
+        style={{
+          fontSize: '0.65rem',
+          color: 'var(--text-muted)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: 'block',
+        }}
+      >
+        {subtitle}
+      </span>
+    </Card>
+  );
+};
+
 export const Financials: React.FC = () => {
   const { t } = useLanguage();
   const { getCurrencySymbol } = useBusiness();
@@ -26,6 +129,13 @@ export const Financials: React.FC = () => {
 
   const formatCurrency = (val: number) =>
     `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const formatCompactCurrency = (num: number) => {
+    if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+    if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+    if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+    return formatCurrency(num);
+  };
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -82,13 +192,13 @@ export const Financials: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: '8px',
         }}
       >
         <div>
           <h1
             style={{
-              fontSize: '1.75rem',
+              fontSize: '1.25rem',
               fontWeight: 800,
               color: 'var(--text-main)',
               margin: 0,
@@ -97,7 +207,7 @@ export const Financials: React.FC = () => {
           >
             {t('financialsTitle')}
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
             {t('financialsSubtitle')}
           </p>
         </div>
@@ -154,14 +264,14 @@ export const Financials: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '12px',
             }}
           >
             {/* Health Score Gauge */}
             <Card
               style={{
-                padding: '24px',
+                padding: '12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -182,11 +292,12 @@ export const Financials: React.FC = () => {
               />
               <span
                 style={{
-                  fontSize: '0.85rem',
+                  fontSize: '0.65rem',
                   fontWeight: 800,
                   color: 'var(--text-muted)',
                   textTransform: 'uppercase',
-                  marginBottom: '16px',
+                  marginBottom: '8px',
+                  textAlign: 'center',
                 }}
               >
                 {t('healthScoreLabel')}
@@ -194,34 +305,50 @@ export const Financials: React.FC = () => {
 
               <div
                 style={{
-                  width: '120px',
-                  height: '120px',
+                  width: '70px',
+                  height: '70px',
                   borderRadius: '50%',
-                  border: `8px solid var(--border-color)`,
+                  border: `5px solid var(--border-color)`,
                   borderTopColor: getHealthColor(health.score),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'column',
-                  marginBottom: '16px',
+                  marginBottom: '8px',
                   position: 'relative',
+                  textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-main)' }}>
+                <span
+                  style={{
+                    fontSize: '1.4rem',
+                    fontWeight: 900,
+                    color: 'var(--text-main)',
+                    lineHeight: 1,
+                  }}
+                >
                   {health.score}
                 </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                <span
+                  style={{
+                    fontSize: '0.55rem',
+                    color: 'var(--text-muted)',
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    marginTop: '2px',
+                  }}
+                >
                   / 100
                 </span>
               </div>
 
               <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block' }}>
                   {t('healthRatingLabel')}
                 </span>
                 <strong
                   style={{
-                    fontSize: '1.25rem',
+                    fontSize: '1rem',
                     color: getHealthColor(health.score),
                     textTransform: 'uppercase',
                     fontWeight: 800,
@@ -235,7 +362,7 @@ export const Financials: React.FC = () => {
             {/* Performance Period Card */}
             <Card
               style={{
-                padding: '24px',
+                padding: '12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -244,19 +371,19 @@ export const Financials: React.FC = () => {
               <div>
                 <span
                   style={{
-                    fontSize: '0.85rem',
+                    fontSize: '0.65rem',
                     fontWeight: 800,
                     color: 'var(--text-muted)',
                     textTransform: 'uppercase',
                     display: 'block',
-                    marginBottom: '8px',
+                    marginBottom: '2px',
                   }}
                 >
                   Selected Report Period
                 </span>
                 <strong
                   style={{
-                    fontSize: '1.4rem',
+                    fontSize: '1.1rem',
                     fontWeight: 800,
                     color: 'var(--text-main)',
                     display: 'block',
@@ -266,15 +393,15 @@ export const Financials: React.FC = () => {
                 </strong>
                 <p
                   style={{
-                    margin: '8px 0 0 0',
+                    margin: '2px 0 0 0',
                     color: 'var(--text-muted)',
-                    fontSize: '0.9rem',
+                    fontSize: '0.75rem',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                   }}
                 >
-                  <Calendar size={16} /> {formatDate(startDate)} — {formatDate(endDate)}
+                  <Calendar size={12} /> {formatDate(startDate)} — {formatDate(endDate)}
                 </p>
               </div>
 
@@ -282,40 +409,42 @@ export const Financials: React.FC = () => {
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
-                  gap: '12px',
-                  marginTop: '20px',
+                  gap: '8px',
+                  marginTop: '12px',
                   borderTop: '1px solid var(--border-color)',
-                  paddingTop: '16px',
+                  paddingTop: '8px',
                 }}
               >
                 <div>
                   <span
-                    style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}
+                    style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block' }}
                   >
                     REVENUE
                   </span>
-                  <span
-                    style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--brand-success)' }}
-                  >
-                    {formatCurrency(summary.revenue)}
-                  </span>
+                  <ClickableAmount
+                    value={summary.revenue}
+                    formatCurrency={formatCurrency}
+                    formatCompactCurrency={formatCompactCurrency}
+                    style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--brand-success)' }}
+                  />
                 </div>
                 <div>
                   <span
-                    style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}
+                    style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block' }}
                   >
                     NET PROFIT
                   </span>
-                  <span
+                  <ClickableAmount
+                    value={summary.netProfit}
+                    formatCurrency={formatCurrency}
+                    formatCompactCurrency={formatCompactCurrency}
                     style={{
-                      fontSize: '1.1rem',
+                      fontSize: '1rem',
                       fontWeight: 800,
                       color:
                         summary.netProfit >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)',
                     }}
-                  >
-                    {formatCurrency(summary.netProfit)}
-                  </span>
+                  />
                 </div>
               </div>
             </Card>
@@ -325,262 +454,97 @@ export const Financials: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: '10px',
             }}
           >
             {/* Revenue */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('revenueLabel')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-success)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                  }}
-                >
-                  <TrendingUp size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.revenue)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Money coming in from sales
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('revenueLabel')}
+              value={summary.revenue}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Money coming in from sales"
+              icon={<TrendingUp size={14} />}
+              iconBgColor="rgba(16, 185, 129, 0.1)"
+              iconColor="var(--brand-success)"
+            />
 
             {/* COGS */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('cogsLabel')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-warning)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                  }}
-                >
-                  <ShoppingCart size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.costOfGoodsSold)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Initial cost price of stock sold
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('cogsLabel')}
+              value={summary.costOfGoodsSold}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Initial cost price of stock"
+              icon={<ShoppingCart size={14} />}
+              iconBgColor="rgba(245, 158, 11, 0.1)"
+              iconColor="var(--brand-warning)"
+            />
 
             {/* Gross Profit */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('grossProfitLabel')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-primary)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                  }}
-                >
-                  <DollarSign size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.grossProfit)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Revenue minus COGS
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('grossProfitLabel')}
+              value={summary.grossProfit}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Revenue minus COGS"
+              icon={<DollarSign size={14} />}
+              iconBgColor="rgba(99, 102, 241, 0.1)"
+              iconColor="var(--brand-primary)"
+            />
 
             {/* Expenses */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('expensesTitle')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-danger)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                  }}
-                >
-                  <TrendingDown size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.expenses)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Operating bills & costs
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('expensesTitle')}
+              value={summary.expenses}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Operating bills & costs"
+              icon={<TrendingDown size={14} />}
+              iconBgColor="rgba(239, 68, 68, 0.1)"
+              iconColor="var(--brand-danger)"
+            />
 
             {/* Net Profit */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('netProfitLabel')}
-                </span>
-                <div
-                  style={{
-                    color: summary.netProfit >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor:
-                      summary.netProfit >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                  }}
-                >
-                  <Coins size={18} />
-                </div>
-              </div>
-              <strong
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 900,
-                  color: summary.netProfit >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)',
-                }}
-              >
-                {formatCurrency(summary.netProfit)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Gross Profit minus Expenses
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('netProfitLabel')}
+              value={summary.netProfit}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Gross Profit minus Expenses"
+              icon={<Coins size={14} />}
+              iconBgColor={
+                summary.netProfit >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'
+              }
+              iconColor={summary.netProfit >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)'}
+              valueColor={summary.netProfit >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)'}
+            />
 
             {/* Cash Position */}
-            <Card style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('cashPositionLabel')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-secondary)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                  }}
-                >
-                  <ShieldCheck size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.cashPosition)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Cash Sales minus Cash Expenses
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('cashPositionLabel')}
+              value={summary.cashPosition}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Cash Sales minus Cash Expenses"
+              icon={<ShieldCheck size={14} />}
+              iconBgColor="rgba(6, 182, 212, 0.1)"
+              iconColor="var(--brand-secondary)"
+            />
 
             {/* Inventory Value */}
-            <Card
-              style={{
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                gridColumn: 'span 1',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {t('inventoryValueLabel')}
-                </span>
-                <div
-                  style={{
-                    color: 'var(--brand-primary)',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                  }}
-                >
-                  <ShoppingCart size={18} />
-                </div>
-              </div>
-              <strong style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}>
-                {formatCurrency(summary.inventoryValue)}
-              </strong>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Total worth of shop stock items
-              </span>
-            </Card>
+            <FinancialKPICard
+              title={t('inventoryValueLabel')}
+              value={summary.inventoryValue}
+              formatCurrency={formatCurrency}
+              formatCompactCurrency={formatCompactCurrency}
+              subtitle="Total worth of shop stock"
+              icon={<ShoppingCart size={14} />}
+              iconBgColor="rgba(99, 102, 241, 0.1)"
+              iconColor="var(--brand-primary)"
+              gridColumn="span 1"
+            />
           </div>
 
           {/* Consolidated Financial statement details */}

@@ -15,6 +15,7 @@ export interface SyncQueueItem {
     | 'product_category'
     | 'inventory_transaction'
     | 'sale'
+    | 'sale_item'
     | 'sale_payment'
     | 'expense'
     | 'expense_category'

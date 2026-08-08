@@ -12,6 +12,50 @@ import { Modal } from '../components/Modal';
 import { CustomSelect } from '../components/CustomSelect';
 import { Plus, Edit2, Trash2, Calendar, FileText, Tag, CreditCard } from 'lucide-react';
 
+const ClickableAmount: React.FC<{
+  value: number;
+  formatFull: (v: number) => string;
+  formatCompact: (v: number) => string;
+  style?: React.CSSProperties;
+}> = ({ value, formatFull, formatCompact, style }) => {
+  const [showFull, setShowFull] = React.useState(false);
+  const fullValue = formatFull(value);
+  const compactValue = formatCompact(value);
+  return (
+    <strong
+      onClick={() => setShowFull(!showFull)}
+      style={{ ...style, cursor: 'pointer', display: 'block' }}
+      title={fullValue}
+    >
+      {showFull ? fullValue : compactValue}
+    </strong>
+  );
+};
+
+const ClickableText: React.FC<{
+  text: string;
+  style?: React.CSSProperties;
+}> = ({ text, style }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  return (
+    <strong
+      onClick={() => setIsExpanded(!isExpanded)}
+      style={{
+        ...style,
+        cursor: 'pointer',
+        overflow: isExpanded ? 'visible' : 'hidden',
+        textOverflow: isExpanded ? 'clip' : 'ellipsis',
+        whiteSpace: isExpanded ? 'normal' : 'nowrap',
+        wordBreak: isExpanded ? 'break-word' : 'normal',
+        display: 'block',
+      }}
+      title={text}
+    >
+      {text}
+    </strong>
+  );
+};
+
 export const Expenses: React.FC = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -42,8 +86,23 @@ export const Expenses: React.FC = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const formatCurrency = (val: number) =>
-    `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatCurrency = React.useCallback(
+    (val: number) =>
+      `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    [currSymbol],
+  );
+
+  const formatCompactCurrency = React.useCallback(
+    (num: number) => {
+      if (num >= 1e9) return `${currSymbol}${(num / 1e9).toFixed(1).replace(/\.0$/, '')}B`;
+      if (num >= 1e6) return `${currSymbol}${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (num >= 1e3) return `${currSymbol}${(num / 1e3).toFixed(1).replace(/\.0$/, '')}K`;
+      return `${currSymbol}${Number(num).toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })}`;
+    },
+    [currSymbol],
+  );
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString(undefined, { dateStyle: 'medium' });
@@ -161,88 +220,92 @@ export const Expenses: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '16px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '12px',
         }}
       >
-        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-danger, #ef4444)' }}>
+        <Card style={{ padding: '12px', borderLeft: '4px solid var(--brand-danger, #ef4444)' }}>
           <span
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: 700,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
               display: 'block',
-              marginBottom: '6px',
+              marginBottom: '4px',
             }}
           >
             {t('todayExpenses')}
           </span>
-          <strong style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text-main)' }}>
-            {formatCurrency(todayTotal)}
-          </strong>
+          <ClickableAmount
+            value={todayTotal}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
+            style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}
+          />
         </Card>
-        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-warning, #f59e0b)' }}>
+        <Card style={{ padding: '12px', borderLeft: '4px solid var(--brand-warning, #f59e0b)' }}>
           <span
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: 700,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
               display: 'block',
-              marginBottom: '6px',
+              marginBottom: '4px',
             }}
           >
             {t('weeklyExpenses')}
           </span>
-          <strong style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text-main)' }}>
-            {formatCurrency(weeklyTotal)}
-          </strong>
+          <ClickableAmount
+            value={weeklyTotal}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
+            style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}
+          />
         </Card>
-        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-primary)' }}>
+        <Card style={{ padding: '12px', borderLeft: '4px solid var(--brand-primary)' }}>
           <span
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: 700,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
               display: 'block',
-              marginBottom: '6px',
+              marginBottom: '4px',
             }}
           >
             {t('monthlyExpenses')}
           </span>
-          <strong style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--text-main)' }}>
-            {formatCurrency(monthlyTotal)}
-          </strong>
+          <ClickableAmount
+            value={monthlyTotal}
+            formatFull={formatCurrency}
+            formatCompact={formatCompactCurrency}
+            style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-main)' }}
+          />
         </Card>
-        <Card style={{ padding: '16px', borderLeft: '4px solid var(--brand-secondary)' }}>
+        <Card style={{ padding: '12px', borderLeft: '4px solid var(--brand-secondary)' }}>
           <span
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: 700,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
               display: 'block',
-              marginBottom: '6px',
+              marginBottom: '4px',
             }}
           >
             {t('largestCategory')}
           </span>
-          <strong
+          <ClickableText
+            text={largestCategory}
             style={{
-              fontSize: '1.4rem',
+              fontSize: '1.2rem',
               fontWeight: 900,
               color: 'var(--text-main)',
-              display: 'block',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              marginTop: '6px',
+              marginTop: '4px',
             }}
-          >
-            {largestCategory}
-          </strong>
+          />
         </Card>
       </div>
 
@@ -497,32 +560,39 @@ export const Expenses: React.FC = () => {
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: 'column',
+                  gap: '12px',
                   marginTop: '6px',
                   borderTop: '1px solid var(--border-color)',
-                  paddingTop: '8px',
+                  paddingTop: '10px',
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     {getMethodLabel(exp.payment_method)}
                   </span>
-                  <span
-                    style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--brand-danger)' }}
-                  >
-                    {formatCurrency(exp.amount)}
-                  </span>
+                  <ClickableAmount
+                    value={exp.amount}
+                    formatFull={formatCurrency}
+                    formatCompact={formatCompactCurrency}
+                    style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--brand-danger)' }}
+                  />
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => navigate(`/expenses/edit/${exp.id}`)}
+                    style={{ width: '100%', justifyContent: 'center' }}
                   >
                     Edit
                   </Button>
-                  <Button size="sm" variant="danger" onClick={() => setDeleteTargetId(exp.id)}>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => setDeleteTargetId(exp.id)}
+                    style={{ width: '100%', justifyContent: 'center' }}
+                  >
                     Delete
                   </Button>
                 </div>
