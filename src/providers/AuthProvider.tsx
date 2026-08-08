@@ -58,8 +58,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.hash.includes('type=signup') ||
+        window.location.search.includes('type=signup'))
+    ) {
+      sessionStorage.setItem('just_verified_email', 'true');
+    }
+
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       if (mounted) {
+        if (
+          typeof window !== 'undefined' &&
+          sessionStorage.getItem('just_verified_email') === 'true'
+        ) {
+          return; // Let onAuthStateChange handle the signout and redirect
+        }
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         if (currentSession?.user) {
@@ -73,6 +87,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, changedSession) => {
       if (mounted) {
+        if (
+          typeof window !== 'undefined' &&
+          sessionStorage.getItem('just_verified_email') === 'true'
+        ) {
+          sessionStorage.removeItem('just_verified_email');
+          supabase.auth.signOut().then(() => {
+            window.location.href = '/login?verified=true';
+          });
+          return;
+        }
+
         setSession(changedSession);
         setUser(changedSession?.user ?? null);
         if (changedSession?.user) {
