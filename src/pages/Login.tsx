@@ -17,21 +17,23 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (searchParams.get('verified') === 'true') {
       timeoutId = setTimeout(() => {
         setSuccessMessage('Email confirmed successfully! You can now log in.');
-        searchParams.delete('verified');
-        setSearchParams(searchParams, { replace: true });
       }, 0);
+
+      // Use history API to clean up URL without triggering React Router re-renders
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [searchParams, setSearchParams]);
+  }, [searchParams]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
