@@ -160,6 +160,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setSession(null);
     setUser(null);
     setProfile(null);
+
+    // Clear local database caches to prevent cross-account data leakage
+    try {
+      const { db } = await import('../lib/dexie');
+      await db.cachedBusinesses.clear();
+      await db.businessMembers.clear();
+      await db.cachedProducts.clear();
+    } catch (e) {
+      console.error('Failed to clear local cache on logout', e);
+    }
   };
 
   const resetPassword = async (email: string) => {

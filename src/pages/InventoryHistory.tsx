@@ -38,7 +38,7 @@ const ClickableAmount: React.FC<{
 
 export const InventoryHistory: React.FC = () => {
   const { transactions, products, isLoading } = useInventory();
-  const { getCurrencySymbol } = useBusiness();
+  const { getCurrencySymbol, currentRole } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
@@ -312,7 +312,9 @@ export const InventoryHistory: React.FC = () => {
                       <th style={{ padding: '16px' }}>{t('colItemName')}</th>
                       <th style={{ padding: '16px' }}>{t('colType')}</th>
                       <th style={{ padding: '16px' }}>{t('colQtyChange')}</th>
-                      <th style={{ padding: '16px' }}>{t('colCostPrice')}</th>
+                      {currentRole !== 'cashier' && (
+                        <th style={{ padding: '16px' }}>{t('colCostPrice')}</th>
+                      )}
                       <th style={{ padding: '16px' }}>{t('colRemarks')}</th>
                     </tr>
                   </thead>
@@ -416,19 +418,25 @@ export const InventoryHistory: React.FC = () => {
                               {prod?.unit}
                             </span>
                           </td>
-                          <td
-                            style={{ padding: '16px', fontWeight: 600, color: 'var(--text-main)' }}
-                          >
-                            {tx.unit_cost !== undefined ? (
-                              <ClickableAmount
-                                value={tx.unit_cost}
-                                formatFull={formatCurrency}
-                                formatCompact={formatCompactCurrency}
-                              />
-                            ) : (
-                              '—'
-                            )}
-                          </td>
+                          {currentRole !== 'cashier' && (
+                            <td
+                              style={{
+                                padding: '16px',
+                                fontWeight: 600,
+                                color: 'var(--text-main)',
+                              }}
+                            >
+                              {tx.unit_cost !== undefined ? (
+                                <ClickableAmount
+                                  value={tx.unit_cost}
+                                  formatFull={formatCurrency}
+                                  formatCompact={formatCompactCurrency}
+                                />
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                          )}
                           <td
                             style={{
                               padding: '16px',

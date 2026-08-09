@@ -3,7 +3,8 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../hooks/useLanguage';
-import { LanguageSelector, InstallGuideModal } from '../components';
+import { useBusiness } from '../hooks/useBusiness';
+import { LanguageSelector, InstallGuideModal, CustomSelect } from '../components';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import {
   Menu,
@@ -30,6 +31,7 @@ import {
 
 export const AppLayout: React.FC = () => {
   const { user, profile, signOut } = useAuth();
+  const { currentRole, business, businesses, switchBusiness } = useBusiness();
   const { theme, setTheme } = useTheme();
   const { t } = useLanguage();
   const location = useLocation();
@@ -146,6 +148,28 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <nav style={{ flex: 1, overflowY: 'auto', paddingRight: '4px', margin: '8px 0' }}>
+          {businesses.length > 0 && (
+            <div style={{ marginBottom: '16px' }}>
+              <CustomSelect
+                value={business?.id || ''}
+                onChange={(val) => {
+                  if (val === 'join_another') {
+                    window.location.href = '/onboarding?join=true';
+                  } else if (val === 'create_new') {
+                    window.location.href = '/onboarding?create=true';
+                  } else {
+                    switchBusiness(val);
+                  }
+                }}
+                options={[
+                  ...businesses.map((b) => ({ value: b.id, label: b.business_name })),
+                  { value: 'join_another', label: '+ JOIN ANOTHER STORE' },
+                  { value: 'create_new', label: '+ CREATE NEW STORE' },
+                ]}
+                style={{ width: '100%', fontWeight: 700 }}
+              />
+            </div>
+          )}
           <Link
             to="/dashboard"
             onClick={() => setIsSidebarOpen(false)}
@@ -154,22 +178,27 @@ export const AppLayout: React.FC = () => {
             <LayoutDashboard size={19} />
             <span>Dashboard</span>
           </Link>
-          <Link
-            to="/financials"
-            onClick={() => setIsSidebarOpen(false)}
-            style={navItemStyle('/financials')}
-          >
-            <TrendingUp size={19} />
-            <span>{t('tabFinancials')}</span>
-          </Link>
-          <Link
-            to="/reports"
-            onClick={() => setIsSidebarOpen(false)}
-            style={navItemStyle('/reports')}
-          >
-            <FileText size={19} />
-            <span>{t('tabReports')}</span>
-          </Link>
+
+          {currentRole !== 'cashier' && (
+            <>
+              <Link
+                to="/financials"
+                onClick={() => setIsSidebarOpen(false)}
+                style={navItemStyle('/financials')}
+              >
+                <TrendingUp size={19} />
+                <span>{t('tabFinancials')}</span>
+              </Link>
+              <Link
+                to="/reports"
+                onClick={() => setIsSidebarOpen(false)}
+                style={navItemStyle('/reports')}
+              >
+                <FileText size={19} />
+                <span>{t('tabReports')}</span>
+              </Link>
+            </>
+          )}
           <Link to="/sales" onClick={() => setIsSidebarOpen(false)} style={navItemStyle('/sales')}>
             <ShoppingCart size={19} />
             <span>{t('tabSales')}</span>
@@ -190,22 +219,33 @@ export const AppLayout: React.FC = () => {
             <Users size={19} />
             <span>Customers & Debtors</span>
           </Link>
-          <Link
-            to="/expenses"
-            onClick={() => setIsSidebarOpen(false)}
-            style={navItemStyle('/expenses')}
-          >
-            <Coins size={19} />
-            <span>{t('tabExpenses')}</span>
-          </Link>
+
+          {currentRole !== 'cashier' && (
+            <Link
+              to="/expenses"
+              onClick={() => setIsSidebarOpen(false)}
+              style={navItemStyle('/expenses')}
+            >
+              <Coins size={19} />
+              <span>{t('tabExpenses')}</span>
+            </Link>
+          )}
+
           <Link
             to="/inventory"
             onClick={() => setIsSidebarOpen(false)}
             style={navItemStyle('/inventory')}
           >
             <Package size={19} />
-            <span>Shop Items</span>
+            <span>Inventory</span>
           </Link>
+
+          {currentRole === 'owner' && (
+            <Link to="/team" onClick={() => setIsSidebarOpen(false)} style={navItemStyle('/team')}>
+              <UserCheck size={19} />
+              <span>Team & Access</span>
+            </Link>
+          )}
           <Link
             to="/inventory-ledger"
             onClick={() => setIsSidebarOpen(false)}
@@ -363,7 +403,9 @@ export const AppLayout: React.FC = () => {
                 aria-label="Install App"
               >
                 <Download size={15} />
-                <span style={{ fontWeight: 700 }}>Install</span>
+                <span className="hide-on-mobile" style={{ fontWeight: 700 }}>
+                  Install
+                </span>
               </button>
             )}
             <LanguageSelector />
@@ -386,7 +428,12 @@ export const AppLayout: React.FC = () => {
               ) : (
                 <Monitor size={15} color="var(--brand-secondary)" />
               )}
-              <span style={{ textTransform: 'capitalize', fontWeight: 700 }}>{theme}</span>
+              <span
+                className="hide-on-mobile"
+                style={{ textTransform: 'capitalize', fontWeight: 700 }}
+              >
+                {theme}
+              </span>
             </button>
           </div>
         </header>

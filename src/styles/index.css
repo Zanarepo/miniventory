@@ -1038,3 +1038,9 @@ select option {
     font-size: 0.7rem;
   }
 }
+
+@media (max-width: 639px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

@@ -12,9 +12,14 @@ export const LanguageSelector: React.FC = () => {
       onChange={(val) => setLanguage(val as LanguageCode)}
       options={supportedLanguages.map((lang) => ({
         value: lang.code,
-        label: `${lang.flag} ${lang.label}`,
+        label: (
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>{lang.flag}</span>
+            <span className="hide-on-mobile">{lang.label}</span>
+          </span>
+        ),
       }))}
-      style={{ minWidth: '130px' }}
+      style={{ minWidth: 'auto' }}
     />
   );
 };

@@ -54,7 +54,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireBusiness 
 
   // If user visits /onboarding but already owns a registered business, take them to dashboard
   if (!requireBusiness && business) {
-    return <Navigate to="/dashboard" replace />;
+    const isJoiningOrCreate =
+      window.location.search.includes('join=true') ||
+      window.location.search.includes('create=true');
+    if (!isJoiningOrCreate) {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return <Outlet />;

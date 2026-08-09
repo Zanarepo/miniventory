@@ -40,7 +40,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onEdit,
   onArchive,
 }) => {
-  const { getCurrencySymbol } = useBusiness();
+  const { getCurrencySymbol, currentRole } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
@@ -208,25 +208,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           />
           <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}> /{product.unit}</span>
         </div>
-        <div>
-          <span
-            style={{
-              fontSize: '0.75rem',
-              color: 'var(--text-muted)',
-              display: 'block',
-              fontWeight: 600,
-            }}
-          >
-            {t('colCostPrice')}
-          </span>
-          <ClickableAmount
-            value={product.cost_price}
-            formatFull={formatCurrency}
-            formatCompact={formatCompactCurrency}
-            style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}
-          />
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}> /{product.unit}</span>
-        </div>
+        {currentRole !== 'cashier' && (
+          <div>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-muted)',
+                display: 'block',
+                fontWeight: 600,
+              }}
+            >
+              {t('colCostPrice')}
+            </span>
+            <ClickableAmount
+              value={product.cost_price}
+              formatFull={formatCurrency}
+              formatCompact={formatCompactCurrency}
+              style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}
+            />
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              {' '}
+              /{product.unit}
+            </span>
+          </div>
+        )}
       </div>
     </Card>
   );

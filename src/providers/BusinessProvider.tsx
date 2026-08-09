@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { BusinessContext } from '../contexts/BusinessContext';
-import type { Business } from '../types/business';
+import type { Business, BusinessRole, BusinessMember } from '../types/business';
 import { useAuth } from '../hooks/useAuth';
 import { useNetwork } from '../hooks/useNetwork';
 import { supabase } from '../lib/supabase';
@@ -16,8 +16,39 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
   const { user } = useAuth();
   const { isOnline } = useNetwork();
   const [business, setBusiness] = useState<Business | null>(null);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [currentRole, setCurrentRole] = useState<BusinessRole | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [prevUserId, setPrevUserId] = useState<string | undefined>(user?.id);
+
+  const loadLocalBusinesses = useCallback(async (userId: string) => {
+    // We only have the locally cached businesses
+    // Note: since dexie cachedBusinesses doesn't strictly track membership in local queries
+    // unless we query businessMembers, we do a join locally.
+    const mems = await db.businessMembers.where('user_id').equals(userId).toArray();
+    let bizData: Business[];
+
+    if (mems.length > 0) {
+      const bizIds = mems.map((m) => m.business_id);
+      bizData = await db.cachedBusinesses.where('id').anyOf(bizIds).toArray();
+    } else {
+      // Fallback for pre-RBAC legacy cached data
+      bizData = await db.cachedBusinesses.where('owner_id').equals(userId).toArray();
+    }
+
+    setBusinesses(bizData);
+    if (bizData.length > 0) {
+      const savedBizId = localStorage.getItem('miniventory_active_business_id');
+      let activeBiz = bizData.find((b) => b.id === savedBizId);
+      if (!activeBiz) activeBiz = bizData[0];
+      setBusiness(activeBiz);
+      const activeMem = mems.find((m) => m.business_id === activeBiz?.id);
+      setCurrentRole(activeMem ? activeMem.role : 'owner');
+    } else {
+      setBusiness(null);
+      setCurrentRole(null);
+    }
+  }, []);
 
   if (user?.id !== prevUserId) {
     setPrevUserId(user?.id);
@@ -35,37 +66,45 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
     setIsLoading(true);
     try {
       if (isOnline) {
-        // CRITICAL: Push any pending offline edits to Supabase BEFORE querying cloud data!
-        // This ensures local changes are never overwritten upon network restoration.
         await processSyncQueue();
 
-        const { data, error } = await supabase
-          .from('businesses')
+        // RLS ensures this only returns businesses the user belongs to
+        const { data, error } = await supabase.from('businesses').select('*');
+        const { data: members } = await supabase
+          .from('business_members')
           .select('*')
-          .eq('owner_id', user.id)
-          .maybeSingle();
+          .eq('user_id', user.id);
 
-        if (!error && data) {
-          const bizData = data as Business;
-          setBusiness(bizData);
-          await db.cachedBusinesses.put(bizData);
-        } else if (!data) {
-          const localBiz = await db.cachedBusinesses.where('owner_id').equals(user.id).first();
-          setBusiness(localBiz || null);
+        if (!error && data && data.length > 0) {
+          const bizData = data as Business[];
+          const mems = (members as BusinessMember[]) || [];
+
+          setBusinesses(bizData);
+          await db.cachedBusinesses.bulkPut(bizData);
+          await db.businessMembers.bulkPut(mems);
+
+          // Get last active business from localStorage, or default to first
+          const savedBizId = localStorage.getItem('miniventory_active_business_id');
+          let activeBiz = bizData.find((b) => b.id === savedBizId);
+          if (!activeBiz) activeBiz = bizData[0];
+
+          setBusiness(activeBiz);
+          const activeMem = mems.find((m) => m.business_id === activeBiz?.id);
+          setCurrentRole(activeMem ? activeMem.role : 'owner'); // default fallback
+        } else if (!data || data.length === 0) {
+          // Fallback to local
+          loadLocalBusinesses(user.id);
         }
       } else {
-        // Offline reading from Dexie cache
-        const localBiz = await db.cachedBusinesses.where('owner_id').equals(user.id).first();
-        setBusiness(localBiz || null);
+        loadLocalBusinesses(user.id);
       }
     } catch (err) {
       console.error('Error retrieving business profile:', err);
-      const localBiz = await db.cachedBusinesses.where('owner_id').equals(user.id).first();
-      setBusiness(localBiz || null);
+      loadLocalBusinesses(user.id);
     } finally {
       setIsLoading(false);
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, loadLocalBusinesses]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,6 +112,33 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
     }, 0);
     return () => clearTimeout(timer);
   }, [fetchBusiness]);
+
+  useEffect(() => {
+    if (!user || !business) return;
+
+    // Listen for role changes for the current user in the active business
+    const roleSubscription = supabase
+      .channel('public:business_members')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'business_members',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (payload.new && payload.new.business_id === business.id) {
+            setCurrentRole(payload.new.role);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(roleSubscription);
+    };
+  }, [user, business]);
 
   const createBusiness = async (
     data: Omit<Business, 'id' | 'owner_id' | 'created_at' | 'updated_at'>,
@@ -158,12 +224,30 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
     return match ? match.symbol : business.currency;
   }, [business]);
 
+  const switchBusiness = async (businessId: string) => {
+    const selected = businesses.find((b) => b.id === businessId);
+    if (selected) {
+      localStorage.setItem('miniventory_active_business_id', businessId);
+      setBusiness(selected);
+      // Fetch role locally
+      if (user) {
+        const mem = await db.businessMembers
+          .where({ business_id: businessId, user_id: user.id })
+          .first();
+        setCurrentRole(mem ? mem.role : 'owner');
+      }
+    }
+  };
+
   const value = {
     business,
+    businesses,
+    currentRole,
     isLoading,
     createBusiness,
     updateBusiness,
     refreshBusiness: fetchBusiness,
+    switchBusiness,
     getCurrencySymbol,
   };
 

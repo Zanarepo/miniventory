@@ -211,6 +211,15 @@ export const Login: React.FC = () => {
         >
           {t('registerNowLink')}
         </Link>
+        <div style={{ marginTop: '12px' }}>
+          Got an invite code?{' '}
+          <Link
+            to="/register?join=true"
+            style={{ color: 'var(--brand-primary)', fontWeight: 700, textDecoration: 'none' }}
+          >
+            Join a Store
+          </Link>
+        </div>
       </div>
 
       {errorMessage && (

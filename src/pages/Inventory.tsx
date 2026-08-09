@@ -28,7 +28,7 @@ import {
 
 export const Inventory: React.FC = () => {
   const { products, categories, archiveProduct, isLoading } = useInventory();
-  const { getCurrencySymbol } = useBusiness();
+  const { getCurrencySymbol, currentRole } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
@@ -162,9 +162,11 @@ export const Inventory: React.FC = () => {
               {t('invHistoryBtn')}
             </Button>
           </Link>
-          <Button variant="primary" onClick={handleOpenCreate} leftIcon={<Plus size={18} />}>
-            {t('invAddBtn')}
-          </Button>
+          {currentRole !== 'cashier' && (
+            <Button variant="primary" onClick={handleOpenCreate} leftIcon={<Plus size={18} />}>
+              {t('invAddBtn')}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -349,7 +351,9 @@ export const Inventory: React.FC = () => {
                       <th style={{ padding: '16px' }}>{t('colItemName')}</th>
                       <th style={{ padding: '16px' }}>{t('colCategory')}</th>
                       <th style={{ padding: '16px' }}>{t('colSellingPrice')}</th>
-                      <th style={{ padding: '16px' }}>{t('colCostPrice')}</th>
+                      {currentRole !== 'cashier' && (
+                        <th style={{ padding: '16px' }}>{t('colCostPrice')}</th>
+                      )}
                       <th style={{ padding: '16px' }}>{t('colRemainingStock')}</th>
                       <th style={{ padding: '16px', textAlign: 'right' }}>{t('colActions')}</th>
                     </tr>
@@ -411,12 +415,16 @@ export const Inventory: React.FC = () => {
                             /{p.unit}
                           </span>
                         </td>
-                        <td style={{ padding: '16px', fontWeight: 600, color: 'var(--text-main)' }}>
-                          {currSymbol}
-                          {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
-                            p.cost_price,
-                          )}
-                        </td>
+                        {currentRole !== 'cashier' && (
+                          <td
+                            style={{ padding: '16px', fontWeight: 600, color: 'var(--text-main)' }}
+                          >
+                            {currSymbol}
+                            {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
+                              p.cost_price,
+                            )}
+                          </td>
+                        )}
                         <td style={{ padding: '16px' }}>
                           <StockBadge
                             status={p.stock_status}
@@ -426,43 +434,48 @@ export const Inventory: React.FC = () => {
                         </td>
                         <td style={{ padding: '16px', textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '8px' }}>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenAdjust(p)}
-                              title="Update stock quantity"
-                            >
-                              <Sliders size={15} /> {t('btnAdjust')}
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => handleOpenEdit(p)}
-                              title="Edit item details"
-                            >
-                              <Edit2 size={15} /> {t('btnEdit')}
-                            </Button>
-                            <button
-                              onClick={() => handleArchive(p)}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'var(--text-muted)',
-                                cursor: 'pointer',
-                                padding: '6px',
-                                transition: 'color var(--transition-fast)',
-                              }}
-                              title={t('btnDelete')}
-                              onMouseOver={(e) =>
-                                ((e.currentTarget as HTMLElement).style.color =
-                                  'var(--brand-danger)')
-                              }
-                              onMouseOut={(e) =>
-                                ((e.currentTarget as HTMLElement).style.color = 'var(--text-muted)')
-                              }
-                            >
-                              <Archive size={17} />
-                            </button>
+                            {currentRole !== 'cashier' && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenAdjust(p)}
+                                  title="Update stock quantity"
+                                >
+                                  <Sliders size={15} /> {t('btnAdjust')}
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => handleOpenEdit(p)}
+                                  title="Edit item details"
+                                >
+                                  <Edit2 size={15} /> {t('btnEdit')}
+                                </Button>
+                                <button
+                                  onClick={() => handleArchive(p)}
+                                  style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'var(--text-muted)',
+                                    cursor: 'pointer',
+                                    padding: '6px',
+                                    transition: 'color var(--transition-fast)',
+                                  }}
+                                  title={t('btnDelete')}
+                                  onMouseOver={(e) =>
+                                    ((e.currentTarget as HTMLElement).style.color =
+                                      'var(--brand-danger)')
+                                  }
+                                  onMouseOut={(e) =>
+                                    ((e.currentTarget as HTMLElement).style.color =
+                                      'var(--text-muted)')
+                                  }
+                                >
+                                  <Archive size={17} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

@@ -8,6 +8,7 @@ import type {
 } from '../../hooks/useRecentTransactions';
 import { History, ArrowUpRight, ArrowDownRight, Package, ArrowRight, FileText } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useBusiness } from '../../hooks/useBusiness';
 
 export interface RecentTransactionsWidgetProps {
   transactions: RecentTransactionItem[];
@@ -28,6 +29,7 @@ export const RecentTransactionsWidget: React.FC<RecentTransactionsWidgetProps> =
 }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { currentRole } = useBusiness();
 
   const formatAmount = (item: RecentTransactionItem): React.ReactNode => {
     if (item.isMonetary) {
@@ -64,7 +66,9 @@ export const RecentTransactionsWidget: React.FC<RecentTransactionsWidgetProps> =
   const tabs: { label: string; value: TransactionFilter; count: number }[] = [
     { label: 'All Activity', value: 'all', count: summary.totalCount },
     { label: 'Sales Receipts', value: 'sale', count: summary.salesCount },
-    { label: 'Expenses', value: 'expense', count: summary.expensesCount },
+    ...(currentRole !== 'cashier'
+      ? [{ label: 'Expenses', value: 'expense' as TransactionFilter, count: summary.expensesCount }]
+      : []),
     { label: 'Stock Adjustments', value: 'inventory', count: summary.inventoryCount },
   ];
 
@@ -134,7 +138,9 @@ export const RecentTransactionsWidget: React.FC<RecentTransactionsWidgetProps> =
               </span>
             </h3>
             <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', margin: 0 }}>
-              Your latest customer sales, business expenses, and product stock adjustments
+              {currentRole === 'cashier'
+                ? 'Your latest customer sales and product stock adjustments'
+                : 'Your latest customer sales, business expenses, and product stock adjustments'}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useBusiness } from '../hooks/useBusiness';
+import { useAuth } from '../hooks/useAuth';
 import { db } from '../lib/dexie';
 import { supabase } from '../lib/supabase';
 import { Card } from '../components/Card';
@@ -17,7 +18,8 @@ import { VoidSaleModal } from '../components/SalesHistory/VoidSaleModal';
 
 export const SalesHistory: React.FC = () => {
   const { t } = useLanguage();
-  const { business, getCurrencySymbol } = useBusiness();
+  const { business, getCurrencySymbol, currentRole } = useBusiness();
+  const { profile } = useAuth();
   const currSymbol = getCurrencySymbol();
   const [sales, setSales] = useState<SaleWithItems[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,9 +43,10 @@ export const SalesHistory: React.FC = () => {
 
       const finalReason =
         voidReasonSelect === 'Other' ? customVoidReason || 'Other' : voidReasonSelect;
+      const voidedBy = profile?.full_name || profile?.email || 'Unknown';
       const newReceipt = sale.receipt_number.includes('[VOID')
         ? sale.receipt_number
-        : `${sale.receipt_number} [VOID: ${finalReason}]`;
+        : `${sale.receipt_number} [VOID: ${finalReason} by ${voidedBy}]`;
       const updatedSale = { ...sale, payment_status: 'VOIDED', receipt_number: newReceipt };
       await db.sales.update(saleId, { payment_status: 'VOIDED', receipt_number: newReceipt });
 
@@ -187,9 +190,61 @@ export const SalesHistory: React.FC = () => {
         status: 'pending',
       });
 
+      // Create new RETURN Sale for the history
+      const voidedBy = profile?.full_name || profile?.email || 'Unknown';
+      const newReturnSaleId = crypto.randomUUID();
+      const returnSale = {
+        id: newReturnSaleId,
+        business_id: business.id,
+        customer_id: selectedSale.customer_id,
+        receipt_number: `${selectedSale.receipt_number} [VOID by ${voidedBy}]`,
+        subtotal: item.line_total,
+        total_amount: item.line_total,
+        total_cost: item.unit_cost * item.quantity,
+        gross_profit: item.line_profit,
+        payment_method: selectedSale.payment_method,
+        payment_status: 'VOIDED',
+        amount_paid: 0,
+        balance_due: 0,
+        notes: `Item returned from ${selectedSale.receipt_number} by ${voidedBy}`,
+        created_by: profile?.id || selectedSale.created_by,
+        created_at: new Date().toISOString(),
+      };
+
+      await db.sales.add(returnSale as any);
+      await db.syncQueue.add({
+        action: 'CREATE',
+        entity: 'sale',
+        payload: returnSale,
+        createdAt: Date.now(),
+        status: 'pending',
+      });
+
+      const returnSaleItem = {
+        ...item,
+        id: crypto.randomUUID(),
+        sale_id: newReturnSaleId,
+        is_voided: true,
+      };
+
+      await db.saleItems.add(returnSaleItem);
+      await db.syncQueue.add({
+        action: 'CREATE',
+        entity: 'sale_item',
+        payload: returnSaleItem,
+        createdAt: Date.now(),
+        status: 'pending',
+      });
+
       setSelectedSale(updatedSale);
       setSelectedSaleItems((prev) => prev.map((i) => (i.id === item.id ? updatedItem : i)));
-      setSales((prev) => prev.map((s) => (s.id === updatedSale.id ? updatedSale : s)));
+      setSales((prev) => {
+        const next = prev.map((s) => (s.id === updatedSale.id ? updatedSale : s));
+        next.unshift(returnSale as any);
+        return next.sort(
+          (a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime(),
+        );
+      });
 
       if (
         selectedSale.customer_id &&
@@ -489,6 +544,7 @@ export const SalesHistory: React.FC = () => {
           formatDate={formatDate}
           onViewReceipt={viewReceipt}
           onVoidSale={setVoidSaleId}
+          currentRole={currentRole}
         />
 
         <Pagination

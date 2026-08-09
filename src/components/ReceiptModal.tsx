@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/dexie';
 import { useLanguage } from '../hooks/useLanguage';
@@ -6,7 +6,9 @@ import { useBusiness } from '../hooks/useBusiness';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { useCustomers } from '../hooks/useCustomers';
+import { supabase } from '../lib/supabase';
 import type { Sale, SaleItem } from '../types/sales';
+import type { Profile } from '../types/auth';
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -26,7 +28,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   onReturnItem,
 }) => {
   const { t } = useLanguage();
-  const { business, getCurrencySymbol } = useBusiness();
+  const { business, getCurrencySymbol, currentRole } = useBusiness();
   const { customers } = useCustomers();
   const currSymbol = getCurrencySymbol();
 
@@ -34,6 +36,26 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     () => (sale?.created_by ? db.cachedProfiles.get(sale.created_by) : undefined),
     [sale?.created_by],
   );
+
+  const [fetchedCashier, setFetchedCashier] = useState<Partial<Profile> | null>(null);
+
+  useEffect(() => {
+    if (sale?.created_by && !cashier) {
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', sale.created_by)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setFetchedCashier(data);
+            db.cachedProfiles.put(data as Profile).catch(() => {});
+          }
+        });
+    }
+  }, [sale?.created_by, cashier]);
+
+  const displayCashier = cashier || fetchedCashier;
 
   const formatCurrency = (val: number) =>
     `${currSymbol}${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -217,6 +239,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                       {formatCurrency(item.line_total)}
                     </td>
                     {onReturnItem &&
+                      currentRole !== 'cashier' &&
                       !(
                         sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')
                       ) && (
@@ -348,7 +371,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                       fontSize: '0.85rem',
                     }}
                   >
-                    {cashier?.full_name || sale.created_by}
+                    {String(displayCashier?.full_name || sale.created_by)}
                   </td>
                 </tr>
               )}
@@ -482,6 +505,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           }}
         >
           {onVoidSale &&
+            currentRole !== 'cashier' &&
             !(sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')) && (
               <Button
                 variant="outline"

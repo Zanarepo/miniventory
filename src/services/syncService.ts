@@ -156,7 +156,10 @@ export const processSyncQueue = async (): Promise<number> => {
               await handleFailedSync(item.id!, error || new Error('RPC failed'));
             }
           } else if (item.action === 'UPDATE') {
-            const payload = item.payload as Partial<Sale> & { id: string } & Record<string, any>;
+            const payload = item.payload as Partial<Sale> & { id: string } & Record<
+                string,
+                unknown
+              >;
             // Strip UI-only fields to avoid Postgres unknown column errors
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { productNames, itemCount, firstItemName, hasDiscount, ...dbPayload } = payload;
@@ -172,7 +175,7 @@ export const processSyncQueue = async (): Promise<number> => {
           if (item.action === 'UPDATE') {
             const payload = item.payload as Partial<SaleItem> & { id: string } & Record<
                 string,
-                any
+                unknown
               >;
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { product_name, ...dbPayload } = payload;

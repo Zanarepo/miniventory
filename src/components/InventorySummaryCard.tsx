@@ -27,7 +27,7 @@ const ClickableAmount: React.FC<{
 
 export const InventorySummaryCard: React.FC = () => {
   const { products, totalValuation, lowStockCount, outOfStockCount } = useInventory();
-  const { getCurrencySymbol } = useBusiness();
+  const { getCurrencySymbol, currentRole } = useBusiness();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
@@ -133,68 +133,70 @@ export const InventorySummaryCard: React.FC = () => {
       </Card>
 
       {/* Total Value */}
-      <Card
-        style={{
-          padding: '12px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div
+      {currentRole !== 'cashier' && (
+        <Card
           style={{
+            padding: '12px',
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: '8px',
-            marginBottom: '8px',
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              color: 'var(--text-muted)',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              lineHeight: '1.2',
-              letterSpacing: '0.02em',
-            }}
-          >
-            {t('statTotalValue')}
-          </p>
           <div
             style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(46, 125, 50, 0.12)',
-              color: 'var(--brand-primary)',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: '8px',
+              marginBottom: '8px',
             }}
           >
-            <TrendingUp size={16} />
+            <p
+              style={{
+                margin: 0,
+                color: 'var(--text-muted)',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                lineHeight: '1.2',
+                letterSpacing: '0.02em',
+              }}
+            >
+              {t('statTotalValue')}
+            </p>
+            <div
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(46, 125, 50, 0.12)',
+                color: 'var(--brand-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <TrendingUp size={16} />
+            </div>
           </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'baseline' }}>
-          <ClickableAmount
-            value={totalValuation}
-            formatFull={formatCurrency}
-            formatCompact={formatCompactCurrency}
-            style={{
-              fontSize: '1.28rem',
-              fontWeight: 800,
-              color: 'var(--text-main)',
-              letterSpacing: '-0.02em',
-              lineHeight: '1.1',
-              wordBreak: 'break-word',
-            }}
-          />
-        </div>
-      </Card>
+          <div style={{ display: 'flex', alignItems: 'baseline' }}>
+            <ClickableAmount
+              value={totalValuation}
+              formatFull={formatCurrency}
+              formatCompact={formatCompactCurrency}
+              style={{
+                fontSize: '1.28rem',
+                fontWeight: 800,
+                color: 'var(--text-main)',
+                letterSpacing: '-0.02em',
+                lineHeight: '1.1',
+                wordBreak: 'break-word',
+              }}
+            />
+          </div>
+        </Card>
+      )}
 
       {/* Low Stock Warnings */}
       <Card

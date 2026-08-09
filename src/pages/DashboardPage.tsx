@@ -53,7 +53,7 @@ export const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'daily' | 'charts' | 'stock' | 'health'>('daily');
   const [revenueDays, setRevenueDays] = useState<number>(30);
   const { user, profile } = useAuth();
-  const { business } = useBusiness();
+  const { business, currentRole } = useBusiness();
   const { kpis, isLoading, error, hasData } = useDashboard();
   const {
     trendData,
@@ -220,7 +220,7 @@ export const DashboardPage: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: currentRole === 'cashier' ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
           gap: '6px',
           padding: '6px',
           backgroundColor: 'rgba(0, 0, 0, 0.15)',
@@ -231,9 +231,13 @@ export const DashboardPage: React.FC = () => {
       >
         {[
           { id: 'daily', label: t('dashTabOverview'), icon: Zap, color: '#10b981' },
-          { id: 'charts', label: t('dashTabCharts'), icon: BarChart2, color: '#3b82f6' },
+          ...(currentRole !== 'cashier'
+            ? [{ id: 'charts', label: t('dashTabCharts'), icon: BarChart2, color: '#3b82f6' }]
+            : []),
           { id: 'stock', label: t('dashTabStock'), icon: Package, color: '#f59e0b' },
-          { id: 'health', label: t('dashTabHealth'), icon: HeartPulse, color: '#8b5cf6' },
+          ...(currentRole !== 'cashier'
+            ? [{ id: 'health', label: t('dashTabHealth'), icon: HeartPulse, color: '#8b5cf6' }]
+            : []),
         ].map((tab) => {
           const IconComponent = tab.icon;
           const isActive = activeTab === tab.id;
@@ -272,7 +276,7 @@ export const DashboardPage: React.FC = () => {
       {activeTab === 'daily' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
           {/* Epic 9: Rapid-Access Quick Actions Toolbar */}
-          <QuickActionsWidget />
+          {currentRole !== 'cashier' && <QuickActionsWidget />}
 
           {/* Empty State / Get Started Banner for New Businesses */}
           {!hasData && (
@@ -369,59 +373,67 @@ export const DashboardPage: React.FC = () => {
               />
 
               {/* 2. Today's Expenses */}
-              <KPICard
-                title={t('dashTodayExpenses')}
-                value={`${currencySymbol}${formatCompactValue(kpis.todayExpenses)}`}
-                fullValue={`${currencySymbol}${kpis.todayExpenses.toLocaleString()}`}
-                icon={<Receipt size={16} color="#c62828" />}
-                trendPercentage={kpis.todayExpensesChangePerc}
-                trendLabel="vs yesterday"
-                isPositiveTrend={false}
-                accentColor="#c62828"
-                onClick={() => navigate('/expenses')}
-              />
+              {currentRole !== 'cashier' && (
+                <KPICard
+                  title={t('dashTodayExpenses')}
+                  value={`${currencySymbol}${formatCompactValue(kpis.todayExpenses)}`}
+                  fullValue={`${currencySymbol}${kpis.todayExpenses.toLocaleString()}`}
+                  icon={<Receipt size={16} color="#c62828" />}
+                  trendPercentage={kpis.todayExpensesChangePerc}
+                  trendLabel="vs yesterday"
+                  isPositiveTrend={false}
+                  accentColor="#c62828"
+                  onClick={() => navigate('/expenses')}
+                />
+              )}
 
               {/* 3. Today's Profit */}
-              <KPICard
-                title={t('dashActualProfit')}
-                value={`${currencySymbol}${formatCompactValue(kpis.todayProfit)}`}
-                fullValue={`${currencySymbol}${kpis.todayProfit.toLocaleString()}`}
-                icon={<Award size={16} color="var(--brand-primary)" />}
-                trendPercentage={kpis.todayProfitChangePerc}
-                trendLabel="vs yesterday"
-                isPositiveTrend={true}
-                accentColor="var(--brand-primary)"
-                onClick={() => navigate('/financials')}
-              />
+              {currentRole !== 'cashier' && (
+                <KPICard
+                  title={t('dashActualProfit')}
+                  value={`${currencySymbol}${formatCompactValue(kpis.todayProfit)}`}
+                  fullValue={`${currencySymbol}${kpis.todayProfit.toLocaleString()}`}
+                  icon={<Award size={16} color="var(--brand-primary)" />}
+                  trendPercentage={kpis.todayProfitChangePerc}
+                  trendLabel="vs yesterday"
+                  isPositiveTrend={true}
+                  accentColor="var(--brand-primary)"
+                  onClick={() => navigate('/financials')}
+                />
+              )}
 
               {/* 4. Cash Position */}
-              <KPICard
-                title={t('dashAvailableCash')}
-                value={`${currencySymbol}${formatCompactValue(kpis.cashPosition)}`}
-                fullValue={`${currencySymbol}${kpis.cashPosition.toLocaleString()}`}
-                icon={<Wallet size={16} color="#0288d1" />}
-                neutralTrend={true}
-                subMetrics={[
-                  {
-                    label: 'In: ' + currencySymbol + formatCompactValue(kpis.cashIn),
-                    value: 'Out: ' + currencySymbol + formatCompactValue(kpis.cashOut),
-                    color: 'var(--text-main)',
-                  },
-                ]}
-                accentColor="#0288d1"
-                onClick={() => navigate('/financials')}
-              />
+              {currentRole !== 'cashier' && (
+                <KPICard
+                  title={t('dashAvailableCash')}
+                  value={`${currencySymbol}${formatCompactValue(kpis.cashPosition)}`}
+                  fullValue={`${currencySymbol}${kpis.cashPosition.toLocaleString()}`}
+                  icon={<Wallet size={16} color="#0288d1" />}
+                  neutralTrend={true}
+                  subMetrics={[
+                    {
+                      label: 'In: ' + currencySymbol + formatCompactValue(kpis.cashIn),
+                      value: 'Out: ' + currencySymbol + formatCompactValue(kpis.cashOut),
+                      color: 'var(--text-main)',
+                    },
+                  ]}
+                  accentColor="#0288d1"
+                  onClick={() => navigate('/financials')}
+                />
+              )}
 
               {/* 5. Inventory Value */}
-              <KPICard
-                title={t('dashStockValue')}
-                value={`${currencySymbol}${formatCompactValue(kpis.inventoryValue)}`}
-                fullValue={`${currencySymbol}${kpis.inventoryValue.toLocaleString()}`}
-                icon={<Layers size={16} color="#7b1fa2" />}
-                neutralTrend={true}
-                accentColor="#7b1fa2"
-                onClick={() => navigate('/inventory-ledger')}
-              />
+              {currentRole !== 'cashier' && (
+                <KPICard
+                  title={t('dashStockValue')}
+                  value={`${currencySymbol}${formatCompactValue(kpis.inventoryValue)}`}
+                  fullValue={`${currencySymbol}${kpis.inventoryValue.toLocaleString()}`}
+                  icon={<Layers size={16} color="#7b1fa2" />}
+                  neutralTrend={true}
+                  accentColor="#7b1fa2"
+                  onClick={() => navigate('/inventory-ledger')}
+                />
+              )}
 
               {/* 6. Products in Stock */}
               <KPICard

@@ -1,9 +1,9 @@
 import React, { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../hooks/useLanguage';
 import { Button, Input, Toast, CustomSelect } from '../components';
-import { User, Phone, Lock, HelpCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { User, Phone, Lock, HelpCircle, ArrowRight, Eye, EyeOff, Hash } from 'lucide-react';
 
 const SECURITY_QUESTIONS = [
   "What is your mother's maiden name?",
@@ -17,11 +17,16 @@ export const Register: React.FC = () => {
   const { signUp } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [fullName, setFullName] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [pinOrPassword, setPinOrPassword] = useState('');
   const [securityQuestion, setSecurityQuestion] = useState(SECURITY_QUESTIONS[0]);
   const [securityAnswer, setSecurityAnswer] = useState('');
+  const [joinCode, setJoinCode] = useState(searchParams.get('join') === 'true' ? '' : '');
+  const [isJoinMode] = useState(searchParams.get('join') === 'true');
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -63,6 +68,9 @@ export const Register: React.FC = () => {
     if (error) {
       setErrorMessage(error.message || 'Error creating account. Please check your details.');
     } else {
+      if (joinCode.trim().length === 6) {
+        sessionStorage.setItem('miniventory_pending_join_code', joinCode.trim().toUpperCase());
+      }
       if (identifier.includes('@')) {
         setSuccessMessage(
           'Account registered successfully! Please check your email inbox to verify your account before logging in.',
@@ -178,6 +186,21 @@ export const Register: React.FC = () => {
               />
             </div>
           </>
+        )}
+
+        {isJoinMode && (
+          <div className="col-span-2">
+            <Input
+              label="Invite Code (Optional)"
+              type="text"
+              placeholder="e.g. A1B2C3"
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              maxLength={6}
+              helperText="Enter the 6-digit code to automatically join a store after signup."
+              leftIcon={<Hash size={17} />}
+            />
+          </div>
         )}
 
         <div className="col-span-2">

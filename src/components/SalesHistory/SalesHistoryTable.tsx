@@ -10,6 +10,7 @@ interface SalesHistoryTableProps {
   formatDate: (val: string) => string;
   onViewReceipt: (sale: SaleWithItems) => void;
   onVoidSale: (saleId: string) => void;
+  currentRole?: string | null;
 }
 
 export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
@@ -18,6 +19,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
   formatDate,
   onViewReceipt,
   onVoidSale,
+  currentRole,
 }) => {
   const { t } = useLanguage();
 
@@ -138,24 +140,25 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
                 </td>
                 <td style={{ padding: '12px 16px' }}>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {!(
-                      sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')
-                    ) && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        style={{
-                          borderColor: 'var(--brand-danger)',
-                          color: 'var(--brand-danger)',
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onVoidSale(sale.id);
-                        }}
-                      >
-                        Void
-                      </Button>
-                    )}
+                    {currentRole !== 'cashier' &&
+                      !(
+                        sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')
+                      ) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          style={{
+                            borderColor: 'var(--brand-danger)',
+                            color: 'var(--brand-danger)',
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onVoidSale(sale.id);
+                          }}
+                        >
+                          Void
+                        </Button>
+                      )}
                     <Button
                       size="sm"
                       variant="outline"
@@ -293,19 +296,20 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
                 )}
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {!(sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')) && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    style={{ borderColor: 'var(--brand-danger)', color: 'var(--brand-danger)' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onVoidSale(sale.id);
-                    }}
-                  >
-                    Void
-                  </Button>
-                )}
+                {currentRole !== 'cashier' &&
+                  !(sale.payment_status === 'VOIDED' || sale.receipt_number.includes('[VOID')) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      style={{ borderColor: 'var(--brand-danger)', color: 'var(--brand-danger)' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onVoidSale(sale.id);
+                      }}
+                    >
+                      Void
+                    </Button>
+                  )}
                 <Button
                   size="sm"
                   variant="outline"

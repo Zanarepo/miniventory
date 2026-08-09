@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useBusiness } from './useBusiness';
+import { useAuth } from './useAuth';
 import { useExpenses } from './useExpenses';
 import { useInventory } from './useInventory';
 import { db } from '../lib/dexie';
@@ -30,7 +31,8 @@ export interface RecentTransactionsSummary {
 }
 
 export const useRecentTransactions = () => {
-  const { business } = useBusiness();
+  const { business, currentRole } = useBusiness();
+  const { profile } = useAuth();
   const { expenses, isLoading: isExpensesLoading } = useExpenses();
   const { products, transactions: invTransactions, isLoading: isInvLoading } = useInventory();
   const businessId = business?.id;
@@ -96,28 +98,33 @@ export const useRecentTransactions = () => {
       }
 
       // 2. Add Expenses
-      for (const e of expenses) {
-        const dateStr = e.created_at || e.expense_date || new Date().toISOString();
-        items.push({
-          id: `exp_${e.id}`,
-          type: 'expense',
-          date: dateStr,
-          displayDate: formatDisplayDate(dateStr),
-          title: e.description || 'Operational Expense',
-          description: `Outflow via ${e.payment_method || 'CASH'}`,
-          amount: Number(e.amount || 0),
-          isMonetary: true,
-          isCredit: false,
-          paymentMethod: e.payment_method || 'CASH',
-          status: 'Completed',
-          linkUrl: '/expenses',
-        });
+      if (currentRole !== 'cashier') {
+        for (const e of expenses) {
+          const dateStr = e.created_at || e.expense_date || new Date().toISOString();
+          items.push({
+            id: `exp_${e.id}`,
+            type: 'expense',
+            date: dateStr,
+            displayDate: formatDisplayDate(dateStr),
+            title: e.description || 'Operational Expense',
+            description: `Outflow via ${e.payment_method || 'CASH'}`,
+            amount: Number(e.amount || 0),
+            isMonetary: true,
+            isCredit: false,
+            paymentMethod: e.payment_method || 'CASH',
+            status: 'Completed',
+            linkUrl: '/expenses',
+          });
+        }
       }
 
       // 3. Add Inventory Adjustments & Stock Events
       for (const t of invTransactions) {
         // Skip redundant Sales Deduction stock movements as they are already recorded under Sales receipts
         if (t.movement_type === 'Sales Deduction') continue;
+
+        // Hide other users' inventory actions from cashiers
+        if (currentRole === 'cashier' && t.created_by !== profile?.id) continue;
 
         const dateStr = t.created_at || new Date().toISOString();
         const productName = productMap.get(t.product_id || '') || 'Inventory Item';
@@ -155,7 +162,7 @@ export const useRecentTransactions = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [businessId, expenses, invTransactions, productMap]);
+  }, [businessId, expenses, invTransactions, productMap, currentRole, profile?.id]);
 
   useEffect(() => {
     if (!isExpensesLoading && !isInvLoading) {

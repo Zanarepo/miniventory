@@ -40,6 +40,9 @@ const NotFound = React.lazy(() =>
 const DesignSystem = React.lazy(() =>
   import('../pages/DesignSystem').then((module) => ({ default: module.DesignSystem })),
 );
+const JoinSetup = React.lazy(() =>
+  import('../pages/JoinSetup').then((module) => ({ default: module.JoinSetup })),
+);
 
 const BusinessOnboarding = React.lazy(() =>
   import('../pages/BusinessOnboarding').then((module) => ({ default: module.BusinessOnboarding })),
@@ -83,6 +86,9 @@ const Financials = React.lazy(() =>
 const ReportsPage = React.lazy(() =>
   import('../pages/ReportsPage').then((module) => ({ default: module.ReportsPage })),
 );
+const TeamManagement = React.lazy(() =>
+  import('../pages/TeamManagement').then((module) => ({ default: module.TeamManagement })),
+);
 
 // Admin Routes
 const AdminDashboard = React.lazy(() =>
@@ -120,6 +126,7 @@ export const AppRoutes: React.FC = () => {
         {/* Root Public Landing */}
         <Route path="/" element={<Landing />} />
         <Route path="/design-system" element={<DesignSystem />} />
+        <Route path="/join-setup" element={<JoinSetup />} />
 
         {/* Public Routes */}
         <Route element={<AuthLayout />}>
@@ -149,6 +156,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/expenses/edit/:id" element={<EditExpense />} />
             <Route path="/financials" element={<Financials />} />
             <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/team" element={<TeamManagement />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

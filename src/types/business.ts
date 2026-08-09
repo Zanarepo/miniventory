@@ -18,6 +18,16 @@ export interface Business {
   updated_at?: string;
 }
 
+export type BusinessRole = 'owner' | 'manager' | 'cashier';
+
+export interface BusinessMember {
+  id: string;
+  business_id: string;
+  user_id: string;
+  role: BusinessRole;
+  joined_at: string;
+}
+
 export type BusinessCategory =
   | 'Retail'
   | 'Wholesale'
