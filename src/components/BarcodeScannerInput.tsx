@@ -22,6 +22,15 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
 
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
+  const handleScanSuccess = (barcode: string) => {
+    const trimmed = barcode.trim();
+    if (!trimmed) return;
+    onChange(trimmed);
+
+    setSuccessMsg(`Scanned: ${trimmed}`);
+    setTimeout(() => setSuccessMsg(null), 2500);
+  };
+
   useEffect(() => {
     if (showCamera) {
       scannerRef.current = new Html5QrcodeScanner(
@@ -47,15 +56,6 @@ export const BarcodeScannerInput: React.FC<BarcodeScannerInputProps> = ({
       }
     };
   }, [showCamera]);
-
-  const handleScanSuccess = (barcode: string) => {
-    const trimmed = barcode.trim();
-    if (!trimmed) return;
-    onChange(trimmed);
-
-    setSuccessMsg(`Scanned: ${trimmed}`);
-    setTimeout(() => setSuccessMsg(null), 2500);
-  };
 
   useEffect(() => {
     if (!useExternalScanner) return;

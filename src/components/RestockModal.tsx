@@ -29,10 +29,15 @@ export const RestockModal: React.FC<RestockModalProps> = ({ isOpen, onClose, pro
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuantity('1');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCostPrice(String(product.cost_price || 0));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRestockType('base');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScannedSerials([]);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(null);
     }
   }, [isOpen, product]);

@@ -26,7 +26,9 @@ export const SelectSerialModal: React.FC<SelectSerialModalProps> = ({
   // Reset state when modal opens for a new product
   React.useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearch('');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedSerials(new Set());
     }
   }, [isOpen, product]);

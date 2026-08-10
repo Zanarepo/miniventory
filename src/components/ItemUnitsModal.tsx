@@ -24,18 +24,7 @@ export const ItemUnitsModal: React.FC<ItemUnitsModalProps> = ({ isOpen, onClose,
   const { voidItemUnit, itemUnits: globalUnits } = useInventory();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && product && business) {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      fetchUnits();
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setItemUnits([]);
-      setSearchQuery('');
-    }
-  }, [isOpen, product, business, globalUnits]);
-
-  const fetchUnits = async () => {
+  const fetchUnits = React.useCallback(async () => {
     if (!product || !business) return;
     setIsLoading(true);
 
@@ -60,7 +49,19 @@ export const ItemUnitsModal: React.FC<ItemUnitsModalProps> = ({ isOpen, onClose,
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [product, business, isOnline, globalUnits]);
+
+  useEffect(() => {
+    if (isOpen && product && business) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchUnits();
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setItemUnits([]);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSearchQuery('');
+    }
+  }, [isOpen, product, business, fetchUnits]);
 
   const handleDelete = async (unit: ItemUnit) => {
     const reason = window.prompt(

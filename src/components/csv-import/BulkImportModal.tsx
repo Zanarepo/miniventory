@@ -105,7 +105,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
 
       if (!product) {
         // Create Product
-        let categoryId = categories[0]?.id;
+        const categoryId = categories[0]?.id;
         if (!categoryId) {
           // If no categories exist, we should ideally create one, but for now we pass undefined
           // and let the backend/schema handle it if optional, or fail gracefully.
