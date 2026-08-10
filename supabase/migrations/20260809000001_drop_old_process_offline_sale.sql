@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS process_offline_sale(jsonb, jsonb[]);

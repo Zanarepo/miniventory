@@ -2,6 +2,7 @@
 ALTER TABLE sale_items ADD COLUMN IF NOT EXISTS is_voided BOOLEAN DEFAULT false;
 
 -- Create UPDATE policies for sales and sale_items
+DROP POLICY IF EXISTS "Users can update sales for their businesses" ON sales;
 CREATE POLICY "Users can update sales for their businesses" 
 ON sales FOR UPDATE 
 USING (business_id IN (
@@ -11,6 +12,7 @@ WITH CHECK (business_id IN (
     SELECT id FROM businesses WHERE owner_id = auth.uid()
 ));
 
+DROP POLICY IF EXISTS "Users can update sale items for their businesses" ON sale_items;
 CREATE POLICY "Users can update sale items for their businesses" 
 ON sale_items FOR UPDATE 
 USING (sale_id IN (

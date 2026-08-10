@@ -31,4 +31,19 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    chunkSizeWarningLimit: 1500, // Increase warning limit to 1.5MB
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'vendor';
+            if (id.includes('@supabase')) return 'supabase';
+            if (id.includes('lucide-react') || id.includes('recharts')) return 'ui';
+            if (id.includes('dexie') || id.includes('papaparse') || id.includes('html2canvas') || id.includes('jspdf')) return 'db';
+          }
+        },
+      },
+    },
+  },
 });

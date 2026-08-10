@@ -33,6 +33,7 @@ export interface SaleItem {
   custom_name?: string;
   is_discounted?: boolean;
   is_voided?: boolean;
+  serials?: string[];
   created_at?: string;
 }
 

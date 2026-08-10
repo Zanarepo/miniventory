@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useInventory } from '../hooks/useInventory';
 import { useBusiness } from '../hooks/useBusiness';
 import { useLanguage } from '../hooks/useLanguage';
+import { useAuth } from '../hooks/useAuth';
 import { Card, Button, SearchInput } from '../components';
 import type { StockMovementType } from '../types/inventory';
 import { Link } from 'react-router-dom';
@@ -14,6 +15,7 @@ import {
   AlertCircle,
   RefreshCw,
   Calendar,
+  Info,
 } from 'lucide-react';
 
 const ClickableAmount: React.FC<{
@@ -39,6 +41,7 @@ const ClickableAmount: React.FC<{
 export const InventoryHistory: React.FC = () => {
   const { transactions, products, isLoading } = useInventory();
   const { getCurrencySymbol, currentRole } = useBusiness();
+  const { user } = useAuth();
   const { t } = useLanguage();
   const currSymbol = getCurrencySymbol();
 
@@ -88,6 +91,11 @@ export const InventoryHistory: React.FC = () => {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((tx) => {
+      // Cashiers can only see their own transactions
+      if (currentRole === 'cashier' && tx.created_by !== user?.id) {
+        return false;
+      }
+
       if (filterType !== 'all' && tx.movement_type !== filterType) {
         return false;
       }
@@ -101,7 +109,7 @@ export const InventoryHistory: React.FC = () => {
       }
       return true;
     });
-  }, [transactions, filterType, searchQuery, productMap]);
+  }, [transactions, filterType, searchQuery, productMap, currentRole, user?.id]);
 
   const getMovementIconAndBadge = (type: StockMovementType) => {
     switch (type) {
@@ -183,20 +191,30 @@ export const InventoryHistory: React.FC = () => {
               <ArrowLeft size={16} style={{ marginRight: '4px' }} /> Back to Shop Items
             </Link>
           </div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: '1.85rem',
-              fontWeight: 900,
-              color: 'var(--text-main)',
-              letterSpacing: '-0.03em',
-            }}
-          >
-            📜 {t('historyTitle')}
-          </h1>
-          <p style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-            {t('historySubtitle')}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: '1.4rem',
+                fontWeight: 800,
+                color: 'var(--text-main)',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {t('historyTitle')}
+            </h1>
+            <div
+              title={t('historySubtitle')}
+              style={{
+                color: 'var(--text-muted)',
+                cursor: 'help',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Info size={18} />
+            </div>
+          </div>
         </div>
 
         <div className="btn-group-responsive" style={{ flex: '0 0 auto', width: 'auto' }}>

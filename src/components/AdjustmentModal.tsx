@@ -38,6 +38,7 @@ export const AdjustmentModal: React.FC<AdjustmentModalProps> = ({
   const [quantity, setQuantity] = useState<string>('');
   const [unitCost, setUnitCost] = useState<string>('');
   const [remarks, setRemarks] = useState<string>('');
+  const [adjustType, setAdjustType] = useState<'base' | 'bulk'>('base');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -60,12 +61,24 @@ export const AdjustmentModal: React.FC<AdjustmentModalProps> = ({
     setErrorMessage(null);
 
     const parsedCost = unitCost ? parseFloat(unitCost) : product.cost_price;
+    let finalQty = parsedQty;
+    let finalCost = parsedCost;
+    let finalRemarks = remarks.trim();
+
+    if (adjustType === 'bulk' && product.conversion_ratio && product.bulk_unit) {
+      finalQty = parsedQty * product.conversion_ratio;
+      if (unitCost) {
+        finalCost = parsedCost / product.conversion_ratio;
+      }
+      finalRemarks += ` (${parsedQty} ${product.bulk_unit} at ${product.conversion_ratio} ${product.unit} each)`;
+    }
+
     const result = await recordStockAdjustment(
       product.id,
       movementType,
-      parsedQty,
-      parsedCost,
-      remarks.trim(),
+      finalQty,
+      finalCost,
+      finalRemarks,
     );
     setIsSubmitting(false);
 
@@ -219,8 +232,49 @@ export const AdjustmentModal: React.FC<AdjustmentModalProps> = ({
             marginBottom: '12px',
           }}
         >
+          {product.bulk_unit && product.conversion_ratio ? (
+            <div
+              style={{ gridColumn: '1 / -1', display: 'flex', gap: '16px', marginBottom: '4px' }}
+            >
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="adjustType"
+                  checked={adjustType === 'base'}
+                  onChange={() => setAdjustType('base')}
+                />
+                Base Unit ({product.unit})
+              </label>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="adjustType"
+                  checked={adjustType === 'bulk'}
+                  onChange={() => setAdjustType('bulk')}
+                />
+                Bulk Unit ({product.bulk_unit})
+              </label>
+            </div>
+          ) : null}
+
           <Input
-            label={`${t('fieldAdjustQty')} (${product.unit})`}
+            label={`${t('fieldAdjustQty')} (${adjustType === 'bulk' ? product.bulk_unit : product.unit})`}
             type="number"
             step="any"
             min="0.01"

@@ -32,8 +32,63 @@ export interface Product {
   minimum_stock: number;
   image_url?: string;
   is_active: boolean;
+  is_serialized?: boolean;
+  barcode?: string;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface Location {
+  id: string;
+  business_id: string;
+  name: string;
+  is_default: boolean;
+  created_at?: string;
+}
+
+export interface ProductLocation {
+  product_id: string;
+  location_id: string;
+  reorder_threshold: number;
+  quantity: number;
+}
+
+export interface RestockBatch {
+  id: string;
+  business_id: string;
+  product_id: string;
+  quantity: number;
+  cost_price: number;
+  created_by?: string;
+  status: 'ACTIVE' | 'VOID';
+  void_reason?: string;
+  created_at?: string;
+}
+
+export interface ItemUnit {
+  id: string;
+  business_id: string;
+  product_id: string;
+  serial_barcode: string;
+  status: 'AVAILABLE' | 'SOLD' | 'VOID' | 'PENDING_RESTOCK';
+  restock_batch_id?: string;
+  cost_price: number;
+  created_at?: string;
+}
+
+export interface PendingRestock {
+  id: string;
+  business_id: string;
+  sale_id: string;
+  product_id: string;
+  quantity: number;
+  unit_cost: number;
+  serials: string[];
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  created_by: string;
+  created_at: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
 }
 
 export interface InventoryTransaction {
@@ -64,6 +119,9 @@ export interface InventoryContextType {
   products: ProductWithStock[];
   categories: ProductCategory[];
   transactions: InventoryTransaction[];
+  locations: Location[];
+  restockBatches: RestockBatch[];
+  itemUnits: ItemUnit[];
   isLoading: boolean;
   error: string | null;
   totalValuation: number;
@@ -87,5 +145,14 @@ export interface InventoryContextType {
     unitCost: number | undefined,
     remarks: string,
   ) => Promise<boolean>;
+  createRestockBatch: (
+    productId: string,
+    quantity: number,
+    costPrice: number,
+    serials?: string[],
+    customRemarks?: string,
+  ) => Promise<boolean>;
+  voidRestockBatch: (batchId: string, reason: string) => Promise<boolean>;
+  voidItemUnit: (unit: ItemUnit, reason: string) => Promise<boolean>;
   refreshInventory: () => Promise<void>;
 }

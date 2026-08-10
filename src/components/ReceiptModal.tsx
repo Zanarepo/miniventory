@@ -171,6 +171,17 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                       }}
                     >
                       {item.custom_name || item.product_name || `Item ${idx + 1}`}
+                      {item.serials && item.serials.length > 0 && (
+                        <div
+                          style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--text-muted)',
+                            marginTop: '4px',
+                          }}
+                        >
+                          S/N: {item.serials.join(', ')}
+                        </div>
+                      )}
                       {isVoided && (
                         <span
                           style={{

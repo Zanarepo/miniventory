@@ -7,14 +7,15 @@ import { supabase } from '../lib/supabase';
 import { Card } from '../components/Card';
 import { ReceiptModal } from '../components/ReceiptModal';
 import { Pagination } from '../components/Pagination';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 import type { Sale, SaleItem } from '../types/sales';
 import type { SaleWithItems } from '../types/sales';
-import type { InventoryTransaction } from '../types/inventory';
+import type { PendingRestock } from '../types/inventory';
 import { SalesHistoryStats } from '../components/SalesHistory/SalesHistoryStats';
 import { SalesHistoryFilters } from '../components/SalesHistory/SalesHistoryFilters';
 import { SalesHistoryTable } from '../components/SalesHistory/SalesHistoryTable';
 import { VoidSaleModal } from '../components/SalesHistory/VoidSaleModal';
+import { Info } from 'lucide-react';
 
 export const SalesHistory: React.FC = () => {
   const { t } = useLanguage();
@@ -61,27 +62,62 @@ export const SalesHistory: React.FC = () => {
       const saleItems = await db.saleItems.where('sale_id').equals(saleId).toArray();
       const now = new Date().toISOString();
 
-      const inventoryTxs: InventoryTransaction[] = saleItems.map((item) => ({
+      const pendingRestocks: PendingRestock[] = saleItems.map((item) => ({
         id: crypto.randomUUID(),
         business_id: business.id,
+        sale_id: sale.id,
         product_id: item.product_id,
-        movement_type: 'Void Restock',
         quantity: Math.abs(item.quantity),
         unit_cost: item.unit_cost,
-        remarks: `Voided Sale: ${sale.receipt_number}`,
-        created_by: sale.created_by,
+        serials: item.serials || [],
+        status: 'PENDING',
+        created_by: profile?.id || sale.created_by,
         created_at: now,
       }));
 
-      await db.inventoryTransactions.bulkPut(inventoryTxs);
-      for (const tx of inventoryTxs) {
+      await db.pendingRestocks.bulkPut(pendingRestocks);
+      for (const pr of pendingRestocks) {
         await db.syncQueue.add({
           action: 'CREATE',
-          entity: 'inventory_transaction',
-          payload: tx,
+          entity: 'pending_restock',
+          payload: pr,
           createdAt: Date.now(),
           status: 'pending',
         });
+      }
+
+      // Mark serialized items as VOID
+      const serialUpdates: any[] = [];
+      for (const item of saleItems) {
+        if (item.serials && item.serials.length > 0) {
+          for (const serial of item.serials) {
+            let unit = await db.itemUnits.where('serial_barcode').equals(serial).first();
+            if (!unit && navigator.onLine) {
+              const { data } = await supabase
+                .from('item_units')
+                .select('*')
+                .eq('serial_barcode', serial)
+                .single();
+              if (data) unit = data;
+            }
+            if (unit) {
+              serialUpdates.push({ ...unit, status: 'VOID' });
+            }
+          }
+        }
+      }
+
+      if (serialUpdates.length > 0) {
+        await db.itemUnits.bulkPut(serialUpdates);
+        for (const update of serialUpdates) {
+          await db.syncQueue.add({
+            action: 'UPDATE',
+            entity: 'item_unit',
+            payload: update,
+            createdAt: Date.now(),
+            status: 'pending',
+          });
+        }
       }
 
       if (sale.customer_id && sale.payment_status !== 'PAID' && sale.payment_status !== 'VOIDED') {
@@ -127,13 +163,55 @@ export const SalesHistory: React.FC = () => {
   const handleReturnItem = async (item: SaleItem) => {
     if (!business?.id || !selectedSale || item.is_voided) return;
 
-    if (!window.confirm(`Are you sure you want to return this item?`)) {
-      return;
+    let qtyToReturn = item.quantity;
+    let isPartial = false;
+
+    if (item.quantity > 1) {
+      const input = window.prompt(
+        `How many items do you want to return? (Max: ${item.quantity})`,
+        '1',
+      );
+      if (input === null) return;
+      const num = parseFloat(input);
+      if (isNaN(num) || num <= 0 || num > item.quantity) {
+        alert('Invalid quantity.');
+        return;
+      }
+      qtyToReturn = num;
+      if (qtyToReturn < item.quantity) {
+        isPartial = true;
+      }
+    } else {
+      if (!window.confirm(`Are you sure you want to return this item?`)) {
+        return;
+      }
     }
 
     try {
-      const updatedItem = { ...item, is_voided: true };
-      await db.saleItems.update(item.id, { is_voided: true });
+      let updatedItem = { ...item };
+
+      const averageUnitSellingPrice = item.line_total / item.quantity;
+      const lineTotalReduction = averageUnitSellingPrice * qtyToReturn;
+      const lineCostReduction = item.unit_cost * qtyToReturn;
+      const lineProfitReduction = lineTotalReduction - lineCostReduction;
+
+      if (isPartial) {
+        updatedItem = {
+          ...item,
+          quantity: item.quantity - qtyToReturn,
+          line_total: item.line_total - lineTotalReduction,
+          line_profit: item.line_profit - lineProfitReduction,
+        };
+        await db.saleItems.update(item.id, {
+          quantity: updatedItem.quantity,
+          line_total: updatedItem.line_total,
+          line_profit: updatedItem.line_profit,
+        });
+      } else {
+        updatedItem = { ...item, is_voided: true };
+        await db.saleItems.update(item.id, { is_voided: true });
+      }
+
       await db.syncQueue.add({
         action: 'UPDATE',
         entity: 'sale_item',
@@ -142,10 +220,10 @@ export const SalesHistory: React.FC = () => {
         status: 'pending',
       });
 
-      const newTotal = selectedSale.total_amount - item.line_total;
-      const newSubtotal = selectedSale.subtotal - item.line_total;
-      const newGrossProfit = selectedSale.gross_profit - item.line_profit;
-      const newTotalCost = selectedSale.total_cost - item.unit_cost * item.quantity;
+      const newTotal = selectedSale.total_amount - lineTotalReduction;
+      const newSubtotal = selectedSale.subtotal - lineTotalReduction;
+      const newGrossProfit = selectedSale.gross_profit - lineProfitReduction;
+      const newTotalCost = selectedSale.total_cost - lineCostReduction;
 
       const newReceipt = selectedSale.receipt_number.includes('[PARTIAL RETURN]')
         ? selectedSale.receipt_number
@@ -169,26 +247,59 @@ export const SalesHistory: React.FC = () => {
         status: 'pending',
       });
 
-      const tx = {
+      // Handle pending restock and serials (if any)
+      const pendingRestock = {
         id: crypto.randomUUID(),
         business_id: business.id,
+        sale_id: selectedSale.id,
         product_id: item.product_id,
-        movement_type: 'Void Restock' as const,
-        quantity: Math.abs(item.quantity),
+        quantity: qtyToReturn,
         unit_cost: item.unit_cost,
-        remarks: `Partial Return: ${selectedSale.receipt_number}`,
-        created_by: selectedSale.created_by,
+        serials: item.serials || [],
+        status: 'PENDING' as const,
+        created_by: profile?.id || selectedSale.created_by,
         created_at: new Date().toISOString(),
       };
 
-      await db.inventoryTransactions.add(tx);
+      await db.pendingRestocks.add(pendingRestock);
       await db.syncQueue.add({
         action: 'CREATE',
-        entity: 'inventory_transaction',
-        payload: tx,
+        entity: 'pending_restock',
+        payload: pendingRestock,
         createdAt: Date.now(),
         status: 'pending',
       });
+
+      if (item.serials && item.serials.length > 0) {
+        const serialUpdates: any[] = [];
+        for (const serial of item.serials) {
+          let unit = await db.itemUnits.where('serial_barcode').equals(serial).first();
+          if (!unit && navigator.onLine) {
+            const { data } = await supabase
+              .from('item_units')
+              .select('*')
+              .eq('serial_barcode', serial)
+              .single();
+            if (data) unit = data;
+          }
+          if (unit) {
+            serialUpdates.push({ ...unit, status: 'VOID' });
+          }
+        }
+
+        if (serialUpdates.length > 0) {
+          await db.itemUnits.bulkPut(serialUpdates);
+          for (const update of serialUpdates) {
+            await db.syncQueue.add({
+              action: 'UPDATE',
+              entity: 'item_unit',
+              payload: update,
+              createdAt: Date.now(),
+              status: 'pending',
+            });
+          }
+        }
+      }
 
       // Create new RETURN Sale for the history
       const voidedBy = profile?.full_name || profile?.email || 'Unknown';
@@ -198,10 +309,10 @@ export const SalesHistory: React.FC = () => {
         business_id: business.id,
         customer_id: selectedSale.customer_id,
         receipt_number: `${selectedSale.receipt_number} [VOID by ${voidedBy}]`,
-        subtotal: item.line_total,
-        total_amount: item.line_total,
-        total_cost: item.unit_cost * item.quantity,
-        gross_profit: item.line_profit,
+        subtotal: lineTotalReduction,
+        total_amount: lineTotalReduction,
+        total_cost: lineCostReduction,
+        gross_profit: lineProfitReduction,
         payment_method: selectedSale.payment_method,
         payment_status: 'VOIDED',
         amount_paid: 0,
@@ -224,6 +335,9 @@ export const SalesHistory: React.FC = () => {
         ...item,
         id: crypto.randomUUID(),
         sale_id: newReturnSaleId,
+        quantity: qtyToReturn,
+        line_total: lineTotalReduction,
+        line_profit: lineProfitReduction,
         is_voided: true,
       };
 
@@ -492,13 +606,29 @@ export const SalesHistory: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 font-heading">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: '1.4rem',
+              fontWeight: 800,
+              color: 'var(--text-main)',
+              letterSpacing: '-0.02em',
+            }}
+          >
             {t('salesHistoryTitle')}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {t('salesHistorySubtitle')}
-          </p>
+          <div
+            title={t('salesHistorySubtitle')}
+            style={{
+              color: 'var(--text-muted)',
+              cursor: 'help',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Info size={18} />
+          </div>
         </div>
       </div>
 

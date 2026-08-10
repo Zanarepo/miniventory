@@ -10,9 +10,15 @@ import {
   ProductCard,
   AdjustmentModal,
   ProductFormModal,
+  RestockModal,
+  ItemUnitsModal,
   InventorySummaryCard,
   Toast,
+  PendingRestocksModal,
 } from '../components';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../lib/dexie';
+import { BulkImportModal } from '../components/csv-import/BulkImportModal';
 import type { ProductWithStock } from '../types/inventory';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
@@ -24,6 +30,9 @@ import {
   Archive,
   Filter,
   AlertTriangle,
+  Download,
+  Hash,
+  Info,
 } from 'lucide-react';
 
 export const Inventory: React.FC = () => {
@@ -46,11 +55,24 @@ export const Inventory: React.FC = () => {
   const [productToAdjust, setProductToAdjust] = useState<ProductWithStock | null>(null);
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
 
+  const [productToRestock, setProductToRestock] = useState<ProductWithStock | null>(null);
+  const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] = useState<ProductWithStock | null>(null);
+  const [isSerialsModalOpen, setIsSerialsModalOpen] = useState(false);
+
   const [productToEdit, setProductToEdit] = useState<ProductWithStock | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(
     initialAction === 'new' || initialAction === 'add',
   );
+  const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+  const [isPendingRestocksOpen, setIsPendingRestocksOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const pendingRestocksCount = useLiveQuery(async () => {
+    if (currentRole === 'cashier') return 0;
+    return await db.pendingRestocks.where('status').equals('PENDING').count();
+  }, [currentRole]);
 
   useEffect(() => {
     if (searchParams.has('action')) {
@@ -83,6 +105,11 @@ export const Inventory: React.FC = () => {
     });
   }, [products, selectedCategory, showLowStockOnly, searchQuery]);
 
+  const handleOpenSerials = (product: ProductWithStock) => {
+    setSelectedProduct(product);
+    setIsSerialsModalOpen(true);
+  };
+
   const handleOpenCreate = () => {
     setProductToEdit(null);
     setIsFormModalOpen(true);
@@ -96,6 +123,11 @@ export const Inventory: React.FC = () => {
   const handleOpenAdjust = (product: ProductWithStock) => {
     setProductToAdjust(product);
     setIsAdjustModalOpen(true);
+  };
+
+  const handleOpenRestock = (product: ProductWithStock) => {
+    setProductToRestock(product);
+    setIsRestockModalOpen(true);
   };
 
   const handleArchive = async (product: ProductWithStock) => {
@@ -136,21 +168,29 @@ export const Inventory: React.FC = () => {
           marginBottom: '24px',
         }}
       >
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <h1
             style={{
               margin: 0,
-              fontSize: '1.85rem',
-              fontWeight: 900,
+              fontSize: '1.4rem',
+              fontWeight: 800,
               color: 'var(--text-main)',
-              letterSpacing: '-0.03em',
+              letterSpacing: '-0.02em',
             }}
           >
-            📦 {t('invTitle')}
+            {t('invTitle')}
           </h1>
-          <p style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-            {t('invSubtitle')}
-          </p>
+          <div
+            title={t('invSubtitle')}
+            style={{
+              color: 'var(--text-muted)',
+              cursor: 'help',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Info size={18} />
+          </div>
         </div>
 
         <div
@@ -162,10 +202,40 @@ export const Inventory: React.FC = () => {
               {t('invHistoryBtn')}
             </Button>
           </Link>
-          {currentRole !== 'cashier' && (
-            <Button variant="primary" onClick={handleOpenCreate} leftIcon={<Plus size={18} />}>
-              {t('invAddBtn')}
+          <Link to="/inventory-restock" style={{ textDecoration: 'none', display: 'flex' }}>
+            <Button variant="outline" leftIcon={<Package size={17} />}>
+              Restock Logs
             </Button>
+          </Link>
+          {currentRole !== 'cashier' && (
+            <>
+              {pendingRestocksCount !== undefined && pendingRestocksCount > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsPendingRestocksOpen(true)}
+                  style={{
+                    borderColor: 'var(--brand-danger)',
+                    color: 'var(--brand-danger)',
+                    position: 'relative',
+                  }}
+                >
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                    {pendingRestocksCount}
+                  </span>
+                  Review Returns
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => setIsBulkImportOpen(true)}
+                leftIcon={<Download size={18} />}
+              >
+                Import CSV
+              </Button>
+              <Button variant="primary" onClick={handleOpenCreate} leftIcon={<Plus size={18} />}>
+                {t('invAddBtn')}
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -369,16 +439,32 @@ export const Inventory: React.FC = () => {
                         className="table-row-hover"
                       >
                         <td style={{ padding: '16px' }}>
-                          <span
-                            style={{
-                              fontWeight: 800,
-                              color: 'var(--text-main)',
-                              display: 'block',
-                              fontSize: '1rem',
-                            }}
-                          >
-                            {p.product_name}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span
+                              style={{
+                                fontWeight: 800,
+                                color: 'var(--text-main)',
+                                display: 'block',
+                                fontSize: '1rem',
+                              }}
+                            >
+                              {p.product_name}
+                            </span>
+                            {p.is_serialized && (
+                              <span
+                                style={{
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  background: 'var(--brand-primary-light)',
+                                  color: 'var(--brand-primary)',
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                SN
+                              </span>
+                            )}
+                          </div>
                           {p.sku && (
                             <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                               Code: {p.sku}
@@ -436,14 +522,34 @@ export const Inventory: React.FC = () => {
                           <div style={{ display: 'inline-flex', gap: '8px' }}>
                             {currentRole !== 'cashier' && (
                               <>
+                                {p.is_serialized && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenSerials(p)}
+                                    leftIcon={<Hash size={14} />}
+                                  >
+                                    Serials
+                                  </Button>
+                                )}
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleOpenAdjust(p)}
-                                  title="Update stock quantity"
+                                  onClick={() => handleOpenRestock(p)}
+                                  title="Restock this item"
                                 >
-                                  <Sliders size={15} /> {t('btnAdjust')}
+                                  <Download size={15} /> Restock
                                 </Button>
+                                {!p.is_serialized && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenAdjust(p)}
+                                    title="Update stock quantity"
+                                  >
+                                    <Sliders size={15} /> {t('btnAdjust')}
+                                  </Button>
+                                )}
                                 <Button
                                   variant="secondary"
                                   size="sm"
@@ -496,6 +602,8 @@ export const Inventory: React.FC = () => {
                 key={p.id}
                 product={p}
                 onAdjustStock={handleOpenAdjust}
+                onRestock={handleOpenRestock}
+                onSerials={handleOpenSerials}
                 onEdit={handleOpenEdit}
                 onArchive={handleArchive}
               />
@@ -517,6 +625,29 @@ export const Inventory: React.FC = () => {
         onClose={() => setIsFormModalOpen(false)}
         productToEdit={productToEdit}
         onSuccess={(msg) => setStatusMessage(msg || 'Shop item saved successfully')}
+      />
+
+      <PendingRestocksModal
+        isOpen={isPendingRestocksOpen}
+        onClose={() => setIsPendingRestocksOpen(false)}
+      />
+
+      {productToRestock && (
+        <RestockModal
+          isOpen={isRestockModalOpen}
+          onClose={() => setIsRestockModalOpen(false)}
+          product={productToRestock}
+        />
+      )}
+      <ItemUnitsModal
+        isOpen={isSerialsModalOpen}
+        onClose={() => setIsSerialsModalOpen(false)}
+        product={selectedProduct}
+      />
+      <BulkImportModal
+        isOpen={isBulkImportOpen}
+        onClose={() => setIsBulkImportOpen(false)}
+        onSuccess={(msg) => setStatusMessage(msg)}
       />
     </div>
   );

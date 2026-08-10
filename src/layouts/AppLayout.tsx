@@ -5,6 +5,8 @@ import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../hooks/useLanguage';
 import { useBusiness } from '../hooks/useBusiness';
 import { LanguageSelector, InstallGuideModal, CustomSelect } from '../components';
+import { SyncIndicator } from '../components/SyncIndicator';
+import { SyncCenter } from '../components/SyncCenter';
 import { usePwaInstall } from '../hooks/usePwaInstall';
 import {
   Menu,
@@ -39,6 +41,7 @@ export const AppLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDesktopOpen, setIsDesktopOpen] = useState(true);
   const [isInstallGuideOpen, setIsInstallGuideOpen] = useState(false);
+  const [isSyncCenterOpen, setIsSyncCenterOpen] = useState(false);
 
   // Close mobile sidebar asynchronously upon route change without triggering React 19 synchronous cascading renders
   useEffect(() => {
@@ -384,6 +387,9 @@ export const AppLayout: React.FC = () => {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
+            <div onClick={() => setIsSyncCenterOpen(true)}>
+              <SyncIndicator />
+            </div>
             {showInstallButton && (
               <button
                 onClick={async () => {
@@ -457,6 +463,7 @@ export const AppLayout: React.FC = () => {
       </div>
 
       <InstallGuideModal isOpen={isInstallGuideOpen} onClose={() => setIsInstallGuideOpen(false)} />
+      <SyncCenter isOpen={isSyncCenterOpen} onClose={() => setIsSyncCenterOpen(false)} />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNetwork } from '../hooks/useNetwork';
 import { db } from '../lib/dexie';
 import { supabase } from '../lib/supabase';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 import { ExpenseContext } from '../contexts/ExpenseContext';
 import type { Expense, ExpenseCategory } from '../types/expenses';
 

@@ -5,7 +5,7 @@ import { StockBadge } from './StockBadge';
 import type { ProductWithStock } from '../types/inventory';
 import { useBusiness } from '../hooks/useBusiness';
 import { useLanguage } from '../hooks/useLanguage';
-import { Sliders, Edit2, Tag, Hash, Archive } from 'lucide-react';
+import { Sliders, Edit2, Tag, Hash, Archive, Download } from 'lucide-react';
 
 const ClickableAmount: React.FC<{
   value: number;
@@ -30,15 +30,19 @@ const ClickableAmount: React.FC<{
 export interface ProductCardProps {
   product: ProductWithStock;
   onAdjustStock: (product: ProductWithStock) => void;
+  onRestock: (product: ProductWithStock) => void;
   onEdit: (product: ProductWithStock) => void;
   onArchive?: (product: ProductWithStock) => void;
+  onSerials?: (product: ProductWithStock) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onAdjustStock,
+  onRestock,
   onEdit,
   onArchive,
+  onSerials,
 }) => {
   const { getCurrencySymbol, currentRole } = useBusiness();
   const { t } = useLanguage();
@@ -76,15 +80,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           className="btn-group-responsive"
           style={{ width: '100%', borderTop: 'none', padding: 0, margin: 0 }}
         >
-          <Button
-            variant="outline"
-            size="sm"
-            style={{ flex: 1 }}
-            onClick={() => onAdjustStock(product)}
-            leftIcon={<Sliders size={15} />}
-          >
-            {t('btnAdjust')}
-          </Button>
+          {currentRole !== 'cashier' && (
+            <>
+              {product.is_serialized && onSerials && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  style={{ flex: 1 }}
+                  onClick={() => onSerials(product)}
+                  leftIcon={<Hash size={15} />}
+                >
+                  Serials
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                style={{ flex: 1 }}
+                onClick={() => onRestock(product)}
+                leftIcon={<Download size={15} />}
+              >
+                Restock
+              </Button>
+              {!product.is_serialized && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  style={{ flex: 1 }}
+                  onClick={() => onAdjustStock(product)}
+                  leftIcon={<Sliders size={15} />}
+                >
+                  {t('btnAdjust')}
+                </Button>
+              )}
+            </>
+          )}
           <Button
             variant="secondary"
             size="sm"
@@ -94,7 +124,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             {t('btnEdit')}
           </Button>
-          {onArchive && (
+          {currentRole !== 'cashier' && onArchive && (
             <Button
               variant="outline"
               size="sm"

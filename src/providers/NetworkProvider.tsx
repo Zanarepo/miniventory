@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NetworkContext } from '../contexts/NetworkContext';
 import { Toast } from '../components/Toast';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 import { db } from '../lib/dexie';
 
 interface NetworkProviderProps {

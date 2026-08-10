@@ -5,7 +5,7 @@ import type { Profile } from '../types/auth';
 import { supabase } from '../lib/supabase';
 import { formatAuthIdentifier } from '../utils/authFormatter';
 import { db } from '../lib/dexie';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 
 interface AuthProviderProps {
   children: React.ReactNode;

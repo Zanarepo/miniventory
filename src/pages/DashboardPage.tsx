@@ -28,8 +28,6 @@ import {
   type DashboardFilterOption,
 } from '../components/dashboard';
 import { Button, LoadingSpinner } from '../components';
-import { SyncIndicator } from '../components/SyncIndicator';
-import { SyncCenter } from '../components/SyncCenter';
 import { SUPPORTED_CURRENCIES } from '../constants/businessCategories';
 import {
   TrendingUp,
@@ -97,7 +95,6 @@ export const DashboardPage: React.FC = () => {
     setFilter: setRecentTxFilter,
   } = useRecentTransactions();
   const { metrics: businessHealthMetrics, isLoading: isHealthLoading } = useBusinessHealth();
-  const [isSyncCenterOpen, setIsSyncCenterOpen] = useState(false);
   const { logAction } = useAuditLog();
   const hasLoggedOpen = useRef(false);
 
@@ -189,9 +186,6 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <div onClick={() => setIsSyncCenterOpen(true)}>
-            <SyncIndicator />
-          </div>
           <div
             style={{
               display: 'inline-flex',
@@ -540,8 +534,6 @@ export const DashboardPage: React.FC = () => {
           <BusinessHealthWidget metrics={businessHealthMetrics} isLoading={isHealthLoading} />
         </div>
       )}
-
-      <SyncCenter isOpen={isSyncCenterOpen} onClose={() => setIsSyncCenterOpen(false)} />
     </div>
   );
 };

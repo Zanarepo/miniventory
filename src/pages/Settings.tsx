@@ -12,6 +12,28 @@ import {
 } from '../components';
 import type { Business, BusinessCategory } from '../types/business';
 import { Store, Phone, MapPin, Save, Globe, Wifi, WifiOff } from 'lucide-react';
+import { db } from '../lib/dexie';
+import Dexie from 'dexie';
+
+const WipeButton = () => (
+  <Button
+    variant="danger"
+    onClick={async () => {
+      if (window.confirm('WARNING: This will completely wipe all local app data! Are you sure?')) {
+        try {
+          db.close();
+          await Dexie.delete('MiniventoryDatabase');
+          alert('Local Cache Wiped Successfully!');
+          window.location.reload();
+        } catch (e) {
+          alert('Failed to wipe: ' + e);
+        }
+      }
+    }}
+  >
+    Wipe Local Cache
+  </Button>
+);
 
 const SettingsForm: React.FC<{
   initialBusiness: Business;
@@ -200,6 +222,21 @@ export const Settings: React.FC = () => {
               {business.country || 'West African commercial standards'}.
             </p>
           </div>
+        </div>
+      </Card>
+
+      <Card
+        title="Danger Zone"
+        style={{ padding: '24px', marginTop: '24px', borderColor: 'var(--brand-danger)' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h4 style={{ margin: '0 0 4px', color: 'var(--brand-danger)' }}>Clear Local Data</h4>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              Wipes your offline cache. Use this if your local data is out of sync or stuck.
+            </p>
+          </div>
+          <WipeButton />
         </div>
       </Card>
     </div>

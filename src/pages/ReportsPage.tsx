@@ -17,7 +17,6 @@ import type {
   InventoryReportItem,
 } from '../types/reports';
 import {
-  FileText,
   DownloadCloud,
   Printer,
   Package,
@@ -26,6 +25,7 @@ import {
   PieChart,
   Building,
   History,
+  Info,
 } from 'lucide-react';
 
 const ClickableAmount: React.FC<{
@@ -319,31 +319,29 @@ export const ReportsPage: React.FC = () => {
         }}
         className="print-hidden"
       >
-        <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <h1
             style={{
-              fontSize: '1.5rem',
-              lineHeight: '2rem',
-              fontWeight: '700',
+              margin: 0,
+              fontSize: '1.4rem',
+              fontWeight: 800,
               color: 'var(--text-main)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
+              letterSpacing: '-0.02em',
             }}
           >
-            <FileText style={{ color: 'var(--brand-primary)' }} />
             {t('reportsTitle')}
           </h1>
-          <p
+          <div
+            title={t('reportsSubtitle')}
             style={{
-              fontSize: '0.875rem',
-              lineHeight: '1.25rem',
               color: 'var(--text-muted)',
-              marginTop: '4px',
+              cursor: 'help',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            {t('reportsSubtitle')}
-          </p>
+            <Info size={18} />
+          </div>
         </div>
         <button
           onClick={handlePrint}

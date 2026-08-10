@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { db, type CachedAuditLog } from '../lib/dexie';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 import { useAuth } from './useAuth';
 import { useBusiness } from './useBusiness';
 

@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNetwork } from '../hooks/useNetwork';
 import { supabase } from '../lib/supabase';
 import { db } from '../lib/dexie';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue } from '../services/sync';
 import { SUPPORTED_CURRENCIES } from '../constants/businessCategories';
 
 interface BusinessProviderProps {
@@ -68,16 +68,25 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
       if (isOnline) {
         await processSyncQueue();
 
-        // RLS ensures this only returns businesses the user belongs to
-        const { data, error } = await supabase.from('businesses').select('*');
         const { data: members } = await supabase
           .from('business_members')
           .select('*')
           .eq('user_id', user.id);
 
+        const mems = (members as BusinessMember[]) || [];
+        const memberBusinessIds = mems.map((m) => m.business_id);
+
+        let query = supabase.from('businesses').select('*');
+        if (memberBusinessIds.length > 0) {
+          query = query.or(`owner_id.eq.${user.id},id.in.(${memberBusinessIds.join(',')})`);
+        } else {
+          query = query.eq('owner_id', user.id);
+        }
+
+        const { data, error } = await query;
+
         if (!error && data && data.length > 0) {
           const bizData = data as Business[];
-          const mems = (members as BusinessMember[]) || [];
 
           setBusinesses(bizData);
           await db.cachedBusinesses.bulkPut(bizData);

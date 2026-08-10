@@ -1,7 +1,14 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { Business, BusinessMember } from '../types/business';
 import type { Profile } from '../types/auth';
-import type { Product, ProductCategory, InventoryTransaction } from '../types/inventory';
+import type {
+  Product,
+  ProductCategory,
+  InventoryTransaction,
+  RestockBatch,
+  ItemUnit,
+  PendingRestock,
+} from '../types/inventory';
 import type { Sale, SaleItem, SalePayment } from '../types/sales';
 import type { Expense, ExpenseCategory } from '../types/expenses';
 import type { ReportHistory } from '../types/reports';
@@ -23,7 +30,10 @@ export interface SyncQueueItem {
     | 'business'
     | 'report_history'
     | 'audit_log'
-    | 'customer';
+    | 'customer'
+    | 'restock_batch'
+    | 'item_unit'
+    | 'pending_restock';
   payload: unknown;
   createdAt: number;
   status: 'pending' | 'syncing' | 'failed';
@@ -87,6 +97,9 @@ export class MiniventoryDatabase extends Dexie {
   expenses!: EntityTable<Expense, 'id'>;
   reportHistory!: EntityTable<ReportHistory, 'id'>;
   businessMembers!: EntityTable<BusinessMember, 'id'>;
+  restockBatches!: EntityTable<RestockBatch, 'id'>;
+  itemUnits!: EntityTable<ItemUnit, 'id'>;
+  pendingRestocks!: EntityTable<PendingRestock, 'id'>;
 
   constructor() {
     super('MiniventoryDB');
@@ -236,6 +249,51 @@ export class MiniventoryDatabase extends Dexie {
       customers: 'id, business_id, name, phone',
       salePayments: 'id, business_id, sale_id, payment_method, created_at',
       businessMembers: 'id, business_id, user_id, role',
+    });
+    this.version(12).stores({
+      syncQueue: '++id, action, entity, status, createdAt, retryCount',
+      cachedProducts: 'id, name, price, stock, updatedAt',
+      cachedSales: 'id, date, total, status',
+      cachedExpenses: 'id, date, amount, category',
+      cachedBusinesses: 'id, owner_id, business_name, updated_at',
+      cachedProfiles: 'id, email, phone',
+      products: 'id, business_id, category_id, product_name, sku, is_active',
+      productCategories: 'id, business_id, name',
+      inventoryTransactions: 'id, business_id, product_id, movement_type, created_at',
+      sales: 'id, business_id, receipt_number, created_at',
+      saleItems: 'id, sale_id, product_id',
+      expenseCategories: 'id, business_id, name',
+      expenses: 'id, business_id, category_id, expense_date, deleted_at',
+      reportHistory: 'id, businessId, reportType, exportFormat, generatedAt',
+      auditLogs: 'id, business_id, user_id, action, entity, created_at, status',
+      customers: 'id, business_id, name, phone',
+      salePayments: 'id, business_id, sale_id, payment_method, created_at',
+      businessMembers: 'id, business_id, user_id, role',
+      restockBatches: 'id, business_id, product_id, created_at, status',
+      itemUnits: 'id, business_id, product_id, serial_barcode, status, restock_batch_id',
+    });
+    this.version(13).stores({
+      syncQueue: '++id, action, entity, status, createdAt, retryCount',
+      cachedProducts: 'id, name, price, stock, updatedAt',
+      cachedSales: 'id, date, total, status',
+      cachedExpenses: 'id, date, amount, category',
+      cachedBusinesses: 'id, owner_id, business_name, updated_at',
+      cachedProfiles: 'id, email, phone',
+      products: 'id, business_id, category_id, product_name, sku, is_active',
+      productCategories: 'id, business_id, name',
+      inventoryTransactions: 'id, business_id, product_id, movement_type, created_at',
+      sales: 'id, business_id, receipt_number, created_at',
+      saleItems: 'id, sale_id, product_id',
+      expenseCategories: 'id, business_id, name',
+      expenses: 'id, business_id, category_id, expense_date, deleted_at',
+      reportHistory: 'id, businessId, reportType, exportFormat, generatedAt',
+      auditLogs: 'id, business_id, user_id, action, entity, created_at, status',
+      customers: 'id, business_id, name, phone',
+      salePayments: 'id, business_id, sale_id, payment_method, created_at',
+      businessMembers: 'id, business_id, user_id, role',
+      restockBatches: 'id, business_id, product_id, created_at, status',
+      itemUnits: 'id, business_id, product_id, serial_barcode, status, restock_batch_id',
+      pendingRestocks: 'id, business_id, sale_id, product_id, status, created_at',
     });
   }
 }

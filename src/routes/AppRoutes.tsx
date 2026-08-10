@@ -62,6 +62,9 @@ const Inventory = React.lazy(() =>
 const InventoryHistory = React.lazy(() =>
   import('../pages/InventoryHistory').then((module) => ({ default: module.InventoryHistory })),
 );
+const RestockHistory = React.lazy(() =>
+  import('../pages/RestockHistory').then((module) => ({ default: module.RestockHistory })),
+);
 const NewSale = React.lazy(() =>
   import('../pages/NewSale').then((module) => ({ default: module.NewSale })),
 );
@@ -148,6 +151,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/inventory-ledger" element={<InventoryHistory />} />
+            <Route path="/inventory-restock" element={<RestockHistory />} />
             <Route path="/sales" element={<NewSale />} />
             <Route path="/sales-history" element={<SalesHistory />} />
             <Route path="/customers" element={<Customers />} />
