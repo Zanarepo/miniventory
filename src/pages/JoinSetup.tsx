@@ -27,7 +27,7 @@ export const JoinSetup: React.FC = () => {
       navigate('/');
       return;
     }
-    
+
     if (authLoading) return;
 
     // If they arrived without being authenticated AND without an email in URL, redirect to root
@@ -37,12 +37,17 @@ export const JoinSetup: React.FC = () => {
     }
 
     if (session?.user) {
-      supabase.from('profiles').select('full_name').eq('id', session.user.id).single().then(({ data: profile }) => {
-        if (profile?.full_name) {
-          setIsExistingUser(true);
-          setProfileName(profile.full_name);
-        }
-      });
+      supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', session.user.id)
+        .single()
+        .then(({ data: profile }) => {
+          if (profile?.full_name) {
+            setIsExistingUser(true);
+            setProfileName(profile.full_name);
+          }
+        });
     }
   }, [authLoading, session, businessId, navigate]);
 
@@ -64,7 +69,7 @@ export const JoinSetup: React.FC = () => {
       if (!isExistingUser) {
         // Native sign up for a truly new user
         const emailFromUrl = searchParams.get('email');
-        if (!emailFromUrl) throw new Error("Missing email from invite");
+        if (!emailFromUrl) throw new Error('Missing email from invite');
 
         // If they somehow have a stale local session (e.g. from a deleted test account), clear it first
         if (session) {
@@ -78,14 +83,16 @@ export const JoinSetup: React.FC = () => {
           email: emailFromUrl,
           password: password,
           options: {
-            data: { full_name: fullName.trim() }
-          }
+            data: { full_name: fullName.trim() },
+          },
         });
 
         if (signUpError) throw new Error(signUpError.message);
 
         if (!signUpData.session) {
-          setSuccessMessage("Account created successfully! Please check your email to confirm your account. Once confirmed, you can log in to access the workspace.");
+          setSuccessMessage(
+            'Account created successfully! Please check your email to confirm your account. Once confirmed, you can log in to access the workspace.',
+          );
           setIsLoading(false);
           return;
         }
@@ -164,7 +171,7 @@ export const JoinSetup: React.FC = () => {
               lineHeight: 1.5,
             }}
           >
-            {isExistingUser 
+            {isExistingUser
               ? `Welcome back, ${profileName}! You've been invited to join the workspace for ${businessName}.`
               : `You've been invited! Please set your name and a secure password to join the dashboard.`}
           </p>

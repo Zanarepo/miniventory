@@ -96,20 +96,22 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
           setCurrentRole(activeMem ? activeMem.role : 'owner'); // default fallback
         } else {
           // If they have no businesses, check if they have a pending invite saved locally
-          const pendingInviteBusinessId = localStorage.getItem('miniventory_pending_invite_business_id');
+          const pendingInviteBusinessId = localStorage.getItem(
+            'miniventory_pending_invite_business_id',
+          );
           if (pendingInviteBusinessId) {
             // Attempt to accept it
             const { data: rpcData, error: rpcError } = await supabase.rpc('accept_email_invite', {
               p_business_id: pendingInviteBusinessId,
             });
-            
+
             // Clear it regardless so we don't loop endlessly if it fails
             localStorage.removeItem('miniventory_pending_invite_business_id');
-            
+
             if (!rpcError && rpcData?.success) {
-               // Re-run fetchBusiness to pick up the newly joined businesses
-               fetchBusiness();
-               return;
+              // Reload page to pick up newly joined businesses and reset context
+              window.location.reload();
+              return;
             }
           }
 

@@ -51,7 +51,7 @@ export const Login: React.FC = () => {
       if (user) {
         const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single();
         const returnTo = searchParams.get('returnTo');
-        
+
         if (data && data.role === 'pending_admin') {
           navigate('/pending-verification');
         } else if (data && (data.role === 'admin' || data.role === 'superadmin')) {

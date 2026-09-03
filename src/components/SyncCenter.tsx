@@ -21,43 +21,43 @@ const formatEntityName = (entity: string) => {
     customers: 'Customer',
     suppliers: 'Supplier',
   };
-  return map[entity] || entity.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return map[entity] || entity.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
 const formatErrorMessage = (error?: string) => {
   if (!error) return 'Unknown error';
-  
+
   const lowerError = error.toLowerCase();
-  
+
   if (lowerError.includes('row-level security') || lowerError.includes('rls')) {
     return "You don't have permission to perform this action.";
   }
-  
+
   if (lowerError.includes('duplicate key') || lowerError.includes('unique constraint')) {
-    return "This record already exists.";
+    return 'This record already exists.';
   }
-  
+
   if (lowerError.includes('foreign key constraint')) {
-    return "This action references data that no longer exists or is unavailable.";
+    return 'This action references data that no longer exists or is unavailable.';
   }
-  
+
   if (lowerError.includes('violates check constraint')) {
-    return "The data provided is invalid.";
+    return 'The data provided is invalid.';
   }
-  
+
   if (lowerError.includes('network error') || lowerError.includes('fetch error')) {
-    return "A network connection error occurred.";
+    return 'A network connection error occurred.';
   }
-  
+
   if (lowerError.includes('timeout')) {
-    return "The request took too long. Please try again.";
+    return 'The request took too long. Please try again.';
   }
 
   // Remove table names in quotes if any remain
   let safeError = error;
   safeError = safeError.replace(/for table "[^"]+"/g, '');
   safeError = safeError.replace(/relation "[^"]+"/g, '');
-  
+
   return safeError.trim();
 };
 

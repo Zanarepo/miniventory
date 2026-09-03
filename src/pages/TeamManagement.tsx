@@ -118,7 +118,8 @@ export const TeamManagement: React.FC = () => {
       if (inviteEmail) {
         // Call edge function to send email
         try {
-          const inviterName = profile?.full_name || currentUser?.email?.split('@')[0] || 'A team member';
+          const inviterName =
+            profile?.full_name || currentUser?.email?.split('@')[0] || 'A team member';
 
           console.log('Invoking edge function with payload:', {
             email: inviteEmail,
