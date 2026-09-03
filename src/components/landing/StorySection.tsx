@@ -11,7 +11,7 @@ export const StorySection: React.FC = () => {
           <span className="mv-eyebrow">See it in action</span>
           <h2>Built for the way you really run your shop</h2>
           <p>
-            From your first sale to your end-of-day report — here's what Miniventory actually does
+            From your first sale to your end-of-day report - here's what Miniventory actually does
             for you.
           </p>
         </Reveal>

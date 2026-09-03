@@ -5,6 +5,62 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { AlertCircle, RefreshCw, Trash2, CheckCircle2 } from 'lucide-react';
 
+const formatEntityName = (entity: string) => {
+  const map: Record<string, string> = {
+    audit_log: 'Audit Log',
+    audit_logs: 'Audit Log',
+    products: 'Product',
+    sales: 'Sale',
+    expenses: 'Expense',
+    business_members: 'Team Member',
+    businesses: 'Store Details',
+    profiles: 'User Profile',
+    inventory_adjustments: 'Stock Adjustment',
+    inventory_transfers: 'Stock Transfer',
+    purchase_orders: 'Purchase Order',
+    customers: 'Customer',
+    suppliers: 'Supplier',
+  };
+  return map[entity] || entity.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+const formatErrorMessage = (error?: string) => {
+  if (!error) return 'Unknown error';
+  
+  const lowerError = error.toLowerCase();
+  
+  if (lowerError.includes('row-level security') || lowerError.includes('rls')) {
+    return "You don't have permission to perform this action.";
+  }
+  
+  if (lowerError.includes('duplicate key') || lowerError.includes('unique constraint')) {
+    return "This record already exists.";
+  }
+  
+  if (lowerError.includes('foreign key constraint')) {
+    return "This action references data that no longer exists or is unavailable.";
+  }
+  
+  if (lowerError.includes('violates check constraint')) {
+    return "The data provided is invalid.";
+  }
+  
+  if (lowerError.includes('network error') || lowerError.includes('fetch error')) {
+    return "A network connection error occurred.";
+  }
+  
+  if (lowerError.includes('timeout')) {
+    return "The request took too long. Please try again.";
+  }
+
+  // Remove table names in quotes if any remain
+  let safeError = error;
+  safeError = safeError.replace(/for table "[^"]+"/g, '');
+  safeError = safeError.replace(/relation "[^"]+"/g, '');
+  
+  return safeError.trim();
+};
+
 export const SyncCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose,
@@ -178,7 +234,7 @@ export const SyncCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                           color: 'var(--text-main)',
                         }}
                       >
-                        {item.entity}
+                        {formatEntityName(item.entity)}
                       </span>
                     </div>
                     <p
@@ -204,7 +260,7 @@ export const SyncCenter: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                         wordBreak: 'break-word',
                       }}
                     >
-                      {item.reason || 'Unknown error'}
+                      {formatErrorMessage(item.reason)}
                     </p>
                   </div>
                   <button

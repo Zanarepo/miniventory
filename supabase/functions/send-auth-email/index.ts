@@ -104,6 +104,17 @@ serve(async (req: Request) => {
         "Reset Password",
         link
       );
+    } else if (email_action_type === 'invite') {
+      const inviterName = user?.user_metadata?.inviter_name || "Someone";
+      const businessName = user?.user_metadata?.business_name || "a business";
+      subject = `You've been invited to join ${businessName} on Miniventory`;
+      const link = `${site_url}/auth/v1/verify?token=${token_hash}&type=invite&redirect_to=${encodeURIComponent(redirect_to)}`;
+      htmlContent = baseEmailTemplate(
+        "You're Invited!",
+        `${inviterName} has invited you to join ${businessName} on Miniventory. Click the button below to accept the invitation and set up your account.`,
+        "Accept Invitation",
+        link
+      );
     } else {
       // Ignore other types or fallback
       return new Response(JSON.stringify({ message: "Email type not handled" }), { 

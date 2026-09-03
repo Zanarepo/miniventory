@@ -14,7 +14,6 @@ export const LanguageSelector: React.FC = () => {
         value: lang.code,
         label: (
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span>{lang.flag}</span>
             <span className="hide-on-mobile">{lang.label}</span>
           </span>
         ),

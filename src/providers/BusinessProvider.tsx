@@ -74,16 +74,10 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
           .eq('user_id', user.id);
 
         const mems = (members as BusinessMember[]) || [];
-        const memberBusinessIds = mems.map((m) => m.business_id);
 
-        let query = supabase.from('businesses').select('*');
-        if (memberBusinessIds.length > 0) {
-          query = query.or(`owner_id.eq.${user.id},id.in.(${memberBusinessIds.join(',')})`);
-        } else {
-          query = query.eq('owner_id', user.id);
-        }
-
-        const { data, error } = await query;
+        // Rely on PostgreSQL Row Level Security (RLS) to automatically filter
+        // businesses to only those the user owns or is a member of.
+        const { data, error } = await supabase.from('businesses').select('*');
 
         if (!error && data && data.length > 0) {
           const bizData = data as Business[];
@@ -100,7 +94,25 @@ export const BusinessProvider: React.FC<BusinessProviderProps> = ({ children }) 
           setBusiness(activeBiz);
           const activeMem = mems.find((m) => m.business_id === activeBiz?.id);
           setCurrentRole(activeMem ? activeMem.role : 'owner'); // default fallback
-        } else if (!data || data.length === 0) {
+        } else {
+          // If they have no businesses, check if they have a pending invite saved locally
+          const pendingInviteBusinessId = localStorage.getItem('miniventory_pending_invite_business_id');
+          if (pendingInviteBusinessId) {
+            // Attempt to accept it
+            const { data: rpcData, error: rpcError } = await supabase.rpc('accept_email_invite', {
+              p_business_id: pendingInviteBusinessId,
+            });
+            
+            // Clear it regardless so we don't loop endlessly if it fails
+            localStorage.removeItem('miniventory_pending_invite_business_id');
+            
+            if (!rpcError && rpcData?.success) {
+               // Re-run fetchBusiness to pick up the newly joined businesses
+               fetchBusiness();
+               return;
+            }
+          }
+
           // Fallback to local
           loadLocalBusinesses(user.id);
         }

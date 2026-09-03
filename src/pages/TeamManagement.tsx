@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useBusiness } from '../hooks/useBusiness';
+import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
@@ -30,6 +31,7 @@ interface Invite {
 
 export const TeamManagement: React.FC = () => {
   const { business, currentRole } = useBusiness();
+  const { profile } = useAuth();
   const [members, setMembers] = useState<MemberWithProfile[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export const TeamManagement: React.FC = () => {
         email: inviteEmail || null,
         role: newInviteRole,
         created_by: currentUser?.id,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
       },
     ]);
 
@@ -116,7 +118,7 @@ export const TeamManagement: React.FC = () => {
       if (inviteEmail) {
         // Call edge function to send email
         try {
-          const inviterName = currentUser?.email?.split('@')[0] || 'A team member';
+          const inviterName = profile?.full_name || currentUser?.email?.split('@')[0] || 'A team member';
 
           console.log('Invoking edge function with payload:', {
             email: inviteEmail,

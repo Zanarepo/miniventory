@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Button, Input, Toast, Card } from '../components';
 import { Lock, User, ArrowRight, CheckCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 export const JoinSetup: React.FC = () => {
+  const { session, isLoading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -17,46 +19,77 @@ export const JoinSetup: React.FC = () => {
   const businessId = searchParams.get('business_id');
   const businessName = searchParams.get('business_name') || 'the team';
 
+  const [isExistingUser, setIsExistingUser] = useState(false);
+  const [profileName, setProfileName] = useState('');
+
   useEffect(() => {
-    // If they arrived without a business ID or not authenticated by the URL hash, redirect
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session || !businessId) {
-        navigate('/');
-      }
-    });
-  }, [businessId, navigate]);
+    if (!businessId) {
+      navigate('/');
+      return;
+    }
+    
+    if (authLoading) return;
+
+    // If they arrived without being authenticated AND without an email in URL, redirect to root
+    if (!session && !window.location.hash.includes('access_token') && !searchParams.get('email')) {
+      navigate('/');
+      return;
+    }
+
+    if (session?.user) {
+      supabase.from('profiles').select('full_name').eq('id', session.user.id).single().then(({ data: profile }) => {
+        if (profile?.full_name) {
+          setIsExistingUser(true);
+          setProfileName(profile.full_name);
+        }
+      });
+    }
+  }, [authLoading, session, businessId, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!businessId) return;
 
-    if (!fullName.trim() || password.length < 6) {
-      setErrorMessage('Please enter your full name and a password of at least 6 characters.');
-      return;
+    if (!isExistingUser) {
+      if (!fullName.trim() || password.length < 6) {
+        setErrorMessage('Please enter your full name and a password of at least 6 characters.');
+        return;
+      }
     }
 
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      // Update their password
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.updateUser({
-        password: password,
-      });
+      if (!isExistingUser) {
+        // Native sign up for a truly new user
+        const emailFromUrl = searchParams.get('email');
+        if (!emailFromUrl) throw new Error("Missing email from invite");
 
-      if (authError || !user) throw new Error(authError?.message || 'Failed to update password');
+        // If they somehow have a stale local session (e.g. from a deleted test account), clear it first
+        if (session) {
+          await supabase.auth.signOut();
+        }
 
-      // Update their profile name (include email to prevent not-null constraint errors on upsert)
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: user.id,
-        email: user.email,
-        full_name: fullName.trim(),
-      });
+        // Save the business ID so we can auto-accept the invite after they confirm their email
+        localStorage.setItem('miniventory_pending_invite_business_id', businessId);
 
-      if (profileError) throw profileError;
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: emailFromUrl,
+          password: password,
+          options: {
+            data: { full_name: fullName.trim() }
+          }
+        });
+
+        if (signUpError) throw new Error(signUpError.message);
+
+        if (!signUpData.session) {
+          setSuccessMessage("Account created successfully! Please check your email to confirm your account. Once confirmed, you can log in to access the workspace.");
+          setIsLoading(false);
+          return;
+        }
+      }
 
       // Accept the invite in the DB
       const { data, error: rpcError } = await supabase.rpc('accept_email_invite', {
@@ -131,31 +164,37 @@ export const JoinSetup: React.FC = () => {
               lineHeight: 1.5,
             }}
           >
-            You've been invited! Please set your name and a secure password to join the dashboard.
+            {isExistingUser 
+              ? `Welcome back, ${profileName}! You've been invited to join the workspace for ${businessName}.`
+              : `You've been invited! Please set your name and a secure password to join the dashboard.`}
           </p>
 
           <form
             onSubmit={handleSubmit}
             style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
           >
-            <Input
-              label="Full Name"
-              type="text"
-              placeholder="e.g. John Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-              leftIcon={<User size={18} />}
-            />
-            <Input
-              label="Create Password"
-              type="password"
-              placeholder="At least 6 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              leftIcon={<Lock size={18} />}
-            />
+            {!isExistingUser && (
+              <>
+                <Input
+                  label="Full Name"
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  leftIcon={<User size={18} />}
+                />
+                <Input
+                  label="Create Password"
+                  type="password"
+                  placeholder="At least 6 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  leftIcon={<Lock size={18} />}
+                />
+              </>
+            )}
             <Button
               type="submit"
               variant="primary"
@@ -164,7 +203,7 @@ export const JoinSetup: React.FC = () => {
               style={{ width: '100%', marginTop: '8px', fontWeight: 800 }}
               rightIcon={<ArrowRight size={18} />}
             >
-              Join Dashboard
+              {isExistingUser ? 'Accept & Join Workspace' : 'Join Dashboard'}
             </Button>
           </form>
         </Card>

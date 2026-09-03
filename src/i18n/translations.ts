@@ -244,9 +244,9 @@ export const TRANSLATIONS: TranslationDictionary = {
   en: {
     appTitle: 'Miniventory',
     appTagline: 'Simple Business Record Keeping for Every Entrepreneur',
-    heroBadge: '✨ Offline-First Financial Tracking',
+    heroBadge: 'Offline-First Financial Tracking',
     heroDesc:
-      'Designed specifically for market traders, food vendors, fashion designers, and growing enterprises. Record inventory, calculate profits automatically, and access your records anytime—even without internet!',
+      'Designed specifically for market traders, food vendors, fashion designers, and growing enterprises. Record inventory, calculate profits automatically, and access your records anytime-even without internet!',
     getStartedFree: 'Get Started Free',
     existingAccount: 'Existing Account',
     footerDesc: 'Empowering everyday African entrepreneurs with intuitive digital bookkeeping.',
@@ -477,9 +477,9 @@ export const TRANSLATIONS: TranslationDictionary = {
   pid: {
     appTitle: 'Miniventory',
     appTagline: 'Easy book-keeping for every hustle & business person',
-    heroBadge: '✨ No Internet Required! Record Better',
+    heroBadge: 'No Internet Required! Record Better',
     heroDesc:
-      'We make am special for market traders, food sellers, tailors, and business hustle. Measure your market stock, count your daily profit automatically, and check your records anytime—even if internet no dey!',
+      'We make am special for market traders, food sellers, tailors, and business hustle. Measure your market stock, count your daily profit automatically, and check your records anytime-even if internet no dey!',
     getStartedFree: 'Open Account Free',
     existingAccount: 'Enter Your Account',
     footerDesc: 'Supporting African business hustlers with easy simple record keeping.',
@@ -709,7 +709,7 @@ export const TRANSLATIONS: TranslationDictionary = {
   ha: {
     appTitle: 'Miniventory',
     appTagline: 'Sauƙi wajen kiyaye lissafin kowane ɗan kasuwa',
-    heroBadge: '✨ Lissafi Ko Ba Tare Da Intanet Ba',
+    heroBadge: 'Lissafi Ko Ba Tare Da Intanet Ba',
     heroDesc:
       "An tsara ta ne musamman don 'yan kasuwa, masu sayar da abinci, masu dinka sanya, da sauran kasuwanci. Lika hajoji, gane ribarka cikin hanzari, kuma duba lissafinka kowane lokaci ko ba tare da intanet ba!",
     getStartedFree: 'Bude Asusu Kyauta',
@@ -941,9 +941,9 @@ export const TRANSLATIONS: TranslationDictionary = {
   ig: {
     appTitle: 'Miniventory',
     appTagline: 'Ndekọ ahịa dị mfe maka ndị na-azụ ahịa dum',
-    heroBadge: '✨ Ahịa Na-arụ Yana Mgbe Adighi Internet',
+    heroBadge: 'Ahịa Na-arụ Yana Mgbe Adighi Internet',
     heroDesc:
-      'A kwabere ya nke mbụ maka ndị ahịa na mgbidi, ndị nrere nrere, nakwa ndị ufe kpara. Kọwaa akpa ahịa gị, nweta mgbako elele ahịa azu niile na ngọngọ oge—ma ọ bụ mgbe adịghị intanet!',
+      'A kwabere ya nke mbụ maka ndị ahịa na mgbidi, ndị nrere nrere, nakwa ndị ufe kpara. Kọwaa akpa ahịa gị, nweta mgbako elele ahịa azu niile na ngọngọ oge-ma ọ bụ mgbe adịghị intanet!',
     getStartedFree: 'Bido N’Ụgwọ Gaghị Kpabigara',
     existingAccount: 'Banye na Akwada Ahịa Gị',
     footerDesc: 'Na-akwalite ikike akpa ahịa ndị Afrịka gaa ozi dijital mfe dị ukwu.',
@@ -1189,7 +1189,7 @@ export const TRANSLATIONS: TranslationDictionary = {
   yo: {
     appTitle: 'Miniventory',
     appTagline: 'Ọkàn ni iṣakoso owo ati kikọ asiko owo fun gbogbo oniṣowo',
-    heroBadge: '✨ Ṣíṣàkósò Owo Láláisi Internet Lori Eko Gbagede',
+    heroBadge: 'Ṣíṣàkósò Owo Láláisi Internet Lori Eko Gbagede',
     heroDesc:
       'A ti yan an lara lati ṣe atunke re tààrà fun awọn obinrin ọjà, awọn ta oúnjẹ, títà aṣọ pọlu gbogbo oluṣoju ra igekoko riri! Ni itumo ri ọjà re pata, si koo jale owo si iṣe kàn laisigiri leralera!',
     getStartedFree: 'Bẹ́rẹ́ Alaišiṣi Ọja Lórùn',

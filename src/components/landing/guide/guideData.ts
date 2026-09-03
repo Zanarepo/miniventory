@@ -6,7 +6,7 @@ export const GUIDE_DATA: GuideDictionary = {
     eyebrow: 'Step-by-Step Guide',
     heading: 'How to make Miniventory work for your shop',
     subheading:
-      'Simple instructions for every daily business task — no computer or accounting training required.',
+      'Simple instructions for every daily business task - no computer or accounting training required.',
     proTipHeader: 'Pro Tip',
     pillars: [
       {
@@ -95,7 +95,7 @@ export const GUIDE_DATA: GuideDictionary = {
           },
           {
             title: '2. Type What You Paid For',
-            desc: 'Enter what the money was used for — like generator fuel, shop rent, transport, repairs, or cleaning — and type the amount.',
+            desc: 'Enter what the money was used for - like generator fuel, shop rent, transport, repairs, or cleaning - and type the amount.',
           },
           {
             title: '3. Mark Payment Source',
@@ -108,7 +108,7 @@ export const GUIDE_DATA: GuideDictionary = {
       {
         tabName: 'Profit & Loss',
         badge: 'Automatic Math',
-        headline: 'See your real profit instantly — zero accounting knowledge needed',
+        headline: 'See your real profit instantly - zero accounting knowledge needed',
         accent: '#a3e635', // Emerald / Lime
         icon: TrendingUp,
         ctaText: 'See Live Dashboard',
@@ -135,7 +135,7 @@ export const GUIDE_DATA: GuideDictionary = {
     eyebrow: 'Step-by-Step Guide',
     heading: 'How to use Miniventory manage your shop smoothly',
     subheading:
-      'Simple simple steps for your daily shop work — nobody need degree or computer school to use am.',
+      'Simple simple steps for your daily shop work - nobody need degree or computer school to use am.',
     proTipHeader: 'Pro Advice',
     pillars: [
       {
@@ -224,7 +224,7 @@ export const GUIDE_DATA: GuideDictionary = {
           },
           {
             title: '2. Write Wetin You Pay For',
-            desc: 'Enter wetin you use money do — like gen fuel, shop rent, transport, repairs, or cleaning worker — and enter the amount.',
+            desc: 'Enter wetin you use money do - like gen fuel, shop rent, transport, repairs, or cleaning worker - and enter the amount.',
           },
           {
             title: '3. Select How You Pay',
@@ -237,7 +237,7 @@ export const GUIDE_DATA: GuideDictionary = {
       {
         tabName: 'Profit & Loss (P&L)',
         badge: 'Automatic Calculation',
-        headline: 'See your correct gain immediately — you no need calculator or accounting degree',
+        headline: 'See your correct gain immediately - you no need calculator or accounting degree',
         accent: '#a3e635',
         icon: TrendingUp,
         ctaText: 'See Live Dashboard',
@@ -264,7 +264,7 @@ export const GUIDE_DATA: GuideDictionary = {
     eyebrow: 'Jagoran Mataki-ba-Mataki',
     heading: 'Yadda za ku yi amfani da Miniventory a kantin ku',
     subheading:
-      'Hanyoyi masu sauƙi don sarrafa kudin shago — ba sai ku na da karatun lissafin asusu ba.',
+      'Hanyoyi masu sauƙi don sarrafa kudin shago - ba sai ku na da karatun lissafin asusu ba.',
     proTipHeader: 'Shawara ko Sako',
     pillars: [
       {
@@ -393,7 +393,7 @@ export const GUIDE_DATA: GuideDictionary = {
     eyebrow: 'Usoro Nke Ntuziaka',
     heading: 'Otu i ga esi mee ka Miniventory rụọ ọrụ na ụlọ ahịa gị',
     subheading:
-      'Usoro dị mfe maka ịchịkwa ahịa gị kila ụbọchị — achọghị mmụta mahadum gbasara akaụntụ.',
+      'Usoro dị mfe maka ịchịkwa ahịa gị kila ụbọchị - achọghị mmụta mahadum gbasara akaụntụ.',
     proTipHeader: 'Nkwado Maka Ahịa',
     pillars: [
       {
@@ -495,7 +495,7 @@ export const GUIDE_DATA: GuideDictionary = {
       {
         tabName: 'Uru na mmebi ego',
         badge: 'Ngbakọtara Iji Ruba akụ',
-        headline: 'Tụta oghikperan mbenne ọnwụ — achoghim mmụta ahụ maka mbibị obịm gị lissafi rị',
+        headline: 'Tụta oghikperan mbenne ọnwụ - achoghim mmụta ahụ maka mbibị obịm gị lissafi rị',
         accent: '#a3e635',
         icon: TrendingUp,
         ctaText: 'Lee Shaf na oge gboro gbo',
@@ -522,7 +522,7 @@ export const GUIDE_DATA: GuideDictionary = {
     eyebrow: 'Igbese-nba-Igbese Itosona',
     heading: 'Bii o ṣe le lo Miniventory fun isiro ati ikilo ile-aja rẹ',
     subheading:
-      'Ilana rọrun fun gbogbo iṣẹ́ isowo ojooju mọ́ — o ko nilo iwe kiko ti accountant lomi bibe ojoojumo.',
+      'Ilana rọrun fun gbogbo iṣẹ́ isowo ojooju mọ́ - o ko nilo iwe kiko ti accountant lomi bibe ojoojumo.',
     proTipHeader: 'Imoran Gbeja / Imọ-rere',
     pillars: [
       {
@@ -612,7 +612,7 @@ export const GUIDE_DATA: GuideDictionary = {
           },
           {
             title: '2. Kọ Ìdi owo Tí Ẹ Iná',
-            desc: 'Kọrọ alayeki idi owow — gbi owo epo jẹre the rent ojà, ọrọ tisi pako niko arẹrọ, àìdàdáṣàko bójuto iroyi pọn dandan — kí ẹ̀ kọyée iye fàyọpò!',
+            desc: 'Kọrọ alayeki idi owow - gbi owo epo jẹre the rent ojà, ọrọ tisi pako niko arẹrọ, àìdàdáṣàko bójuto iroyi pọn dandan - kí ẹ̀ kọyée iye fàyọpò!',
           },
           {
             title: '3. Ṣatako Orin Kúrúru Gbi Owó fi Tọ mọ',

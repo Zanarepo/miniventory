@@ -150,7 +150,7 @@ export const HeroSection: React.FC = () => {
 
               <div className="mv-device-toast">
                 <IconMic size={15} />
-                "I sold 3 bags of rice" — recorded automatically
+                "I sold 3 bags of rice" - recorded automatically
               </div>
             </div>
           </div>

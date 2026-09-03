@@ -10,14 +10,14 @@ export const Login: React.FC = () => {
   const { signIn } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState('');
+  const [searchParams] = useSearchParams();
+  const [identifier, setIdentifier] = useState(searchParams.get('email') || '');
   const [pinOrPassword, setPinOrPassword] = useState('');
   const [useMagicLink, setUseMagicLink] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -50,15 +50,18 @@ export const Login: React.FC = () => {
     } else {
       if (user) {
         const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        const returnTo = searchParams.get('returnTo');
+        
         if (data && data.role === 'pending_admin') {
           navigate('/pending-verification');
         } else if (data && (data.role === 'admin' || data.role === 'superadmin')) {
-          navigate('/admin');
+          navigate(returnTo || '/admin');
         } else {
-          navigate('/dashboard');
+          navigate(returnTo || '/dashboard');
         }
       } else {
-        navigate('/dashboard');
+        const returnTo = searchParams.get('returnTo');
+        navigate(returnTo || '/dashboard');
       }
     }
   };

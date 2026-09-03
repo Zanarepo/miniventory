@@ -30,7 +30,7 @@ export const FEATURES = [
   {
     icon: <IconChart />,
     title: 'See your real profit',
-    body: 'Know how much you truly made — today, this week, this month.',
+    body: 'Know how much you truly made - today, this week, this month.',
     accent: '#a3e635',
     num: '03',
   },
@@ -44,7 +44,7 @@ export const FEATURES = [
   {
     icon: <IconReceipt />,
     title: 'Record shop expenses',
-    body: 'Rent, fuel, stock cost — all in one place.',
+    body: 'Rent, fuel, stock cost - all in one place.',
     accent: '#fb7185',
     num: '05',
   },
@@ -58,7 +58,7 @@ export const FEATURES = [
   {
     icon: <IconDoc />,
     title: 'Reports you understand',
-    body: 'Simple daily reports — no accounting knowledge needed.',
+    body: 'Simple daily reports - no accounting knowledge needed.',
     accent: '#34d399',
     num: '07',
   },
@@ -83,7 +83,7 @@ export const STORY_CARDS = [
   {
     eyebrow: 'Record sales & debts',
     title: 'Never lose track of who owes you again',
-    body: 'Every sale, every pending balance — logged in seconds. Miniventory generates a clean digital receipt for every transaction so you and your customer are always on the same page.',
+    body: 'Every sale, every pending balance - logged in seconds. Miniventory generates a clean digital receipt for every transaction so you and your customer are always on the same page.',
     highlights: ['Cash & credit sales', 'Pending balance alerts', 'Customer-linked records'],
     img: sampleReceiptImg,
     imgAlt: 'Sample receipt showing cash paid and pending balance for customer Musa O.',
@@ -93,7 +93,7 @@ export const STORY_CARDS = [
   {
     eyebrow: 'Works without internet',
     title: "Sell at the market, syncs when you're back",
-    body: 'No data? No wahala. Miniventory saves every sale offline and quietly syncs everything the moment your connection returns — securely, automatically, without you lifting a finger.',
+    body: 'No data? No wahala. Miniventory saves every sale offline and quietly syncs everything the moment your connection returns - securely, automatically, without you lifting a finger.',
     highlights: ['Full offline mode', 'Automatic background sync', 'Secure data protection'],
     img: offlineSyncImg,
     imgAlt: 'Market seller using Miniventory on a tablet while offline, with sync shield graphic',
@@ -103,7 +103,7 @@ export const STORY_CARDS = [
   {
     eyebrow: 'Real-time analytics',
     title: 'See the numbers that actually matter',
-    body: 'Forget spreadsheets. Miniventory turns every sale into live business intelligence — portfolio growth, cumulative revenue, profit margins — all on your phone, in real time.',
+    body: 'Forget spreadsheets. Miniventory turns every sale into live business intelligence - portfolio growth, cumulative revenue, profit margins - all on your phone, in real time.',
     highlights: [
       'Live profit & revenue',
       'Inventory & shipping tracking',

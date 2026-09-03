@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 /* ============================================================================
-   Count-up hook for the hero "live" numbers — respects reduced motion.
+   Count-up hook for the hero "live" numbers - respects reduced motion.
    ============================================================================ */
 
 export function useCountUp(target: number, durationMs = 1500) {

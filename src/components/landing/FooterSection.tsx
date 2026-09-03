@@ -27,7 +27,7 @@ export const FooterSection: React.FC = () => {
               </span>
             </a>
             <p>
-              Simple business record keeping for every entrepreneur — built for the realities of
+              Simple business record keeping for every entrepreneur - built for the realities of
               African small businesses.
             </p>
           </div>
